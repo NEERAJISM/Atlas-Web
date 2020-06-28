@@ -6,7 +6,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { LoginModule } from './login/login.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MDBBootstrapModule } from 'angular-bootstrap-md';
 import { FormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
@@ -16,7 +15,6 @@ import { environment } from '../environments/environment';
   imports: [
     NgbModule,
     FormsModule,
-    MDBBootstrapModule.forRoot(),
     BrowserModule,
     AppRoutingModule,
     LoginModule,
