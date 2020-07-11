@@ -1,5 +1,17 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild, Inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+
+
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialog,
+} from '@angular/material/dialog';
+
+export interface DialogData {
+  animal: string;
+  name: string;
+}
 
 import {
   trigger,
@@ -79,7 +91,7 @@ export class DashboardComponent implements OnInit {
     },
   ];
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, public dialog: MatDialog) {}
 
   ngOnInit(): void {}
 
@@ -95,4 +107,45 @@ export class DashboardComponent implements OnInit {
     this.router.navigateByUrl('/dashboard/orders');
   }
 
+  openLogoutDialog(){
+    const dialogRef = this.dialog.open(LogoutDialog, {
+      width: '300px',
+      // data: { name: this.name, animal: this.animal },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      console.log('The dialog was closed');
+      // this.animal = result;
+    });
+  }
+
 }
+
+
+
+
+
+// Dialog
+
+@Component({
+  selector: 'logout-dialog',
+  templateUrl: './dashboard.component.dialog.html',
+})
+export class LogoutDialog {
+  constructor(
+    public dialogRef: MatDialogRef<LogoutDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  onClickLogin() {
+    this.router.navigateByUrl('');
+    this.dialogRef.close();
+  }
+}
+

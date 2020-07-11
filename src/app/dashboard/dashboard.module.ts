@@ -12,6 +12,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatBadgeModule } from '@angular/material/badge';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 import { DashboardComponent } from './dashboard.component';
@@ -19,8 +21,6 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 
 import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
 import { OrdersDashboardComponent } from './components/orders/orders.component';
-
-
 
 @NgModule({
   imports: [
@@ -36,16 +36,18 @@ import { OrdersDashboardComponent } from './components/orders/orders.component';
     MatCardModule,
     MatBadgeModule,
     MatTooltipModule,
+    MatMenuModule,
+    MatDialogModule
   ],
   declarations: [
     DashboardComponent,
     MainDashboardComponent,
-    OrdersDashboardComponent
+    OrdersDashboardComponent,
   ],
   exports: [
     DashboardComponent,
     MainDashboardComponent,
-    OrdersDashboardComponent
+    OrdersDashboardComponent,
   ],
 })
 export class DashboardModule {}
