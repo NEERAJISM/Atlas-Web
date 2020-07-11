@@ -65,13 +65,13 @@ export class LoginComponent {
 
   @HostListener('window:scroll', ['$event'])
   onWindowScroll(e) {
-    let element = document.querySelector('.mask');
+    let element = document.querySelector('.view');
     let navbarElement = document.querySelector('.navbar');
     
     if (element && window.pageYOffset < element.clientHeight - navbarElement.clientHeight) {
-      navbarElement.classList.remove('primary-color');
+      navbarElement.classList.remove('bg-primary');
     } else {
-      navbarElement.classList.add('primary-color');
+      navbarElement.classList.add('bg-primary');
     }
   }
 }
