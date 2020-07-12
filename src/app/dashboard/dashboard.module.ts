@@ -15,8 +15,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 
-
 import { DashboardComponent } from './dashboard.component';
+import { DashboardHeaderComponent } from './header/header.component';
+import { LogoutDialogComponent } from './header/header.component';
+
 import { DashboardRoutingModule } from './dashboard-routing.module';
 
 import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
@@ -41,11 +43,15 @@ import { OrdersDashboardComponent } from './components/orders/orders.component';
   ],
   declarations: [
     DashboardComponent,
+    DashboardHeaderComponent,
+    LogoutDialogComponent,
     MainDashboardComponent,
     OrdersDashboardComponent,
   ],
   exports: [
     DashboardComponent,
+    DashboardHeaderComponent,
+    LogoutDialogComponent,
     MainDashboardComponent,
     OrdersDashboardComponent,
   ],

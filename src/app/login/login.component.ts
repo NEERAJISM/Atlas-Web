@@ -1,21 +1,6 @@
-import {
-  Component,
-  ViewChild,
-  ElementRef,
-  Inject,
-  HostListener,
-} from '@angular/core';
-import {
-  MatDialogRef,
-  MAT_DIALOG_DATA,
-  MatDialog,
-} from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
-
-export interface DialogData {
-  animal: string;
-  name: string;
-}
+import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { LoginDialogComponent } from './dialog/login-dialog.component';
 
 @Component({
   selector: 'app-login',
@@ -37,12 +22,7 @@ export class LoginComponent {
     this.showContent = false;
   }
 
-  ngAfterViewInit() {
-    // document.getElementById('splash').style.display = 'none';
-    // document.getElementById('window').classList.add('window-animation');
-  }
-
-  onImageLoadComplete(){
+  onImageLoadComplete() {
     this.showContent = true;
   }
 
@@ -52,8 +32,8 @@ export class LoginComponent {
   }
 
   openDialog(): void {
-    const dialogRef = this.dialog.open(LoginDialog, {
-      width: '250px',
+    const dialogRef = this.dialog.open(LoginDialogComponent, {
+      width: '300px',
       data: { name: this.name, animal: this.animal },
     });
 
@@ -65,37 +45,16 @@ export class LoginComponent {
 
   @HostListener('window:scroll', ['$event'])
   onWindowScroll(e) {
-    let element = document.querySelector('.view');
-    let navbarElement = document.querySelector('.navbar');
-    
-    if (element && window.pageYOffset < element.clientHeight - navbarElement.clientHeight) {
+    const element = document.querySelector('.view');
+    const navbarElement = document.querySelector('.navbar');
+
+    if (
+      element &&
+      window.pageYOffset < element.clientHeight - navbarElement.clientHeight
+    ) {
       navbarElement.classList.remove('bg-primary');
     } else {
       navbarElement.classList.add('bg-primary');
     }
-  }
-}
-
-// Dialog
-
-@Component({
-  selector: 'login-dialog',
-  templateUrl: './login.component.dialog.html',
-})
-export class LoginDialog {
-  constructor(
-    public dialogRef: MatDialogRef<LoginDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: DialogData,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
-
-  onNoClick(): void {
-    this.dialogRef.close();
-  }
-
-  onClickLogin() {
-    this.router.navigateByUrl('/dashboard');
-    this.dialogRef.close();
   }
 }

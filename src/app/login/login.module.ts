@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginComponent } from './login.component';
+import { LoginDialogComponent } from './dialog/login-dialog.component';
+
 
 import { CoreModule } from '../core/core.module';
 import { CommonModule } from '@angular/common';
@@ -20,7 +22,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatDialogModule,
     MatFormFieldModule,
   ],
-  declarations: [LoginComponent],
-  exports: [LoginComponent],
+  declarations: [
+    LoginComponent,
+    LoginDialogComponent,
+  ],
+  exports: [
+    LoginComponent,
+    LoginDialogComponent,
+  ],
 })
 export class LoginModule {}

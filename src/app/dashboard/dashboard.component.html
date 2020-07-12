@@ -58,39 +58,7 @@
   <!--  Content  -->
 
   <mat-drawer-content class="drawer-content">
-    <mat-toolbar style="background: white;">
-
-      <div mat-card-avatar class="example-header-image mr-3"></div>
-
-      <span>Lakecity Waters</span>
-
-      <button class="ml-auto" mat-button [matMenuTriggerFor]="usermenu">
-        Neeraj
-        <i class="fas fa-angle-down ml-2"></i>
-      </button>
-
-      <button
-        mat-icon-button
-        class="example-icon favorite-icon  mr-2"
-        aria-label="Example icon-button with heart icon"
-      >
-        <i class="fas fa-bell" style="font-size: 1.5em;"></i>
-      </button>
-
-      <mat-menu #usermenu>
-        <button mat-menu-item>
-          <i class="fas fa-user mr-2"></i>
-          Accountant
-        </button>
-        <button mat-menu-item>
-          <i class="fas fa-cog mr-2"></i>
-          Settings
-        </button>
-      </mat-menu>
-
-      <button class="mr-2" mat-raised-button color="accent" (click)="openLogoutDialog()">Logout</button>
-    </mat-toolbar>
-
+    <app-dashboard-header></app-dashboard-header>
     <router-outlet></router-outlet>
   </mat-drawer-content>
 </mat-drawer-container>
