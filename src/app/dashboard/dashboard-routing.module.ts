@@ -1,9 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
-import { OrdersDashboardComponent } from './components/orders/orders.component';
 import { DashboardComponent } from './dashboard.component';
+import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
 import { InvoiceDashboardComponent } from './components/invoice/invoice.component';
+import { InventoryDashboardComponent } from './components/inventory/inventory.component';
+import { CustomersDashboardComponent } from './components/customers/customers.component';
+import { TaxDashboardComponent } from './components/tax/tax.component';
+import { SupportDashboardComponent } from './components/support/support.component';
 
 const aboutRoutes: Routes = [
   {
@@ -20,12 +23,24 @@ const aboutRoutes: Routes = [
             component: MainDashboardComponent,
         },
         {
-            path: 'orders',
-            component: OrdersDashboardComponent,
-        },
-        {
             path: 'invoice',
             component: InvoiceDashboardComponent,
+        },
+        {
+            path: 'inventory',
+            component: InventoryDashboardComponent,
+        },
+        {
+            path: 'customers',
+            component: CustomersDashboardComponent,
+        },
+        {
+            path: 'tax',
+            component: TaxDashboardComponent,
+        },
+        {
+            path: 'support',
+            component: SupportDashboardComponent,
         },
         {
             path: '**',

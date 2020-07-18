@@ -48,28 +48,23 @@ export class DashboardComponent implements OnInit {
     {
       name: 'Inventory',
       icon: 'fas fa-dolly-flatbed mr-2',
-      link: '/dashboard/orders',
+      link: '/dashboard/inventory',
     },
     {
       name: 'Customer',
       icon: 'fas fa-users mr-2',
-      link: '/dashboard/orders',
+      link: '/dashboard/customers',
     },
     {
       name: '  Tax / GST',
       icon: 'fas fa-rupee-sign mr-2 ml-1',
-      link: '/dashboard/orders',
+      link: '/dashboard/tax',
     },
     {
-      name: 'Support',
+      name: 'Help / Support',
       icon: 'fas fa-headset mr-2',
-      link: '/dashboard/orders',
-    },
-    {
-      name: 'Help',
-      icon: 'fas fa-info-circle mr-2',
-      link: '/dashboard/orders',
-    },
+      link: '/dashboard/support',
+    }
   ];
 
   constructor(private router: Router) {}

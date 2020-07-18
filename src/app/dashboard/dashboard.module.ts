@@ -24,8 +24,11 @@ import { LogoutDialogComponent } from './header/header.component';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 
 import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
-import { OrdersDashboardComponent } from './components/orders/orders.component';
 import { InvoiceDashboardComponent } from './components/invoice/invoice.component';
+import { InventoryDashboardComponent } from './components/inventory/inventory.component';
+import { CustomersDashboardComponent } from './components/customers/customers.component';
+import { TaxDashboardComponent } from './components/tax/tax.component';
+import { SupportDashboardComponent } from './components/support/support.component';
 
 @NgModule({
   imports: [
@@ -50,16 +53,22 @@ import { InvoiceDashboardComponent } from './components/invoice/invoice.componen
     DashboardHeaderComponent,
     LogoutDialogComponent,
     MainDashboardComponent,
-    OrdersDashboardComponent,
     InvoiceDashboardComponent,
+    InventoryDashboardComponent,
+    CustomersDashboardComponent,
+    TaxDashboardComponent,
+    SupportDashboardComponent,
   ],
   exports: [
     DashboardComponent,
     DashboardHeaderComponent,
     LogoutDialogComponent,
     MainDashboardComponent,
-    OrdersDashboardComponent,
     InvoiceDashboardComponent,
+    InventoryDashboardComponent,
+    CustomersDashboardComponent,
+    TaxDashboardComponent,
+    SupportDashboardComponent,
   ],
 })
 export class DashboardModule {}
