@@ -4,6 +4,8 @@ import { CoreModule } from '../core/core.module';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
+import { ChartsModule } from 'ng2-charts';
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,12 +25,14 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 
 import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
 import { OrdersDashboardComponent } from './components/orders/orders.component';
+import { InvoiceDashboardComponent } from './components/invoice/invoice.component';
 
 @NgModule({
   imports: [
     NgbModule,
     CoreModule,
     CommonModule,
+    ChartsModule,
     DashboardRoutingModule,
     MatToolbarModule,
     MatIconModule,
@@ -47,6 +51,7 @@ import { OrdersDashboardComponent } from './components/orders/orders.component';
     LogoutDialogComponent,
     MainDashboardComponent,
     OrdersDashboardComponent,
+    InvoiceDashboardComponent,
   ],
   exports: [
     DashboardComponent,
@@ -54,6 +59,7 @@ import { OrdersDashboardComponent } from './components/orders/orders.component';
     LogoutDialogComponent,
     MainDashboardComponent,
     OrdersDashboardComponent,
+    InvoiceDashboardComponent,
   ],
 })
 export class DashboardModule {}

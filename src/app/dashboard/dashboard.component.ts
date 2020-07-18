@@ -41,9 +41,9 @@ export class DashboardComponent implements OnInit {
       link: '/dashboard/main',
     },
     {
-      name: 'Orders',
+      name: 'Biiling / Invoice',
       icon: 'fas fa-boxes mr-2',
-      link: '/dashboard/orders',
+      link: '/dashboard/invoice',
     },
     {
       name: 'Inventory',
@@ -78,9 +78,5 @@ export class DashboardComponent implements OnInit {
 
   toggleMenu() {
     this.showMenuName = !this.showMenuName;
-  }
-
-  routeToAnotherView() {
-    this.router.navigateByUrl('/dashboard/orders');
   }
 }
