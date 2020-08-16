@@ -48,10 +48,7 @@ export class LoginComponent {
     const element = document.querySelector('.view');
     const navbarElement = document.querySelector('.navbar');
 
-    if (
-      element &&
-      window.pageYOffset < element.clientHeight - navbarElement.clientHeight
-    ) {
+    if ( element && window.pageYOffset < element.clientHeight - navbarElement.clientHeight ) {
       navbarElement.classList.remove('bg-primary');
     } else {
       navbarElement.classList.add('bg-primary');

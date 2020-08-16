@@ -7,6 +7,7 @@ import { InventoryDashboardComponent } from './components/inventory/inventory.co
 import { CustomersDashboardComponent } from './components/customers/customers.component';
 import { TaxDashboardComponent } from './components/tax/tax.component';
 import { SupportDashboardComponent } from './components/support/support.component';
+import { EditInvoiceComponent } from './components/invoice/edit/editinvoice.component';
 
 const aboutRoutes: Routes = [
   {
@@ -25,6 +26,10 @@ const aboutRoutes: Routes = [
         {
             path: 'invoice',
             component: InvoiceDashboardComponent,
+        },
+        {
+            path: 'invoice/edit',
+            component: EditInvoiceComponent,
         },
         {
             path: 'inventory',

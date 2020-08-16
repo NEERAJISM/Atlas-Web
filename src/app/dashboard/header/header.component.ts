@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-dashboard-header',
   templateUrl: './header.component.html',
+  styleUrls: ['./header.component.scss'],
 })
 export class DashboardHeaderComponent {
   constructor(private router: Router, public dialog: MatDialog) {}
