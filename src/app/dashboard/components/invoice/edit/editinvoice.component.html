@@ -1,6 +1,7 @@
 <div class="container-fluid mt-2">
-  <div class="row mb-3 invoice-navbar" (scroll)="onWindowScroll($event)">
-    <div class="col col-lg-2">
+
+  <div class="row mb-3 invoice-navbar">
+    <div class="col col-lg-4">
       <button
         class="mr-2 text-white font-weight-light"
         style="border-radius: 20px;"
@@ -9,20 +10,6 @@
         (click)="goBackToInvoiceComponent()"
       >
         <i class="fas fa-arrow-left"></i>
-        Go Back To Invoices
-      </button>
-    </div>
-
-    <div class="col col-lg-2">
-      <button
-        class="mr-2 text-white font-weight-light"
-        style="border-radius: 20px;"
-        mat-raised-button
-        color="primary"
-        (click)="goBackToInvoiceComponent()"
-      >
-        <i class="fas fa-save"></i>
-        Save as Draft
       </button>
     </div>
 
@@ -30,31 +17,6 @@
       <h4 class="mb-4 text-center">Create New Invoice</h4>
     </div>
 
-    <div class="col col-lg-2">
-      <button
-        class="mr-2 text-white font-weight-light"
-        style="border-radius: 20px;"
-        mat-raised-button
-        color="accent"
-        (click)="goBackToInvoiceComponent()"
-      >
-        <i class="fas fa-eye"></i>
-        Preview
-      </button>
-    </div>
-
-    <div class="col col-lg-2">
-      <button
-        class="mr-2 text-white font-weight-light"
-        style="border-radius: 20px;"
-        mat-raised-button
-        color="primary"
-        (click)="goBackToInvoiceComponent()"
-      >
-        <i class="fas fa-check-circle"></i>
-        Genrate Invoice
-      </button>
-    </div>
   </div>
 
   <mat-accordion class="example-headers-align">
@@ -263,13 +225,38 @@
     </div>
   </div>
 
-  <div class="row my-2">
+  <div class="row my-2 mb-5">
     <div style="margin : auto;">
       <button class="mr-2 mt-2" mat-raised-button color="warn" (click)="addItem()">
         <i class="fas fa-plus text-white py-3" style="font-size: 1.4em;"></i>
-        Add new line
+        Add new item
       </button>
     </div>
+  </div>
+  <div class="row my-2 mb-5">
+  </div>
+
+
+  <div class="row p-2" style="background-color: #123548; position: fixed; bottom: 0; width:100%">
+      <button class="ml-3 btn-primary" mat-raised-button (click)="addItem()">
+        <i class="fas fa-eye text-white py-3" style="font-size: 1.6em;"></i>
+        &nbsp; Preview
+      </button>
+  
+      <button class="ml-4 btn-success" mat-raised-button (click)="addItem()">
+        <i class="fas fa-check text-white py-3" style="font-size: 1.6em;"></i>
+        &nbsp; Create Invoice
+      </button>
+  
+      <button class="ml-4 btn-info" mat-raised-button (click)="addItem()">
+        <i class="fas fa-save text-white py-3" style="font-size: 1.6em;"></i>
+        &nbsp; Save as Draft
+      </button>
+  
+      <button class="ml-4" mat-raised-button color="warn" (click)="goBackToInvoiceComponent()">
+        <i class="fas fa-times text-white py-3" style="font-size: 1.6em;"></i>
+        &nbsp; Cancel
+      </button>
   </div>
 
 </div>

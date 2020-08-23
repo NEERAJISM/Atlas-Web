@@ -7,6 +7,8 @@ import { FormsModule } from '@angular/forms';
 
 import { ChartsModule } from 'ng2-charts';
 
+import { PdfViewerModule } from 'ng2-pdf-viewer';
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,6 +46,7 @@ import { SupportDashboardComponent } from './components/support/support.componen
     CoreModule,
     CommonModule,
     ChartsModule,
+    PdfViewerModule,
     DashboardRoutingModule,
     MatToolbarModule,
     MatIconModule,

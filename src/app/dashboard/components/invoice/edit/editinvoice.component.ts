@@ -1,7 +1,6 @@
 import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
 
-
 interface Item {
   name: string;
   unit: string;
@@ -23,22 +22,13 @@ export class EditInvoiceComponent {
   items: Item[] = [];
 
   constructor(private router: Router) {
-  }
-
-  goBackToInvoiceComponent(){
-    this.router.navigateByUrl('/dashboard/invoice');
-  }
-
-  @HostListener('window:scroll', ['$event'])
-  onWindowScroll(e) {
-    const element = document.querySelector('.dashboard-header');
-    const navbarElement = document.querySelector('.invoice-navbar');
-
-    if ( element && window.pageYOffset < element.clientHeight) {
-      navbarElement.classList.remove('sticky');
-    } else {
-      navbarElement.classList.add('sticky');
+    for (let i = 0; i < this.step; i++) {
+      this.addItem();
     }
+  }
+
+  goBackToInvoiceComponent() {
+    this.router.navigateByUrl('/dashboard/invoice');
   }
 
   setStep(index: number) {
@@ -53,7 +43,7 @@ export class EditInvoiceComponent {
     this.step--;
   }
 
-  addItem(){
+  addItem() {
     const item = {} as Item;
     item.price = this.items.length + 1;
     this.items.push(item);

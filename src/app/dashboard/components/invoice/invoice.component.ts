@@ -58,6 +58,7 @@ const NAMES: string[] = [
 })
 export class InvoiceDashboardComponent implements OnInit {
   value = 'Clear me';
+  pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf'
 
   displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
   dataSource: MatTableDataSource<UserData>;

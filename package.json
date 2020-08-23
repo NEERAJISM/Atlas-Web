@@ -28,6 +28,7 @@
     "bootstrap": "^4.4.0",
     "chart.js": "^2.9.3",
     "ng2-charts": "^2.3.2",
+    "ng2-pdf-viewer": "^6.3.2",
     "rxjs": "~6.5.4",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
