@@ -1,4 +1,4 @@
-<div class="container-fluid mt-2">
+<div class="container-fluid mt-2" id="htmlData" #htmlData>
 
   <div class="row mb-3 invoice-navbar">
     <div class="col col-lg-4">
@@ -30,7 +30,7 @@
           Address Details
         </mat-panel-title>
         <mat-panel-description>
-          Provide Buyer / Shipping Address
+          c/o Balkrishna Patidar, Gamda Brhamaniya
           <mat-icon>account_circle</mat-icon>
         </mat-panel-description>
       </mat-expansion-panel-header>
@@ -38,13 +38,18 @@
       <div class="row">
         <div class="col col-lg-4">
           <div class="row">
-            <div class="col">
+            <div class="col col-lg-4">
               <h5>To Buyer</h5>
+            </div>
+            <div class="col-lg-8" style="display: grid; justify-content: end;">
+              <mat-checkbox class="example-margin"
+                >New Client</mat-checkbox
+              >
             </div>
           </div>
 
           <div class="row">
-            <div class="col">
+            <div class="col" *ngIf="false">
               <p>
                 <mat-form-field appearance="outline" style="width: 100%;">
                   <mat-label>Outline form field</mat-label>
@@ -52,6 +57,18 @@
                 </mat-form-field>
               </p>
             </div>
+
+            <div class="col-lg-12" *ngIf="true">
+              <mat-form-field appearance="fill">
+                <mat-label>Select an option</mat-label>
+                <mat-select [(value)]="selected">
+                  <mat-option value="option0">New Client</mat-option>
+                  <mat-option value="option1">Krishna Borewell</mat-option>
+                  <mat-option value="option2">Tirupati Tractors</mat-option>
+                  <mat-option value="option3">Lakecity waters</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div >
           </div>
 
           <div class="row">
@@ -238,7 +255,7 @@
 
 
   <div class="row p-2" style="background-color: #123548; position: fixed; bottom: 0; width:100%">
-      <button class="ml-3 btn-primary" mat-raised-button (click)="addItem()">
+      <button class="ml-3 btn-primary" mat-raised-button (click)="openPDF()">
         <i class="fas fa-eye text-white py-3" style="font-size: 1.6em;"></i>
         &nbsp; Preview
       </button>
@@ -248,7 +265,7 @@
         &nbsp; Create Invoice
       </button>
   
-      <button class="ml-4 btn-info" mat-raised-button (click)="addItem()">
+      <button class="ml-4 btn-info" mat-raised-button (click)="downloadPDF()">
         <i class="fas fa-save text-white py-3" style="font-size: 1.6em;"></i>
         &nbsp; Save as Draft
       </button>

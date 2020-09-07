@@ -24,6 +24,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatSelectModule } from '@angular/material/select';
 
 import { DashboardComponent } from './dashboard.component';
 import { DashboardHeaderComponent } from './header/header.component';
@@ -62,7 +63,8 @@ import { SupportDashboardComponent } from './components/support/support.componen
     MatTableModule,
     MatPaginatorModule,
     MatCheckboxModule,
-    MatExpansionModule
+    MatExpansionModule,
+    MatSelectModule
   ],
   declarations: [
     DashboardComponent,
