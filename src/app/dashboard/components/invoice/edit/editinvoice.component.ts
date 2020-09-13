@@ -49,9 +49,29 @@ export class EditInvoiceComponent {
     ['Mob : +91 - 8877073059', 'Mob : +91 - 9929307208']
   ];
 
-  head = [['No.', 'Item Description', 'Code', 'Qty', 'Price', 'Amount', 'SGST', 'CGST', 'Total']];
+  bodyTotal = [
+    ['Total Amount', '14,000.0'],
+    ['Tax (SGST + CGST)', '945.0 (@18%)'],
+    ['Final Amount (Total + Tax)', '11,033.0\n(Eleven Thousand Thirty-three Only)'],
+  ];
+
+  head = [['No.', 'Item Description', 'Code', 'Qty', 'Price', 'Total', 'SGST', 'CGST', 'Total + Tax']];
 
   data = [
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
+    [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
     [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
     [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
     [1, 'Sulphuric Acid 500 ml bottle', 532, 5, 500.0, 2500.0, '225.0\n(9%)', '225.0\n(9%)', 2950.0],
@@ -131,11 +151,19 @@ export class EditInvoiceComponent {
       theme: 'striped'
     });
 
-    doc.setFontSize(12);
     let finalY = (doc as any).lastAutoTable.finalY;
 
-    doc.line(50, finalY + 40, 100, finalY + 40);
-    doc.text('Authorized Signature', 50, finalY + 50);
+    (doc as any).autoTable({
+      startY: finalY + 5,
+      body: this.bodyTotal,
+      theme: 'plain',
+      styles: {cellWidth: 'wrap', fontStyle: 'bold', fontSize: '11', halign: 'right'}
+    });
+
+    finalY = (doc as any).lastAutoTable.finalY;
+    doc.setFontSize(12);
+    doc.line(145, finalY + 20, 195, finalY + 20);
+    doc.text('Authorized Signature', 150, finalY + 30);
 
     // fOOTER
     // doc.setFontSize(11);
