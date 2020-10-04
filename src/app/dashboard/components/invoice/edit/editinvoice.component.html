@@ -1,10 +1,9 @@
 <div class="container-fluid mt-2" id="htmlData" #htmlData>
-
   <div class="row mb-3 invoice-navbar">
     <div class="col col-lg-4">
       <button
         class="mr-2 text-white font-weight-light"
-        style="border-radius: 20px;"
+        style="border-radius: 20px"
         mat-raised-button
         color="accent"
         (click)="goBackToInvoiceComponent()"
@@ -16,7 +15,6 @@
     <div class="col col-lg-4">
       <h4 class="mb-4 text-center">Create New Invoice</h4>
     </div>
-
   </div>
 
   <mat-accordion class="example-headers-align">
@@ -26,9 +24,7 @@
       hideToggle
     >
       <mat-expansion-panel-header>
-        <mat-panel-title>
-          Address Details
-        </mat-panel-title>
+        <mat-panel-title> Address Details </mat-panel-title>
         <mat-panel-description>
           c/o Balkrishna Patidar, Gamda Brhamaniya
           <mat-icon>account_circle</mat-icon>
@@ -41,17 +37,15 @@
             <div class="col col-lg-4">
               <h5>To Buyer</h5>
             </div>
-            <div class="col-lg-8" style="display: grid; justify-content: end;">
-              <mat-checkbox class="example-margin"
-                >New Client</mat-checkbox
-              >
+            <div class="col-lg-8" style="display: grid; justify-content: end">
+              <mat-checkbox class="example-margin">New Client</mat-checkbox>
             </div>
           </div>
 
           <div class="row">
             <div class="col" *ngIf="false">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -68,13 +62,13 @@
                   <mat-option value="option3">Lakecity waters</mat-option>
                 </mat-select>
               </mat-form-field>
-            </div >
+            </div>
           </div>
 
           <div class="row">
             <div class="col">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -85,7 +79,7 @@
           <div class="row">
             <div class="col-lg-6">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -93,7 +87,7 @@
             </div>
             <div class="col-lg-6">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -107,7 +101,7 @@
             <div class="col-lg-4">
               <h5>Shipping To</h5>
             </div>
-            <div class="col-lg-8" style="display: grid; justify-content: end;">
+            <div class="col-lg-8" style="display: grid; justify-content: end">
               <mat-checkbox class="example-margin"
                 >Same as Buyer address</mat-checkbox
               >
@@ -117,7 +111,7 @@
           <div class="row">
             <div class="col">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -128,7 +122,7 @@
           <div class="row">
             <div class="col">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -139,7 +133,7 @@
           <div class="row">
             <div class="col-lg-6">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -147,7 +141,7 @@
             </div>
             <div class="col-lg-6">
               <p>
-                <mat-form-field appearance="outline" style="width: 100%;">
+                <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
                 </mat-form-field>
@@ -161,119 +155,256 @@
 
   <h5 class="my-3 font-weight-light">Item Summary</h5>
 
-  <div class="row mt-3" *ngFor="let item of items">
+  <!-- Form Begins -->
 
-    <div class="col-lg-1">
-      <p class="m-0">
-        <mat-form-field appearance="outline" style="width: 100%;">
-          <mat-label>No.</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+  <form>
+    <div class="row mt-3" *ngFor="let item of items; index as i">
+      <div class="ml-3" style="display: flex; align-items: center">
+        <h5>{{ i + 1 + "." }}</h5>
+      </div>
 
-    <div class="col-lg-3">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label> Select Product</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+      <!-- Product -->
 
-    <div class="col-lg-1">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label>Qty</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+      <div class="col-lg-3">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label> Type / Select Product name</mat-label>
 
-    <div class="col-lg-1">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label>Unit</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+            <input
+              matInput
+              required
+              [(ngModel)]="item.name"
+              type="text"
+              name="product_{{ i }}"
+              placeholder="Pick one"
+              aria-label="Number"
+              [matAutocomplete]="autoProduct"
+            />
 
-    <div class="col-lg-1">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label>Price</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+            <mat-autocomplete #autoProduct="matAutocomplete">
+              <mat-option
+                *ngFor="let option of optionsProduct"
+                [value]="option"
+              >
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </p>
+      </div>
 
-    <div class="col-lg-1">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label>Discount</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+      <!-- Unit -->
 
-    <div class="col-lg-2">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label>TAX / GST</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+      <div class="col-lg-1">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>Unit</mat-label>
 
-    <div class="col-lg-1">
-      <p class="m-0">
-        <mat-form-field class="my-form-field" appearance="outline" style="width: 100%;">
-          <mat-label>Total</mat-label>
-          <input matInput placeholder="Placeholder" />
-        </mat-form-field>
-      </p>
-    </div>
+            <input
+              matInput
+              required
+              type="text"
+              [(ngModel)]="item.unit"
+              name="unit_{{ i }}"
+              placeholder="Pick one"
+              aria-label="Number"
+              [matAutocomplete]="autoUnit"
+            />
 
-    <div class="col-lg-1">
-      <button class="mt-2" mat-raised-button color="warn">
-        <i class="fas fa-trash text-white py-3" style="font-size: 1.4em;"></i>
-      </button>
+            <mat-autocomplete #autoUnit="matAutocomplete">
+              <mat-option *ngFor="let option of optionsUnit" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </p>
+      </div>
+
+      <!-- Price -->
+
+      <div class="col-lg-1">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>Price (&#8377;)</mat-label>
+            <input
+              name="price_{{ i }}"
+              [(ngModel)]="item.price"
+              matInput
+              required
+              type="number"
+              min="0"
+              onkeyup="if(this.value<0){this.value= this.value * -1}"
+            />
+          </mat-form-field>
+        </p>
+      </div>
+
+      <!-- Qty / Pcs -->
+
+      <div class="col-lg-1">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>Qty / Pcs</mat-label>
+            <input
+              name="qty_{{ i }}"
+              [(ngModel)]="item.qty"
+              (ngModelChange)="calculate($event)"
+              matInput
+              required
+              type="number"
+              min="1"
+              onkeyup="if(this.value<0){this.value= this.value * -1}"
+            />
+          </mat-form-field>
+        </p>
+      </div>
+
+      <!-- Discount -->
+
+      <div class="col-lg-1">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>Discount (&#8377;)</mat-label>
+            <input
+              name="discount_{{ i }}"
+              [(ngModel)]="item.discount"
+              matInput
+              required
+              type="number"
+              min="0"
+              onkeyup="if(this.value<0){this.value= this.value * -1}"
+            />
+          </mat-form-field>
+        </p>
+      </div>
+
+      <!-- TAX / GST -->
+
+      <div class="col-lg-2">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>TAX / GST (%)</mat-label>
+
+            <input
+              name="tax_{{ i }}"
+              matInput
+              type="text"
+              [(ngModel)]="item.tax"
+              placeholder="Pick one"
+              aria-label="Number"
+              [matAutocomplete]="autoTax"
+            />
+
+            <mat-autocomplete #autoTax="matAutocomplete">
+              <mat-option *ngFor="let option of optionsTax" [value]="option">
+                {{ option }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </p>
+      </div>
+
+      <!-- Total -->
+
+      <div class="col-lg-1">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>Total (&#8377;)</mat-label>
+            <input
+              readonly
+              name="total_{{ i }}"
+              [(ngModel)]="item.total"
+              value="{{calculate(item)}}"
+              matInput
+              type="number"
+            />
+          </mat-form-field>
+        </p>
+      </div>
+
+      <div class="col-lg-1">
+        <button
+          class="mt-2"
+          mat-raised-button
+          color="warn"
+          (click)="removeItem(i)"
+        >
+          <i class="fas fa-trash text-white py-3" style="font-size: 1.4em"></i>
+        </button>
+      </div>
     </div>
-  </div>
+  </form>
 
   <div class="row my-2 mb-5">
-    <div style="margin : auto;">
-      <button class="mr-2 mt-2" mat-raised-button color="warn" (click)="addItem()">
-        <i class="fas fa-plus text-white py-3" style="font-size: 1.4em;"></i>
+    <div style="margin: auto">
+      <button
+        class="mr-2 mt-2"
+        mat-raised-button
+        color="warn"
+        (click)="addItem()"
+      >
+        <i class="fas fa-plus text-white py-3" style="font-size: 1.4em"></i>
         Add new item
       </button>
     </div>
   </div>
-  <div class="row my-2 mb-5">
+  <div class="row my-2 mb-5"></div>
+
+  <div
+    class="row p-2"
+    style="background-color: #123548; position: fixed; bottom: 0; width: 100%"
+  >
+    <button class="ml-3 btn-primary" mat-raised-button (click)="downloadPDF()">
+      <i class="fas fa-eye text-white py-3" style="font-size: 1.6em"></i>
+      &nbsp; Preview
+    </button>
+
+    <button class="ml-4 btn-success" mat-raised-button (click)="addItem()">
+      <i class="fas fa-check text-white py-3" style="font-size: 1.6em"></i>
+      &nbsp; Create Invoice
+    </button>
+
+    <button class="ml-4 btn-info" mat-raised-button (click)="downloadPDF()">
+      <i class="fas fa-save text-white py-3" style="font-size: 1.6em"></i>
+      &nbsp; Save as Draft
+    </button>
+
+    <button
+      class="ml-4"
+      mat-raised-button
+      color="warn"
+      (click)="goBackToInvoiceComponent()"
+    >
+      <i class="fas fa-times text-white py-3" style="font-size: 1.6em"></i>
+      &nbsp; Cancel
+    </button>
   </div>
-
-
-  <div class="row p-2" style="background-color: #123548; position: fixed; bottom: 0; width:100%">
-      <button class="ml-3 btn-primary" mat-raised-button (click)="openPDF()">
-        <i class="fas fa-eye text-white py-3" style="font-size: 1.6em;"></i>
-        &nbsp; Preview
-      </button>
-  
-      <button class="ml-4 btn-success" mat-raised-button (click)="addItem()">
-        <i class="fas fa-check text-white py-3" style="font-size: 1.6em;"></i>
-        &nbsp; Create Invoice
-      </button>
-  
-      <button class="ml-4 btn-info" mat-raised-button (click)="downloadPDF()">
-        <i class="fas fa-save text-white py-3" style="font-size: 1.6em;"></i>
-        &nbsp; Save as Draft
-      </button>
-  
-      <button class="ml-4" mat-raised-button color="warn" (click)="goBackToInvoiceComponent()">
-        <i class="fas fa-times text-white py-3" style="font-size: 1.6em;"></i>
-        &nbsp; Cancel
-      </button>
-  </div>
-
 </div>

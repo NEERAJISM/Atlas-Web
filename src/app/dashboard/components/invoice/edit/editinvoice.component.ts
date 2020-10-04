@@ -1,5 +1,7 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormControl } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
@@ -23,6 +25,16 @@ export class EditInvoiceComponent {
   @ViewChild('htmlData') htmlData: ElementRef;
 
   selected: string = 'None';
+
+  myControl = new FormControl();
+  optionsProduct: string[] = ['HCL', 'Sulphuric', 'Nitric', 'Phosphic'];
+  optionsUnit: string[] = ['250 ml', '500 ml', '1 L', '5 L'];
+  optionsTax: string[] = [
+    '5% (2.5% SGST + 2.5% CGST)',
+    '12% (6% SGST + 6% CGST)',
+    '18% (9% SGST + 9% CGST)',
+    '28% (14% SGST + 14% CGST)',
+  ];
 
   step = 0;
 
@@ -291,8 +303,9 @@ export class EditInvoiceComponent {
     ],
   ];
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private snackBar: MatSnackBar) {
     this.loadClients();
+    this.addItem();
   }
 
   loadClients() {}
@@ -314,16 +327,43 @@ export class EditInvoiceComponent {
   }
 
   addItem() {
-    const item = {} as Item;
-    item.price = this.items.length + 1;
-    this.items.push(item);
+    if (this.validateItems()) {
+      this.openSnackBar('New item added!', 'Dismiss');
+      const item = {} as Item;
+      item.qty = 1;
+      item.discount = 0;
+      this.items.push(item);
+    } else {
+      this.openSnackBar('Please enter valid values', 'Dismiss');
+    }
   }
 
-  public openPDF(): void {
-    // let DATA = this.htmlData.nativeElement;
-    // let doc = new jsPDF ();
-    // doc.fromHTML(DATA.innerHTML, 15, 15);
-    // doc.output('dataurlnewwindow');
+  calculate(item: Item): number {
+    item.total =
+      Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
+    return item.total;
+  }
+
+  validateItems(): boolean {
+    for (const item of this.items) {
+      if (
+        item.name &&
+        item.unit &&
+        item.price &&
+        item.qty &&
+        item.tax &&
+        item.total
+      ) {
+        continue;
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  removeItem(index: number) {
+    this.items.splice(index, 1);
   }
 
   public downloadPDF(): void {
@@ -389,18 +429,24 @@ export class EditInvoiceComponent {
     doc.line(145, finalY + 20, 195, finalY + 20);
     doc.text('Authorized Signature', 150, finalY + 30);
 
-    // fOOTER
-    // doc.setFontSize(11);
-    // doc.text('Page 1 of 1', 185, 7);
+    // Footer
 
     doc.setFontSize(9);
     const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       doc.setPage(i);
-      doc.text( "Powered by Atlas®", 10, 290);
-      doc.text( "Page " + i + " of " + pageCount, 180, 290);
+      doc.text('Powered by Atlas®', 10, 290);
+      doc.text('Page ' + i + ' of ' + pageCount, 180, 290);
     }
 
     doc.save('atlas.pdf');
+  }
+
+  openSnackBar(message: string, action: string) {
+    this.snackBar.open(message, action, {
+      duration: 2000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+    });
   }
 }
