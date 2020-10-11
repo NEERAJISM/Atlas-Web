@@ -12,7 +12,7 @@ interface Item {
   qty: number;
   price: number;
   discount: number;
-  tax: number;
+  tax: string;
   total: number;
 }
 
@@ -35,6 +35,7 @@ export class EditInvoiceComponent {
     '18% (9% SGST + 9% CGST)',
     '28% (14% SGST + 14% CGST)',
   ];
+  optionsTaxValue: number[] = [0.05, 0.12, 0.18, 0.28];
 
   step = 0;
 
@@ -42,30 +43,31 @@ export class EditInvoiceComponent {
 
   title = 'jspdf-autotable-demo';
 
-  headOwnerAddress = [['Invoice # 1254-5621', 'Seller : Krishna Borewell']];
-
+  headOwnerAddress = [['Krishna Borewell']];
   dataOwnerAddress = [
-    [
-      'Issue Date     : 20 Sep 2020',
-      'C\\o Balkrishna Patidar, Gamda Brahmaniya',
-    ],
-    ['Due   Date     : 20 Sep 2020', 'Sagwara, Dungarpur (Raj) - 314025'],
-    ['Supply Place : Sagwara', 'Email : 8patidarneeraj@gmail.com'],
-    ['', 'Mob : +91 - 8877073059'],
+    [ 'C\\o Balkrishna Patidar, Gamda Brahmaniya'],
+    [ 'Sagwara, Dungarpur (Raj) - 314025'],
+    [ 'Email : 8patidarneeraj@gmail.com'],
+    [ 'Mob : +91 - 8877073059'],
+  ];
+
+  headInvoiceDtails = [['Invoice # 1254-5621']];
+  dataInvoiceDtails = [
+    ['Issue Date     : 20 Sep 2020' ],
+    ['Due   Date     : 20 Sep 2020'],
+    ['Supply Place : Sagwara'],
+    ['Supply State : Rajasthan']
   ];
 
   headSellerAddress = [
-    ['Billing To : \nNeeraj Patidar', 'Shipping To : \nRajat Jain Akhawat'],
+    ['Customer Name', 'Billing Address', 'Shipping Address'],
   ];
 
   dataSellerAddress = [
-    [
-      'Co Balkrishna Patidar, Gamda Brahmaniya',
-      '27,Lakshmi Marg, Amal ka kanta,',
-    ],
-    ['Sagwara, Dungarpur (Raj) - 314025', 'Udaipur (Raj) - 313001'],
-    ['Email : 8patidarneeraj@gmail.com', 'Email : rajatjainakhawat@gmail.com'],
-    ['Mob : +91 - 8877073059', 'Mob : +91 - 9929307208'],
+    ['Neeraj Patidar' , 'Co Balkrishna Patidar, Gamda Brahmaniya' , '27,Lakshmi Marg, Amal ka kanta,'],
+    ['PAN : JHSVJHSV521' , 'Sagwara, Dungarpur (Raj) - 314025', 'Udaipur (Raj) - 313001'],
+    // ['Email : 8patidarneeraj@gmail.com', 'Email : 8patidarneeraj@gmail.com', 'Email : rajatjainakhawat@gmail.com'],
+    ['Email : 8patidarneeraj@gmail.com', 'Mob : +91 - 8877073059', 'Mob : +91 - 9929307208'],
   ];
 
   bodyTotal = [
@@ -301,6 +303,50 @@ export class EditInvoiceComponent {
       '225.0\n(9%)',
       2950.0,
     ],
+    [
+      1,
+      'Sulphuric Acid 500 ml bottle',
+      532,
+      5,
+      500.0,
+      2500.0,
+      '225.0\n(9%)',
+      '225.0\n(9%)',
+      2950.0,
+    ],
+    [
+      1,
+      'Sulphuric Acid 500 ml bottle',
+      532,
+      5,
+      500.0,
+      2500.0,
+      '225.0\n(9%)',
+      '225.0\n(9%)',
+      2950.0,
+    ],
+    [
+      ,
+      'SHIPPING + PACKAGING CHARGES',
+      ,
+      ,
+      50.0,
+      ,
+      '4.5\n(9%)',
+      '4.5\n(9%)',
+      59.0,
+    ],
+    [
+      ,
+      'TOTAL',
+      ,
+      ,
+      15000.0,
+      ,
+      '4050\n(9%)',
+      '4050\n(9%)',
+      21500.0,
+    ],
   ];
 
   constructor(private router: Router, private snackBar: MatSnackBar) {
@@ -339,8 +385,18 @@ export class EditInvoiceComponent {
   }
 
   calculate(item: Item): number {
-    item.total =
-      Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
+    item.total = Math.abs(item.qty) * Math.abs(item.price);
+
+    if(item.total <= 0) {
+      return item.total;
+    }
+
+    item.total -=  Math.abs(item.discount);
+    const index = this.optionsTax.indexOf(item.tax);
+
+    if (index !== -1) {
+      item.total = Math.round(((item.total * (1 + this.optionsTaxValue[index])) + Number.EPSILON) * 100) / 100;
+    }
     return item.total;
   }
 
@@ -372,42 +428,63 @@ export class EditInvoiceComponent {
 
     const doc = new jsPDF(options);
 
-    doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 185, 7, 17, 17);
-
-    doc.setFontSize(30);
-    doc.text('TAX INVOICE', 13, 20);
+    doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
 
     (doc as any).autoTable({
-      startY: 30,
+      startY: 9,
       head: this.headOwnerAddress,
       body: this.dataOwnerAddress,
       theme: 'plain',
-      headStyles: { fontSize: '13', textColor: '#01579b' },
+      margin: {left: 27},
+      headStyles: { fontSize: '12', textColor: '#01579b' },
       styles: {
         cellWidth: 95,
-        fontSize: '11',
+        fontSize: '10',
         cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
       },
     });
 
     (doc as any).autoTable({
-      startY: 65,
+      startY: 9,
+      head: this.headInvoiceDtails,
+      body: this.dataInvoiceDtails,
+      theme: 'plain',
+      margin: {left: 150},
+      headStyles: { fontSize: '12', textColor: '#01579b' },
+      styles: {
+        cellWidth: 95,
+        fontSize: '10',
+        cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
+      },
+    });
+
+    doc.line(10, 42, 85, 42);
+    doc.text('TAX INVOICE', 90, 44);
+    doc.line(130, 42, 200, 42);
+
+
+    (doc as any).autoTable({
+      startY: 50,
       head: this.headSellerAddress,
       body: this.dataSellerAddress,
       theme: 'plain',
-      headStyles: { fontSize: '13', textColor: '#01579b' },
+      margin: {left: 7, right: 7},
+      headStyles: { fontSize: '11', textColor: '#01579b'},
       styles: {
-        cellWidth: 95,
-        fontSize: '11',
+        // cellWidth: 95,
+        fontSize: '10',
         cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
       },
     });
 
     (doc as any).autoTable({
-      startY: 110,
+      startY: 80,
       head: this.head,
       body: this.data,
       theme: 'striped',
+      margin: {left: 8, right: 8},
+      headStyles: { fontSize: '10' },
+      styles: { fontSize: '9' },
     });
 
     let finalY = (doc as any).lastAutoTable.finalY;
