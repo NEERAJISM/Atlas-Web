@@ -19,15 +19,14 @@
 
   <mat-accordion class="example-headers-align">
     <mat-expansion-panel
-      [expanded]="step === 1"
-      (opened)="setStep(0)"
-      hideToggle
+      [expanded]="open"
+      (opened)="open = true"
+      (closed)="expansionClosed()"
     >
       <mat-expansion-panel-header>
         <mat-panel-title> Address Details </mat-panel-title>
         <mat-panel-description>
-          c/o Balkrishna Patidar, Gamda Brhamaniya
-          <mat-icon>account_circle</mat-icon>
+          {{ combinedAddress}}
         </mat-panel-description>
       </mat-expansion-panel-header>
 
@@ -52,16 +51,37 @@
               </p>
             </div>
 
-            <div class="col-lg-12" *ngIf="true">
-              <mat-form-field appearance="fill">
-                <mat-label>Select an option</mat-label>
-                <mat-select [(value)]="selected">
-                  <mat-option value="option0">New Client</mat-option>
-                  <mat-option value="option1">Krishna Borewell</mat-option>
-                  <mat-option value="option2">Tirupati Tractors</mat-option>
-                  <mat-option value="option3">Lakecity waters</mat-option>
-                </mat-select>
-              </mat-form-field>
+            <div class="col-lg-12">
+              <p class="m-0">
+                <mat-form-field
+                  class="my-form-field"
+                  appearance="outline"
+                  style="width: 100%"
+                >
+                  <mat-label> Customer name</mat-label>
+      
+                  <input
+                    matInput
+                    required
+                    [(ngModel)]="address"
+                    type="text"
+                    name="customerAddress"
+                    placeholder="Pick one"
+                    aria-label="Number"
+                    [matAutocomplete]="autoAddress"
+                    [formControl]="addressControl"
+                  />
+      
+                  <mat-autocomplete #autoAddress="matAutocomplete" [displayWith]="getOptionText">
+                    <mat-option
+                      *ngFor="let option of addressObservable | async"
+                      [value]="option"
+                    >
+                      {{ option.name }}
+                    </mat-option>
+                  </mat-autocomplete>
+                </mat-form-field>
+              </p>
             </div>
           </div>
 
@@ -70,7 +90,7 @@
               <p>
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
-                  <input matInput placeholder="Placeholder" />
+                  <input matInput [(ngModel)]="address.line1" placeholder="Placeholder" />
                 </mat-form-field>
               </p>
             </div>
@@ -81,7 +101,7 @@
               <p>
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
-                  <input matInput placeholder="Placeholder" />
+                  <input matInput [(ngModel)]="address.line2" placeholder="Placeholder" />
                 </mat-form-field>
               </p>
             </div>
@@ -98,22 +118,55 @@
 
         <div class="col col-lg-4">
           <div class="row">
-            <div class="col-lg-4">
-              <h5>Shipping To</h5>
-            </div>
-            <div class="col-lg-8" style="display: grid; justify-content: end">
-              <mat-checkbox class="example-margin"
-                >Same as Buyer address</mat-checkbox
-              >
-            </div>
+          <div class="col-lg-4">
+            <h5>Shipping To</h5>
           </div>
+          <div class="col-lg-8" style="display: grid; justify-content: end">
+            <mat-checkbox class="example-margin" (change)="sameAsBuyerCheck()"
+              >Same as Buyer address</mat-checkbox
+            >
+          </div>
+        </div>
 
           <div class="row">
-            <div class="col">
+            <div class="col" *ngIf="false">
               <p>
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
                   <input matInput placeholder="Placeholder" />
+                </mat-form-field>
+              </p>
+            </div>
+
+            <div class="col-lg-12">
+              <p class="m-0">
+                <mat-form-field
+                  class="my-form-field"
+                  appearance="outline"
+                  style="width: 100%"
+                >
+                  <mat-label> Customer name</mat-label>
+      
+                  <input
+                    matInput
+                    required
+                    [(ngModel)]="address2"
+                    type="text"
+                    name="customerAddress"
+                    placeholder="Pick one"
+                    aria-label="Number"
+                    [matAutocomplete]="autoAddress2"
+                    [formControl]="addressControl2"
+                  />
+      
+                  <mat-autocomplete #autoAddress2="matAutocomplete" [displayWith]="getOptionText">
+                    <mat-option
+                      *ngFor="let option of addressObservable2 | async"
+                      [value]="option"
+                    >
+                      {{ option.name }}
+                    </mat-option>
+                  </mat-autocomplete>
                 </mat-form-field>
               </p>
             </div>
@@ -124,7 +177,7 @@
               <p>
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
-                  <input matInput placeholder="Placeholder" />
+                  <input matInput [(ngModel)]="address2.line1" placeholder="Placeholder" />
                 </mat-form-field>
               </p>
             </div>
@@ -135,7 +188,7 @@
               <p>
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Outline form field</mat-label>
-                  <input matInput placeholder="Placeholder" />
+                  <input matInput [(ngModel)]="address2.line2" placeholder="Placeholder" />
                 </mat-form-field>
               </p>
             </div>

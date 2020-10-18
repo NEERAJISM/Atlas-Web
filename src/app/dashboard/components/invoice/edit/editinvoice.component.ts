@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -20,18 +20,39 @@ interface Item {
   total: number;
 }
 
+interface Address {
+  name: string;
+  line1: string;
+  line2: string;
+}
+
 @Component({
   selector: 'app-edit-invoice',
   templateUrl: './editinvoice.component.html',
   styleUrls: ['./editinvoice.component.scss'],
 })
-export class EditInvoiceComponent {
+export class EditInvoiceComponent implements OnInit {
   @ViewChild('htmlData') htmlData: ElementRef;
 
   pdf: ArrayBuffer;
   doc: jsPDF;
 
   selected = 'None';
+
+
+  addressControl: FormControl =new FormControl();
+  addressObservable: Observable<Address[]>;
+  addressControl2: FormControl =new FormControl();
+  addressObservable2: Observable<Address[]>;
+
+  combinedAddress = '';
+  address: Address = {name: '', line1: '', line2: ''};
+  address2: Address = {name: '', line1: '', line2: ''};
+  customerAddress: Address[] = [
+    {name: 'customer1', line1:'addressline1', line2:'line21'},
+    {name: 'customer2', line1:'addressline2', line2:'line22'},
+    {name: 'customer3', line1:'addressline3', line2:'line23'},
+  ]
 
   controls: FormControl[] = [];
   observables: Observable<string[]>[] = [];
@@ -47,7 +68,7 @@ export class EditInvoiceComponent {
   ];
   optionsTaxValue: number[] = [0.05, 0.12, 0.18, 0.28];
 
-  step = 0;
+  open = true;
 
   items: Item[] = [];
 
@@ -363,23 +384,24 @@ export class EditInvoiceComponent {
     this.loadClients();
     this.addItem();
   }
+  ngOnInit(): void {
+    this.addressObservable = this.addressControl.valueChanges
+    .pipe(
+      startWith(''),
+      map(value => this.customerAddress.filter(option => option.name.toLowerCase().includes(value)))
+    );
+
+    this.addressObservable2 = this.addressControl2.valueChanges
+    .pipe(
+      startWith(''),
+      map(value => this.customerAddress.filter(option => option.name.toLowerCase().includes(value)))
+    );
+  }
 
   loadClients() {}
 
   goBackToInvoiceComponent() {
     this.router.navigateByUrl('/dashboard/invoice');
-  }
-
-  setStep(index: number) {
-    this.step = index;
-  }
-
-  nextStep() {
-    this.step++;
-  }
-
-  prevStep() {
-    this.step--;
   }
 
   addItem() {
@@ -406,16 +428,15 @@ export class EditInvoiceComponent {
     let filteredOptions: Observable<string[]> = myControl.valueChanges
       .pipe(
         startWith(''),
-        map(value => this._filter(value))
+        map(value => this._filter(this.optionsProduct, value))
       );
 
     this.controls.push(myControl);
     this.observables.push(filteredOptions);
   }
 
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.optionsProduct.filter(option => option.toLowerCase().includes(filterValue));
+  private _filter(list: any[], value: string): string[] {
+    return list.filter(option => option.toLowerCase().includes(value.toLowerCase()));
   }
 
   calculate(item: Item): number {
@@ -567,5 +588,34 @@ export class EditInvoiceComponent {
     data: this.pdf,
     position: {top: '20px'}
     });
+  }
+
+  getOptionText(option) {
+    return option ? option.name : '';
+  }
+
+  expansionClosed(){
+    this.open = false;
+    let result = '';
+    if (!this.open && this.address) {
+      if (this.address.name) {
+        result += this.address.name + ' , ';
+      }
+      if (this.address.line1) {
+        result += this.address.line1 + ' , ';
+      }
+      if (this.address.line2) {
+        result += this.address.line2;
+      }
+    }
+    this.combinedAddress = result;
+  }
+
+  toggleExpansion() {
+    this.open = !this.open;
+  }
+
+  sameAsBuyerCheck() {
+    this.address2 = this.address;
   }
 }
