@@ -7,6 +7,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
 import { InvoicePreviewComponent } from './preview/invoice.preview.component';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 interface Item {
   name: string;
@@ -29,10 +31,13 @@ export class EditInvoiceComponent {
   pdf: ArrayBuffer;
   doc: jsPDF;
 
-  selected: string = 'None';
+  selected = 'None';
 
-  myControl = new FormControl();
-  optionsProduct: string[] = ['HCL', 'Sulphuric', 'Nitric', 'Phosphic'];
+  controls: FormControl[] = [];
+  observables: Observable<string[]>[] = [];
+
+  optionsProduct: string[] = ['HCL', 'Sulphuric', 'Nitric', 'Phosphic', 'Aquarazia', 'Citric', 'Acidic'];
+
   optionsUnit: string[] = ['250 ml', '500 ml', '1 L', '5 L'];
   optionsTax: string[] = [
     '5% (2.5% SGST + 2.5% CGST)',
@@ -384,15 +389,39 @@ export class EditInvoiceComponent {
       item.qty = 1;
       item.discount = 0;
       this.items.push(item);
+      this.addFormControl();
     } else {
       this.openSnackBar('Please enter valid values', 'Dismiss');
     }
   }
 
+  removeItem(index: number) {
+    this.items.splice(index, 1);
+    this.controls.splice(index, 1);
+    this.observables.splice(index, 1);
+  }
+
+  addFormControl() {
+    let myControl = new FormControl();
+    let filteredOptions: Observable<string[]> = myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+
+    this.controls.push(myControl);
+    this.observables.push(filteredOptions);
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    return this.optionsProduct.filter(option => option.toLowerCase().includes(filterValue));
+  }
+
   calculate(item: Item): number {
     item.total = Math.abs(item.qty) * Math.abs(item.price);
 
-    if(item.total <= 0) {
+    if (item.total <= 0) {
       return item.total;
     }
 
@@ -421,10 +450,6 @@ export class EditInvoiceComponent {
       }
     }
     return true;
-  }
-
-  removeItem(index: number) {
-    this.items.splice(index, 1);
   }
 
   public generatePDF(): void {

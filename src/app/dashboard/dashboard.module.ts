@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { CoreModule } from '../core/core.module';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 import { ChartsModule } from 'ng2-charts';
 
@@ -47,6 +47,7 @@ import { SupportDashboardComponent } from './components/support/support.componen
   imports: [
     NgbModule,
     FormsModule,
+    ReactiveFormsModule,
     CoreModule,
     CommonModule,
     ChartsModule,

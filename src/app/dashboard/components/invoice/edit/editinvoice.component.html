@@ -183,11 +183,12 @@
               placeholder="Pick one"
               aria-label="Number"
               [matAutocomplete]="autoProduct"
+              [formControl]="controls[i]"
             />
 
             <mat-autocomplete #autoProduct="matAutocomplete">
               <mat-option
-                *ngFor="let option of optionsProduct"
+                *ngFor="let option of observables[i] | async"
                 [value]="option"
               >
                 {{ option }}
