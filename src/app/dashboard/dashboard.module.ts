@@ -37,6 +37,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { MainDashboardComponent } from './components/maindashboard/maindashboard.component';
 import { InvoiceDashboardComponent } from './components/invoice/invoice.component';
 import { EditInvoiceComponent } from './components/invoice/edit/editinvoice.component';
+import { InvoicePreviewComponent } from './components/invoice/edit/preview/invoice.preview.component';
 import { InventoryDashboardComponent } from './components/inventory/inventory.component';
 import { CustomersDashboardComponent } from './components/customers/customers.component';
 import { TaxDashboardComponent } from './components/tax/tax.component';
@@ -81,6 +82,7 @@ import { SupportDashboardComponent } from './components/support/support.componen
     CustomersDashboardComponent,
     TaxDashboardComponent,
     SupportDashboardComponent,
+    InvoicePreviewComponent
   ],
   exports: [
     DashboardComponent,

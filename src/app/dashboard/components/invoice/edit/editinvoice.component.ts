@@ -2,9 +2,11 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
+import { InvoicePreviewComponent } from './preview/invoice.preview.component';
 
 interface Item {
   name: string;
@@ -23,6 +25,9 @@ interface Item {
 })
 export class EditInvoiceComponent {
   @ViewChild('htmlData') htmlData: ElementRef;
+
+  pdf: ArrayBuffer;
+  doc: jsPDF;
 
   selected: string = 'None';
 
@@ -349,7 +354,7 @@ export class EditInvoiceComponent {
     ],
   ];
 
-  constructor(private router: Router, private snackBar: MatSnackBar) {
+  constructor(private router: Router, private snackBar: MatSnackBar, public dialog: MatDialog) {
     this.loadClients();
     this.addItem();
   }
@@ -422,15 +427,15 @@ export class EditInvoiceComponent {
     this.items.splice(index, 1);
   }
 
-  public downloadPDF(): void {
+  public generatePDF(): void {
     const options: jsPDFOptions = {};
     options.compress = true;
 
-    const doc = new jsPDF(options);
+    this.doc = new jsPDF(options);
 
-    doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
+    this.doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
 
-    (doc as any).autoTable({
+    (this.doc as any).autoTable({
       startY: 9,
       head: this.headOwnerAddress,
       body: this.dataOwnerAddress,
@@ -444,7 +449,7 @@ export class EditInvoiceComponent {
       },
     });
 
-    (doc as any).autoTable({
+    (this.doc as any).autoTable({
       startY: 9,
       head: this.headInvoiceDtails,
       body: this.dataInvoiceDtails,
@@ -458,12 +463,12 @@ export class EditInvoiceComponent {
       },
     });
 
-    doc.line(10, 42, 85, 42);
-    doc.text('TAX INVOICE', 90, 44);
-    doc.line(130, 42, 200, 42);
+    this.doc.line(10, 42, 85, 42);
+    this.doc.text('TAX INVOICE', 90, 44);
+    this.doc.line(130, 42, 200, 42);
 
 
-    (doc as any).autoTable({
+    (this.doc as any).autoTable({
       startY: 50,
       head: this.headSellerAddress,
       body: this.dataSellerAddress,
@@ -477,7 +482,7 @@ export class EditInvoiceComponent {
       },
     });
 
-    (doc as any).autoTable({
+    (this.doc as any).autoTable({
       startY: 80,
       head: this.head,
       body: this.data,
@@ -487,9 +492,9 @@ export class EditInvoiceComponent {
       styles: { fontSize: '9' },
     });
 
-    let finalY = (doc as any).lastAutoTable.finalY;
+    let finalY = (this.doc as any).lastAutoTable.finalY;
 
-    (doc as any).autoTable({
+    (this.doc as any).autoTable({
       startY: finalY + 5,
       body: this.bodyTotal,
       theme: 'plain',
@@ -501,22 +506,25 @@ export class EditInvoiceComponent {
       },
     });
 
-    finalY = (doc as any).lastAutoTable.finalY;
-    doc.setFontSize(12);
-    doc.line(145, finalY + 20, 195, finalY + 20);
-    doc.text('Authorized Signature', 150, finalY + 30);
+    finalY = (this.doc as any).lastAutoTable.finalY;
+    this.doc.setFontSize(12);
+    this.doc.line(145, finalY + 20, 195, finalY + 20);
+    this.doc.text('Authorized Signature', 150, finalY + 30);
 
     // Footer
 
-    doc.setFontSize(9);
-    const pageCount = (doc as any).internal.getNumberOfPages();
+    this.doc.setFontSize(9);
+    const pageCount = (this.doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.text('Powered by Atlas®', 10, 290);
-      doc.text('Page ' + i + ' of ' + pageCount, 180, 290);
+      this.doc.setPage(i);
+      this.doc.text('Powered by Atlas®', 10, 290);
+      this.doc.text('Page ' + i + ' of ' + pageCount, 180, 290);
     }
+  }
 
-    doc.save('atlas.pdf');
+  public downloadPDF(): void {
+    this.generatePDF();
+    this.doc.save('atlas.pdf');
   }
 
   openSnackBar(message: string, action: string) {
@@ -524,6 +532,15 @@ export class EditInvoiceComponent {
       duration: 2000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
+    });
+  }
+
+  openPreviewDialog(){
+    this.generatePDF();
+    this.pdf = this.doc.output('arraybuffer');
+    this.dialog.open(InvoicePreviewComponent, {
+    data: this.pdf,
+    position: {top: '20px'}
     });
   }
 }
