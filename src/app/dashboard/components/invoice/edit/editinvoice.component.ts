@@ -21,9 +21,17 @@ interface Item {
 }
 
 interface Address {
-  name: string;
   line1: string;
   line2: string;
+  loc: string;
+  pin: number;
+}
+
+interface Client {
+  name: string;
+  id: string;
+  mobile: string;
+  email: string;
 }
 
 @Component({
@@ -39,34 +47,91 @@ export class EditInvoiceComponent implements OnInit {
 
   selected = 'None';
 
+  clientDefaultJson: Client = { name: '', id: '', mobile: '', email: '' };
+  client: Client = this.clientDefaultJson;
+  clientControl: FormControl = new FormControl();
+  clientObservable: Observable<Client[]>;
 
-  addressControl: FormControl =new FormControl();
+  addressDefaultJson: Address = { line1: '', line2: '', loc: '', pin: undefined };
+  address: Address = this.addressDefaultJson;
+  address2: Address = this.addressDefaultJson;
+
+  addressControl: FormControl = new FormControl();
   addressObservable: Observable<Address[]>;
-  addressControl2: FormControl =new FormControl();
+  addressControl2: FormControl = new FormControl();
   addressObservable2: Observable<Address[]>;
 
+  invoiceDate: Date = new Date();
+  dueDate: Date = new Date();
+
+  clientPreview = 'CustomerDetails';
+  clientDefault = 'CustomerDetails';
+
   combinedAddress = '';
-  address: Address = {name: '', line1: '', line2: ''};
-  address2: Address = {name: '', line1: '', line2: ''};
   customerAddress: Address[] = [
-    {name: 'customer1', line1:'addressline1', line2:'line21'},
-    {name: 'customer2', line1:'addressline2', line2:'line22'},
-    {name: 'customer3', line1:'addressline3', line2:'line23'},
-  ]
+    {
+      line1: 'c/o Balkrishna Patidar, Gamda',
+      line2: 'Sagwara',
+      loc: 'Dungarpur (Raj)',
+      pin: 314025,
+    },
+    {
+      line1: 'Police Lines',
+      line2: 'New Colony',
+      loc: 'Dungarpur (Raj)',
+      pin: 314001,
+    },
+    {
+      line1: 'Amal ka Kanta',
+      line2: 'Surajpole',
+      loc: 'Udaipur (Raj)',
+      pin: 313001,
+    },
+  ];
+
+  clients: Client[] = [
+    {
+      name: 'Indu Patidar',
+      id: 'ASD51SDFK',
+      mobile: '4521365488',
+      email: 'abc@gmail.com',
+    },
+    {
+      name: 'Neeraj Patidar',
+      id: 'ASD51SDFK',
+      mobile: '4521365488',
+      email: 'abc@gmail.com',
+    },
+    {
+      name: 'Damini Patidar',
+      id: 'ASD51SDFK',
+      mobile: '4521365488',
+      email: 'abc@gmail.com',
+    },
+  ];
 
   controls: FormControl[] = [];
   observables: Observable<string[]>[] = [];
 
-  optionsProduct: string[] = ['HCL', 'Sulphuric', 'Nitric', 'Phosphic', 'Aquarazia', 'Citric', 'Acidic'];
+  optionsProduct: string[] = [
+    'HCL',
+    'Sulphuric',
+    'Nitric',
+    'Phosphic',
+    'Aquarazia',
+    'Citric',
+    'Acidic',
+  ];
 
   optionsUnit: string[] = ['250 ml', '500 ml', '1 L', '5 L'];
   optionsTax: string[] = [
+    '0% (Tax-Exempt)',
     '5% (2.5% SGST + 2.5% CGST)',
     '12% (6% SGST + 6% CGST)',
     '18% (9% SGST + 9% CGST)',
     '28% (14% SGST + 14% CGST)',
   ];
-  optionsTaxValue: number[] = [0.05, 0.12, 0.18, 0.28];
+  optionsTaxValue: number[] = [0, 0.05, 0.12, 0.18, 0.28];
 
   open = true;
 
@@ -76,18 +141,18 @@ export class EditInvoiceComponent implements OnInit {
 
   headOwnerAddress = [['Krishna Borewell']];
   dataOwnerAddress = [
-    [ 'C\\o Balkrishna Patidar, Gamda Brahmaniya'],
-    [ 'Sagwara, Dungarpur (Raj) - 314025'],
-    [ 'Email : 8patidarneeraj@gmail.com'],
-    [ 'Mob : +91 - 8877073059'],
+    ['C\\o Balkrishna Patidar, Gamda Brahmaniya'],
+    ['Sagwara, Dungarpur (Raj) - 314025'],
+    ['Email : 8patidarneeraj@gmail.com'],
+    ['Mob : +91 - 8877073059'],
   ];
 
   headInvoiceDtails = [['Invoice # 1254-5621']];
   dataInvoiceDtails = [
-    ['Issue Date     : 20 Sep 2020' ],
+    ['Issue Date     : 20 Sep 2020'],
     ['Due   Date     : 20 Sep 2020'],
     ['Supply Place : Sagwara'],
-    ['Supply State : Rajasthan']
+    ['Supply State : Rajasthan'],
   ];
 
   headSellerAddress = [
@@ -95,10 +160,22 @@ export class EditInvoiceComponent implements OnInit {
   ];
 
   dataSellerAddress = [
-    ['Neeraj Patidar' , 'Co Balkrishna Patidar, Gamda Brahmaniya' , '27,Lakshmi Marg, Amal ka kanta,'],
-    ['PAN : JHSVJHSV521' , 'Sagwara, Dungarpur (Raj) - 314025', 'Udaipur (Raj) - 313001'],
+    [
+      'Neeraj Patidar',
+      'Co Balkrishna Patidar, Gamda Brahmaniya',
+      '27,Lakshmi Marg, Amal ka kanta,',
+    ],
+    [
+      'PAN : JHSVJHSV521',
+      'Sagwara, Dungarpur (Raj) - 314025',
+      'Udaipur (Raj) - 313001',
+    ],
     // ['Email : 8patidarneeraj@gmail.com', 'Email : 8patidarneeraj@gmail.com', 'Email : rajatjainakhawat@gmail.com'],
-    ['Email : 8patidarneeraj@gmail.com', 'Mob : +91 - 8877073059', 'Mob : +91 - 9929307208'],
+    [
+      'Email : 8patidarneeraj@gmail.com',
+      'Mob : +91 - 8877073059',
+      'Mob : +91 - 9929307208',
+    ],
   ];
 
   bodyTotal = [
@@ -367,49 +444,61 @@ export class EditInvoiceComponent implements OnInit {
       '4.5\n(9%)',
       59.0,
     ],
-    [
-      ,
-      'TOTAL',
-      ,
-      ,
-      15000.0,
-      ,
-      '4050\n(9%)',
-      '4050\n(9%)',
-      21500.0,
-    ],
+    [, 'TOTAL', , , 15000.0, , '4050\n(9%)', '4050\n(9%)', 21500.0],
   ];
 
-  constructor(private router: Router, private snackBar: MatSnackBar, public dialog: MatDialog) {
-    this.loadClients();
+  constructor(
+    private router: Router,
+    private snackBar: MatSnackBar,
+    public dialog: MatDialog
+  ) {
     this.addItem();
   }
+
   ngOnInit(): void {
-    this.addressObservable = this.addressControl.valueChanges
-    .pipe(
+    this.clientObservable = this.clientControl.valueChanges.pipe(
       startWith(''),
-      map(value => this.customerAddress.filter(option => option.name.toLowerCase().includes(value)))
+      map((value) =>
+        this.clients.filter((option) =>
+          option.name.toLowerCase().includes(value)
+        )
+      )
     );
 
-    this.addressObservable2 = this.addressControl2.valueChanges
-    .pipe(
+    this.addressObservable = this.addressControl.valueChanges.pipe(
       startWith(''),
-      map(value => this.customerAddress.filter(option => option.name.toLowerCase().includes(value)))
+      map((value) =>
+        this.customerAddress.filter((option) =>
+          option.line1.toLowerCase().includes(value)
+        )
+      )
+    );
+
+    this.addressObservable2 = this.addressControl2.valueChanges.pipe(
+      startWith(''),
+      map((value) =>
+        this.customerAddress.filter((option) =>
+          option.line1.toLowerCase().includes(value)
+        )
+      )
     );
   }
-
-  loadClients() {}
 
   goBackToInvoiceComponent() {
     this.router.navigateByUrl('/dashboard/invoice');
   }
 
   addItem() {
+    if (this.open && this.items.length >= 1) {
+      this.expansionClosed();
+    }
+
     if (this.validateItems()) {
       this.openSnackBar('New item added!', 'Dismiss');
       const item = {} as Item;
       item.qty = 1;
       item.discount = 0;
+      item.tax = this.optionsTax[0];
       this.items.push(item);
       this.addFormControl();
     } else {
@@ -424,19 +513,20 @@ export class EditInvoiceComponent implements OnInit {
   }
 
   addFormControl() {
-    let myControl = new FormControl();
-    let filteredOptions: Observable<string[]> = myControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(this.optionsProduct, value))
-      );
+    const myControl = new FormControl();
+    const filteredOptions: Observable<string[]> = myControl.valueChanges.pipe(
+      startWith(''),
+      map((value) => this._filter(this.optionsProduct, value))
+    );
 
     this.controls.push(myControl);
     this.observables.push(filteredOptions);
   }
 
   private _filter(list: any[], value: string): string[] {
-    return list.filter(option => option.toLowerCase().includes(value.toLowerCase()));
+    return list.filter((option) =>
+      option.toLowerCase().includes(value.toLowerCase())
+    );
   }
 
   calculate(item: Item): number {
@@ -446,11 +536,15 @@ export class EditInvoiceComponent implements OnInit {
       return item.total;
     }
 
-    item.total -=  Math.abs(item.discount);
+    item.total -= Math.abs(item.discount);
     const index = this.optionsTax.indexOf(item.tax);
 
     if (index !== -1) {
-      item.total = Math.round(((item.total * (1 + this.optionsTaxValue[index])) + Number.EPSILON) * 100) / 100;
+      item.total =
+        Math.round(
+          (item.total * (1 + this.optionsTaxValue[index]) + Number.EPSILON) *
+            100
+        ) / 100;
     }
     return item.total;
   }
@@ -473,20 +567,52 @@ export class EditInvoiceComponent implements OnInit {
     return true;
   }
 
+  isValidInvoice(): boolean {
+    if (
+      this.invoiceDate &&
+      this.dueDate &&
+      this.client &&
+      this.client.name &&
+      this.client.name.length > 0 &&
+      this.client.mobile &&
+      this.address.line1 &&
+      this.address.line1.length > 0 &&
+      this.address.loc &&
+      this.address.loc.length > 0 &&
+      this.address.pin
+    ) {
+      return this.validateItems();
+    }
+    this.markAllTouched();
+    return false;
+  }
+
+  markAllTouched(){
+    this.clientControl.markAsTouched();
+    this.addressControl.markAsTouched();
+  }
+
   public generatePDF(): void {
     const options: jsPDFOptions = {};
     options.compress = true;
 
     this.doc = new jsPDF(options);
 
-    this.doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
+    this.doc.addImage(
+      '../../assets/icons/atlas-small.png',
+      'PNG',
+      7,
+      12,
+      17,
+      17
+    );
 
     (this.doc as any).autoTable({
       startY: 9,
       head: this.headOwnerAddress,
       body: this.dataOwnerAddress,
       theme: 'plain',
-      margin: {left: 27},
+      margin: { left: 27 },
       headStyles: { fontSize: '12', textColor: '#01579b' },
       styles: {
         cellWidth: 95,
@@ -500,7 +626,7 @@ export class EditInvoiceComponent implements OnInit {
       head: this.headInvoiceDtails,
       body: this.dataInvoiceDtails,
       theme: 'plain',
-      margin: {left: 150},
+      margin: { left: 150 },
       headStyles: { fontSize: '12', textColor: '#01579b' },
       styles: {
         cellWidth: 95,
@@ -513,14 +639,13 @@ export class EditInvoiceComponent implements OnInit {
     this.doc.text('TAX INVOICE', 90, 44);
     this.doc.line(130, 42, 200, 42);
 
-
     (this.doc as any).autoTable({
       startY: 50,
       head: this.headSellerAddress,
       body: this.dataSellerAddress,
       theme: 'plain',
-      margin: {left: 7, right: 7},
-      headStyles: { fontSize: '11', textColor: '#01579b'},
+      margin: { left: 7, right: 7 },
+      headStyles: { fontSize: '11', textColor: '#01579b' },
       styles: {
         // cellWidth: 95,
         fontSize: '10',
@@ -533,7 +658,7 @@ export class EditInvoiceComponent implements OnInit {
       head: this.head,
       body: this.data,
       theme: 'striped',
-      margin: {left: 8, right: 8},
+      margin: { left: 8, right: 8 },
       headStyles: { fontSize: '10' },
       styles: { fontSize: '9' },
     });
@@ -581,34 +706,59 @@ export class EditInvoiceComponent implements OnInit {
     });
   }
 
-  openPreviewDialog(){
+  openPreviewDialog() {
+    if (!this.isValidInvoice()) {
+      this.openSnackBar(
+        'Missing fields required to generate invoice!',
+        'Dismiss'
+      );
+      return;
+    }
+
     this.generatePDF();
     this.pdf = this.doc.output('arraybuffer');
     this.dialog.open(InvoicePreviewComponent, {
-    data: this.pdf,
-    position: {top: '20px'}
+      data: this.pdf,
+      position: { top: '20px' },
     });
   }
 
-  getOptionText(option) {
+  getClientOptionText(option: Client) {
     return option ? option.name : '';
   }
 
-  expansionClosed(){
+  getAddressOptionText(option: Address) {
+    return option ? option.line1 : '';
+  }
+
+  expansionClosed() {
     this.open = false;
     let result = '';
     if (!this.open && this.address) {
-      if (this.address.name) {
-        result += this.address.name + ' , ';
-      }
       if (this.address.line1) {
-        result += this.address.line1 + ' , ';
+        result += ' Address - ';
+        result += this.address.line1;
       }
       if (this.address.line2) {
+        result += ' , ';
         result += this.address.line2;
+      }
+      if (this.address.loc) {
+        result += ' , ';
+        result += this.address.loc;
+      }
+      if (this.address.pin) {
+        result += ' - ';
+        result += this.address.pin;
       }
     }
     this.combinedAddress = result;
+
+    if (this.client.name) {
+      this.clientPreview = this.client.name;
+    } else {
+      this.clientPreview = this.clientDefault;
+    }
   }
 
   toggleExpansion() {
@@ -617,5 +767,31 @@ export class EditInvoiceComponent implements OnInit {
 
   sameAsBuyerCheck() {
     this.address2 = this.address;
+  }
+
+  checkDueDate() {
+    if (
+      !this.dueDate ||
+      this.dueDate.getFullYear() < this.invoiceDate.getFullYear() ||
+      this.dueDate.getMonth() < this.invoiceDate.getMonth() ||
+      this.dueDate.getDate() < this.invoiceDate.getDate()
+    ) {
+      this.dueDate = new Date(this.invoiceDate);
+      this.openSnackBar('Invalid Due Date', '');
+    }
+  }
+
+  clientChange(event){
+    if (typeof event === 'string') {
+      this.client = Object.assign({}, this.clientDefaultJson);
+      this.client.name = event;
+    }
+  }
+
+  addressChange(event){
+    if (typeof event === 'string') {
+      this.address = Object.assign({}, this.addressDefaultJson);
+      this.address.line1 = event;
+    }
   }
 }

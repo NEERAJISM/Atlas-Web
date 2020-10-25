@@ -27,6 +27,8 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
 
 import { DashboardComponent } from './dashboard.component';
 import { DashboardHeaderComponent } from './header/header.component';
@@ -70,7 +72,9 @@ import { SupportDashboardComponent } from './components/support/support.componen
     MatExpansionModule,
     MatSelectModule,
     MatAutocompleteModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   declarations: [
     DashboardComponent,
@@ -97,5 +101,6 @@ import { SupportDashboardComponent } from './components/support/support.componen
     TaxDashboardComponent,
     SupportDashboardComponent,
   ],
+  providers :[{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}]
 })
 export class DashboardModule {}
