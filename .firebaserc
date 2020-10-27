@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "atlas-2020"
+  },
+  "targets": {
+    "atlas-2020": {
+      "hosting": {
+        "atlas": [
+          "atlas-2020"
+        ]
+      }
+    }
   }
 }

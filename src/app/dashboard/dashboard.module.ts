@@ -9,6 +9,8 @@ import { ChartsModule } from 'ng2-charts';
 
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
+import { AngularFirestoreModule } from '@angular/fire/firestore';
+
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -74,7 +76,8 @@ import { SupportDashboardComponent } from './components/support/support.componen
     MatAutocompleteModule,
     MatSnackBarModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
+    AngularFirestoreModule
   ],
   declarations: [
     DashboardComponent,
