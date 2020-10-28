@@ -1,4 +1,4 @@
-import { Address } from './Address';
+import { Address } from './address';
 
 export class Client {
   id: string;
@@ -10,5 +10,5 @@ export class Client {
   mobile: string;
   email: string;
 
-  addresses: Address[];
+  address: Address;
 }

@@ -9,7 +9,4 @@ export class Address {
 
   lon: string;
   lat: string;
-
-  mob: string;
-  email: string;
 }

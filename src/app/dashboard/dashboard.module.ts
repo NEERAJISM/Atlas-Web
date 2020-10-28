@@ -9,8 +9,6 @@ import { ChartsModule } from 'ng2-charts';
 
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
-import { AngularFirestoreModule } from '@angular/fire/firestore';
-
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -46,6 +44,7 @@ import { InventoryDashboardComponent } from './components/inventory/inventory.co
 import { CustomersDashboardComponent } from './components/customers/customers.component';
 import { TaxDashboardComponent } from './components/tax/tax.component';
 import { SupportDashboardComponent } from './components/support/support.component';
+import { NewClientComponent } from './components/customers/newclient/new.client.component';
 
 @NgModule({
   imports: [
@@ -76,8 +75,7 @@ import { SupportDashboardComponent } from './components/support/support.componen
     MatAutocompleteModule,
     MatSnackBarModule,
     MatDatepickerModule,
-    MatNativeDateModule,
-    AngularFirestoreModule
+    MatNativeDateModule
   ],
   declarations: [
     DashboardComponent,
@@ -90,7 +88,8 @@ import { SupportDashboardComponent } from './components/support/support.componen
     CustomersDashboardComponent,
     TaxDashboardComponent,
     SupportDashboardComponent,
-    InvoicePreviewComponent
+    InvoicePreviewComponent,
+    NewClientComponent
   ],
   exports: [
     DashboardComponent,
@@ -104,6 +103,6 @@ import { SupportDashboardComponent } from './components/support/support.componen
     TaxDashboardComponent,
     SupportDashboardComponent,
   ],
-  providers :[{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}]
+  providers : [{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}]
 })
 export class DashboardModule {}

@@ -1,0 +1,178 @@
+<mat-dialog-content style="max-height: 75vh">
+  <div class="row">
+    <div class="col">
+      <h4 class="mb-3" style="display: flex; justify-content: center">
+        Add New Client
+      </h4>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Client Name</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.name"
+            required
+            type="text"
+            name="clientName"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Mobile No.</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.mobile"
+            required
+            type="number"
+            name="clientMobile"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Email-Id</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.email"
+            type="email"
+            name="clientEmail"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>PAN</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.pan"
+            type="text"
+            name="clientPAN"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>GST</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.gst"
+            type="text"
+            name="clientGST"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h5 class="mb-3">Address</h5>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Address Line 1</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.address.line1"
+            required
+            type="text"
+            name="addressLine1"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Address Line 2</mat-label>
+          <input
+            matInput
+            [(ngModel)]="client.address.line2"
+            type="text"
+            name="addressLine2"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-6">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Pin Code</mat-label>
+          <input
+            matInput
+            required
+            [(ngModel)]="client.address.pin"
+            type="number"
+            name="addressPin"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+    <div class="col-lg-6">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>District</mat-label>
+          <input
+            matInput
+            required
+            [(ngModel)]="client.address.district"
+            type="text"
+            name="addressDistrict"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+</mat-dialog-content>
+<div mat-dialog-actions>
+  <button
+    mat-raised-button
+    mat-dialog-close
+    color="primary"
+    (click)="submit()"
+    [disabled]="
+      !(
+        client.name &&
+        client.name.length > 0 &&
+        client.mobile &&
+        client.address &&
+        client.address.line1 &&
+        client.address.line1.length > 0 &&
+        client.address.pin &&
+        client.address.district &&
+        client.address.district.length > 0
+      )
+    "
+  >
+    Add Client
+  </button>
+</div>
