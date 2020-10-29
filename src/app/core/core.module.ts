@@ -1,24 +1,13 @@
 import { NgModule } from '@angular/core';
-import { SplashComponent } from './splash/splash.component';
+import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { FirebaseUtil } from './firebaseutil';
 import { PageNotFoundComponent } from './pagenotfound/pagenotfound.component';
-
-import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { SplashComponent } from './splash/splash.component';
 
 @NgModule({
-  imports: [
-    AngularFirestoreModule
-  ],
-  declarations: [
-    SplashComponent,
-    PageNotFoundComponent,
-  ],
-  exports: [
-    SplashComponent,
-    PageNotFoundComponent,
-  ],
-  providers: [
-    FirebaseUtil
-  ]
+  imports: [AngularFirestoreModule],
+  declarations: [SplashComponent, PageNotFoundComponent],
+  exports: [SplashComponent, PageNotFoundComponent],
+  providers: [FirebaseUtil],
 })
 export class CoreModule {}

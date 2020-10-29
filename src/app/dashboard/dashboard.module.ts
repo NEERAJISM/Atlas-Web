@@ -44,7 +44,8 @@ import { InventoryDashboardComponent } from './components/inventory/inventory.co
 import { CustomersDashboardComponent } from './components/customers/customers.component';
 import { TaxDashboardComponent } from './components/tax/tax.component';
 import { SupportDashboardComponent } from './components/support/support.component';
-import { NewClientComponent } from './components/customers/newclient/new.client.component';
+import { NewClientComponent } from './components/customers/new/new.client.component';
+import { RemoveClientComponent } from './components/customers/remove/remove.client.component';
 
 @NgModule({
   imports: [
@@ -89,7 +90,8 @@ import { NewClientComponent } from './components/customers/newclient/new.client.
     TaxDashboardComponent,
     SupportDashboardComponent,
     InvoicePreviewComponent,
-    NewClientComponent
+    NewClientComponent,
+    RemoveClientComponent
   ],
   exports: [
     DashboardComponent,

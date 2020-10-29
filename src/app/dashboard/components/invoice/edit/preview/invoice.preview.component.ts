@@ -6,7 +6,5 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
   templateUrl: 'invoice.preview.component.html',
 })
 export class InvoicePreviewComponent {
-  pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf';
-
   constructor(@Inject(MAT_DIALOG_DATA) public data) {}
 }
