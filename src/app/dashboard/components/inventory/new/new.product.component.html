@@ -1,0 +1,163 @@
+<mat-dialog-content style="max-height: 75vh">
+  <div class="row">
+    <div class="col">
+      <h4 class="mb-3" style="display: flex; justify-content: center">
+        Add New Product
+      </h4>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-9">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Product Name</mat-label>
+          <input
+            matInput
+            [(ngModel)]="product.name"
+            required
+            type="text"
+            name="productName"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+    <div class="col-lg-3">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Code/Serial No.</mat-label>
+          <input
+            matInput
+            [(ngModel)]="product.serial"
+            type="text"
+            name="productSerial"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Product Description</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="product.desc"
+            type="text"
+            name="productDesc"
+          ></textarea>
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <h5 class="mb-3">Units</h5>
+    </div>
+  </div>
+
+  <div class="row" *ngFor="let unit of product.units; index as i">
+    <div class="col-lg-4">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Unit (ex - 500ml / 1Kg etc.)</mat-label>
+          <input
+            matInput
+            required
+            [(ngModel)]="unit.unit"
+            type="text"
+            name="unit_{{ i }}"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+    <div class="col-lg-3">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Price</mat-label>
+          <input
+            matInput
+            required
+            [(ngModel)]="unit.price"
+            type="number"
+            name="price_{{ i }}"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="col-lg-3">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Stock Qty</mat-label>
+          <input
+            matInput
+            required
+            [(ngModel)]="unit.stock"
+            type="number"
+            name="stock_{{ i }}"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="col-lg-2">
+      <button
+        class="py-1 mt-1"
+        style="font-size: 1.3em"
+        mat-raised-button
+        color="warn"
+        (click)="removeUnit(i)"
+      >
+        <i class="fas fa-trash text-white py-3"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    <div class="col" style="justify-content: center; display: flex">
+      <button
+        class="py-2"
+        style="font-size: 1.2em"
+        mat-raised-button
+        color="primary"
+        (click)="addNewUnit()"
+      >
+        <i class="fas fa-plus text-white"></i>
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<div mat-dialog-actions>
+  <button
+    class="py-2"
+    style="font-size: 1.2em"
+    mat-raised-button
+    mat-dialog-close
+    color="primary"
+    (click)="submit()"
+    [disabled]="
+      !(
+        product.name &&
+        product.name.length > 0 &&
+        product.units.length > 0 &&
+        isValidUnits()
+      )
+    "
+  >
+    {{ action }}
+  </button>
+
+  <button
+    class="py-2"
+    style="font-size: 1.2em"
+    mat-button
+    mat-dialog-close
+  >
+    Cancel
+  </button>
+</div>

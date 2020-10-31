@@ -5,4 +5,5 @@ export class Constants {
   static PRODUCT_DB = 'ProductDB';
 
   static CLIENTS = 'Clients';
+  static PRODUCTS = 'Products';
 }

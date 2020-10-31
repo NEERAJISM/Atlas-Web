@@ -2,6 +2,7 @@ export class Product {
   id: string;
 
   name: string;
+  desc: string;
   serial: string;
 
   // TODO add [] of photos
@@ -12,4 +13,5 @@ export class Product {
 export class Unit {
   unit: string;
   price: number;
+  stock: number;
 }
