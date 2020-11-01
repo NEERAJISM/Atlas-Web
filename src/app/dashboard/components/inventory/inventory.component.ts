@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -13,7 +13,7 @@ import { RemoveProductComponent } from './remove/remove.product.component';
   templateUrl: './inventory.component.html',
   styleUrls: ['./inventory.component.scss'],
 })
-export class InventoryDashboardComponent {
+export class InventoryDashboardComponent implements AfterViewInit {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -32,6 +32,11 @@ export class InventoryDashboardComponent {
   constructor(public fbutil: FirebaseUtil, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource();
     this.fetchProducts();
+  }
+
+  ngAfterViewInit(): void {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   fetchProducts() {
@@ -95,7 +100,7 @@ export class InventoryDashboardComponent {
   }
 
   trimDescription(desc: string): string {
-    if(desc && desc.length > 150) {
+    if (desc && desc.length > 150) {
        return desc.substr(0, 150);
     }
     return desc;

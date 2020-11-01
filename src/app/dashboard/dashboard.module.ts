@@ -4,6 +4,7 @@ import { CoreModule } from '../core/core.module';
 import { CommonModule } from '@angular/common';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BrowserModule } from '@angular/platform-browser';
 
 import { ChartsModule } from 'ng2-charts';
 
@@ -21,6 +22,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MatSortModule } from '@angular/material/sort';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -52,6 +54,7 @@ import { RemoveProductComponent } from './components/inventory/remove/remove.pro
 @NgModule({
   imports: [
     NgbModule,
+    BrowserModule,
     FormsModule,
     ReactiveFormsModule,
     CoreModule,
@@ -71,6 +74,7 @@ import { RemoveProductComponent } from './components/inventory/remove/remove.pro
     MatDialogModule,
     MatInputModule,
     MatTableModule,
+    MatSortModule,
     MatPaginatorModule,
     MatCheckboxModule,
     MatExpansionModule,
