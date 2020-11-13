@@ -1,4 +1,4 @@
-<mat-dialog-content style="max-height: 75vh">
+<mat-dialog-content style="max-height: 85vh">
   <div class="row">
     <div class="col">
       <h4 class="mb-3" style="display: flex; justify-content: center">
@@ -123,6 +123,23 @@
   </div>
 
   <div class="row">
+    <div class="col">
+      <p>
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Area / District</mat-label>
+          <input
+            required
+            matInput
+            [(ngModel)]="client.address.district"
+            type="text"
+            name="district"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-lg-6">
       <p>
         <mat-form-field appearance="outline" style="width: 100%">
@@ -132,7 +149,7 @@
             required
             [(ngModel)]="client.address.pin"
             type="number"
-            name="addressPin"
+            name="pin"
           />
         </mat-form-field>
       </p>
@@ -140,14 +157,10 @@
     <div class="col-lg-6">
       <p>
         <mat-form-field appearance="outline" style="width: 100%">
-          <mat-label>District</mat-label>
-          <input
-            matInput
-            required
-            [(ngModel)]="client.address.district"
-            type="text"
-            name="addressDistrict"
-          />
+          <mat-label>State</mat-label>
+            <mat-select required [(ngModel)]="client.address.state">
+              <mat-option *ngFor="let state of states" [value]="state">{{state}}</mat-option>
+            </mat-select>
         </mat-form-field>
       </p>
     </div>
@@ -169,7 +182,9 @@
         client.address.line1.length > 0 &&
         client.address.pin &&
         client.address.district &&
-        client.address.district.length > 0
+        client.address.district.length > 0 &&
+        client.address.state &&
+        client.address.state.length > 0
       )
     "
   >

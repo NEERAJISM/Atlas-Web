@@ -1,45 +1,25 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
-
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
+import { FirebaseUtil } from '@core/firebaseutil';
+import { Address } from '@core/models/address';
+import { Client } from '@core/models/client';
+import { Item } from '@core/models/invoice';
+import { Product } from '@core/models/product';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
-import { InvoicePreviewComponent } from './preview/invoice.preview.component';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-
-interface Item {
-  name: string;
-  unit: string;
-  qty: number;
-  price: number;
-  discount: number;
-  tax: string;
-  total: number;
-}
-
-interface Address {
-  line1: string;
-  line2: string;
-  loc: string;
-  pin: number;
-}
-
-interface Client {
-  name: string;
-  id: string;
-  mobile: string;
-  email: string;
-}
+import { InvoicePreviewComponent } from './preview/invoice.preview.component';
 
 @Component({
   selector: 'app-edit-invoice',
   templateUrl: './editinvoice.component.html',
   styleUrls: ['./editinvoice.component.scss'],
 })
-export class EditInvoiceComponent implements OnInit {
+export class EditInvoiceComponent {
   @ViewChild('htmlData') htmlData: ElementRef;
 
   pdf: ArrayBuffer;
@@ -47,81 +27,25 @@ export class EditInvoiceComponent implements OnInit {
 
   selected = 'None';
 
-  clientDefaultJson: Client = { name: '', id: '', mobile: '', email: '' };
-  client: Client = this.clientDefaultJson;
+  client: Client = new Client();
   clientControl: FormControl = new FormControl();
   clientObservable: Observable<Client[]>;
 
-  addressDefaultJson: Address = { line1: '', line2: '', loc: '', pin: undefined };
-  address: Address = this.addressDefaultJson;
-  address2: Address = this.addressDefaultJson;
-
-  addressControl: FormControl = new FormControl();
-  addressObservable: Observable<Address[]>;
-  addressControl2: FormControl = new FormControl();
-  addressObservable2: Observable<Address[]>;
+  shippingAddress: Address = new Address();
 
   invoiceDate: Date = new Date();
   dueDate: Date = new Date();
 
-  clientPreview = 'CustomerDetails';
-  clientDefault = 'CustomerDetails';
+  clientPreview = 'Customer Details';
+  clientDefault = 'Customer Details';
 
   combinedAddress = '';
-  customerAddress: Address[] = [
-    {
-      line1: 'c/o Balkrishna Patidar, Gamda',
-      line2: 'Sagwara',
-      loc: 'Dungarpur (Raj)',
-      pin: 314025,
-    },
-    {
-      line1: 'Police Lines',
-      line2: 'New Colony',
-      loc: 'Dungarpur (Raj)',
-      pin: 314001,
-    },
-    {
-      line1: 'Amal ka Kanta',
-      line2: 'Surajpole',
-      loc: 'Udaipur (Raj)',
-      pin: 313001,
-    },
-  ];
-
-  clients: Client[] = [
-    {
-      name: 'Indu Patidar',
-      id: 'ASD51SDFK',
-      mobile: '4521365488',
-      email: 'abc@gmail.com',
-    },
-    {
-      name: 'Neeraj Patidar',
-      id: 'ASD51SDFK',
-      mobile: '4521365488',
-      email: 'abc@gmail.com',
-    },
-    {
-      name: 'Damini Patidar',
-      id: 'ASD51SDFK',
-      mobile: '4521365488',
-      email: 'abc@gmail.com',
-    },
-  ];
+  clients: Client[] = [];
 
   controls: FormControl[] = [];
-  observables: Observable<string[]>[] = [];
+  observables: Observable<Product[]>[] = [];
 
-  optionsProduct: string[] = [
-    'HCL',
-    'Sulphuric',
-    'Nitric',
-    'Phosphic',
-    'Aquarazia',
-    'Citric',
-    'Acidic',
-  ];
+  optionsProduct: Product[] = [];
 
   optionsUnit: string[] = ['250 ml', '500 ml', '1 L', '5 L'];
   optionsTax: string[] = [
@@ -450,38 +374,76 @@ export class EditInvoiceComponent implements OnInit {
   constructor(
     private router: Router,
     private snackBar: MatSnackBar,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public fbutil: FirebaseUtil
   ) {
-    this.addItem();
+    this.fetchClients();
+    this.fetchProducts();
   }
 
-  ngOnInit(): void {
+  fetchClients() {
+    const result: Client[] = [];
+    this.fbutil
+      .getClientRef('bizId')
+      .get()
+      .forEach((res) =>
+        res.forEach((data) => {
+          const c = new Client();
+          if (data.data()) {
+            Object.assign(c, data.data());
+            result.push(c);
+          }
+        })
+      )
+      .finally(() => this.updateClients(result));
+  }
+
+  updateClients(c: Client[]) {
+    this.clients = c;
+
+    this.clientControl.valueChanges.subscribe((value) => {
+      if (typeof value === 'string') {
+        this.client = new Client();
+        this.client.name = value;
+      }
+    });
+
     this.clientObservable = this.clientControl.valueChanges.pipe(
       startWith(''),
       map((value) =>
         this.clients.filter((option) =>
-          option.name.toLowerCase().includes(value)
+          option.name
+            .toLowerCase()
+            .includes(
+              typeof value === 'string'
+                ? value.toLowerCase()
+                : value.name.toLowerCase()
+            )
         )
       )
     );
+  }
 
-    this.addressObservable = this.addressControl.valueChanges.pipe(
-      startWith(''),
-      map((value) =>
-        this.customerAddress.filter((option) =>
-          option.line1.toLowerCase().includes(value)
-        )
+  fetchProducts() {
+    const result: Product[] = [];
+    this.fbutil
+      .getProductRef('bizId')
+      .get()
+      .forEach((res) =>
+        res.forEach((data) => {
+          const p = new Product();
+          if (data.data()) {
+            Object.assign(p, data.data());
+            result.push(p);
+          }
+        })
       )
-    );
+      .finally(() => this.updateProducts(result));
+  }
 
-    this.addressObservable2 = this.addressControl2.valueChanges.pipe(
-      startWith(''),
-      map((value) =>
-        this.customerAddress.filter((option) =>
-          option.line1.toLowerCase().includes(value)
-        )
-      )
-    );
+  updateProducts(p: Product[]) {
+    this.optionsProduct = p;
+    this.addItem();
   }
 
   goBackToInvoiceComponent() {
@@ -514,7 +476,7 @@ export class EditInvoiceComponent implements OnInit {
 
   addFormControl() {
     const myControl = new FormControl();
-    const filteredOptions: Observable<string[]> = myControl.valueChanges.pipe(
+    const filteredOptions: Observable<Product[]> = myControl.valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(this.optionsProduct, value))
     );
@@ -523,9 +485,9 @@ export class EditInvoiceComponent implements OnInit {
     this.observables.push(filteredOptions);
   }
 
-  private _filter(list: any[], value: string): string[] {
+  private _filter(list: any[], value: string): Product[] {
     return list.filter((option) =>
-      option.toLowerCase().includes(value.toLowerCase())
+      option.name.toLowerCase().includes(value.toLowerCase())
     );
   }
 
@@ -575,21 +537,18 @@ export class EditInvoiceComponent implements OnInit {
       this.client.name &&
       this.client.name.length > 0 &&
       this.client.mobile &&
-      this.address.line1 &&
-      this.address.line1.length > 0 &&
-      this.address.loc &&
-      this.address.loc.length > 0 &&
-      this.address.pin
+      this.client.address &&
+      this.client.address.line1 &&
+      this.client.address.line1.length > 0 &&
+      this.client.address.district &&
+      this.client.address.district.length > 0 &&
+      this.client.address.state &&
+      this.client.address.state.length > 0 &&
+      this.client.address.pin
     ) {
       return this.validateItems();
     }
-    this.markAllTouched();
     return false;
-  }
-
-  markAllTouched(){
-    this.clientControl.markAsTouched();
-    this.addressControl.markAsTouched();
   }
 
   public generatePDF(): void {
@@ -734,22 +693,22 @@ export class EditInvoiceComponent implements OnInit {
   expansionClosed() {
     this.open = false;
     let result = '';
-    if (!this.open && this.address) {
-      if (this.address.line1) {
+    if (!this.open && this.client.address) {
+      if (this.client.address.line1) {
         result += ' Address - ';
-        result += this.address.line1;
+        result += this.client.address.line1;
       }
-      if (this.address.line2) {
+      if (this.client.address.line2) {
         result += ' , ';
-        result += this.address.line2;
+        result += this.client.address.line2;
       }
-      if (this.address.loc) {
+      if (this.client.address.district) {
         result += ' , ';
-        result += this.address.loc;
+        result += this.client.address.district;
       }
-      if (this.address.pin) {
+      if (this.client.address.pin) {
         result += ' - ';
-        result += this.address.pin;
+        result += this.client.address.pin;
       }
     }
     this.combinedAddress = result;
@@ -766,7 +725,7 @@ export class EditInvoiceComponent implements OnInit {
   }
 
   sameAsBuyerCheck() {
-    this.address2 = this.address;
+    this.shippingAddress = this.client.address;
   }
 
   checkDueDate() {
@@ -781,17 +740,10 @@ export class EditInvoiceComponent implements OnInit {
     }
   }
 
-  clientChange(event){
-    if (typeof event === 'string') {
-      this.client = Object.assign({}, this.clientDefaultJson);
-      this.client.name = event;
-    }
-  }
-
-  addressChange(event){
-    if (typeof event === 'string') {
-      this.address = Object.assign({}, this.addressDefaultJson);
-      this.address.line1 = event;
-    }
-  }
+  // addressChange(event) {
+  //   if (event && typeof event === 'string') {
+  //     this.address = Object.assign({}, this.addressDefaultJson);
+  //     this.address.line1 = event;
+  //   }
+  // }
 }

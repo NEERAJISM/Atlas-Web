@@ -1,5 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Constants } from '@core/constants';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
 import { Client } from '@core/models/client';
@@ -11,6 +12,7 @@ import { Client } from '@core/models/client';
 })
 export class NewClientComponent {
   client: Client;
+  states = Constants.states;
 
   action = 'Add Client';
 

@@ -80,6 +80,7 @@ export class Item {
     this.price = copy.price;
 
     this.discount = copy.discount;
+    this.tax = copy.tax;
     this.taxPercent = copy.taxPercent;
 
     this.total = copy.total;
@@ -94,6 +95,7 @@ export class Item {
   qty: number;
 
   discount: number;
+  tax: string;
   taxPercent: number;
 
   total: number;

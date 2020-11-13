@@ -10,5 +10,5 @@ export class Client {
   mobile: string;
   email: string;
 
-  address: Address;
+  address: Address = new Address();
 }

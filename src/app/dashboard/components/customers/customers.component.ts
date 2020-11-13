@@ -26,17 +26,28 @@ export class CustomersDashboardComponent implements AfterViewInit {
     'email',
     'address',
     'district',
+    'state',
     'actions',
   ];
 
   constructor(public fbutil: FirebaseUtil, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource();
-    this.fetchClients();
+    this.subscribeToUpdates();
+    this.dialog.afterAllClosed.subscribe(() => this.fetchClients());
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  subscribeToUpdates() {
+    this.fbutil
+      .getClientRef('bizId')
+      .snapshotChanges()
+      .subscribe(() => {
+        this.fetchClients();
+      });
   }
 
   fetchClients() {
@@ -60,14 +71,6 @@ export class CustomersDashboardComponent implements AfterViewInit {
     this.dataSource = new MatTableDataSource(result);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-  }
-
-  addNewClient() {
-    this.dialog.open(NewClientComponent, {
-      position: { top: '20px' },
-    });
-
-    this.dialog.afterAllClosed.subscribe(() => this.fetchClients());
   }
 
   applyFilter(event: Event) {
@@ -97,13 +100,17 @@ export class CustomersDashboardComponent implements AfterViewInit {
     return result;
   }
 
+  addNewClient() {
+    this.dialog.open(NewClientComponent, {
+      position: { top: '20px' },
+    });
+  }
+
   editClient(client: Client) {
     this.dialog.open(NewClientComponent, {
       data: client,
       position: { top: '20px' },
     });
-
-    this.dialog.afterAllClosed.subscribe(() => this.fetchClients());
   }
 
   removeClient(client: Client) {
@@ -113,7 +120,5 @@ export class CustomersDashboardComponent implements AfterViewInit {
         name: client.name,
       },
     });
-
-    this.dialog.afterAllClosed.subscribe(() => this.fetchClients());
   }
 }

@@ -31,12 +31,22 @@ export class InventoryDashboardComponent implements AfterViewInit {
 
   constructor(public fbutil: FirebaseUtil, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource();
-    this.fetchProducts();
+    this.subscribeToUpdates();
+    this.dialog.afterAllClosed.subscribe(() => this.fetchProducts());
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  subscribeToUpdates() {
+    this.fbutil
+      .getProductRef('bizId')
+      .snapshotChanges()
+      .subscribe(() => {
+        this.fetchProducts();
+      });
   }
 
   fetchProducts() {
@@ -66,8 +76,6 @@ export class InventoryDashboardComponent implements AfterViewInit {
     this.dialog.open(NewProductComponent, {
       position: { top: '20px' },
     });
-
-    this.dialog.afterAllClosed.subscribe(() => this.fetchProducts());
   }
 
   applyFilter(event: Event) {
@@ -84,8 +92,6 @@ export class InventoryDashboardComponent implements AfterViewInit {
       data: product,
       position: { top: '20px' },
     });
-
-    this.dialog.afterAllClosed.subscribe(() => this.fetchProducts());
   }
 
   removeProduct(product: Product) {
@@ -95,13 +101,11 @@ export class InventoryDashboardComponent implements AfterViewInit {
         name: product.name,
       },
     });
-
-    this.dialog.afterAllClosed.subscribe(() => this.fetchProducts());
   }
 
   trimDescription(desc: string): string {
     if (desc && desc.length > 150) {
-       return desc.substr(0, 150);
+      return desc.substr(0, 150);
     }
     return desc;
   }
