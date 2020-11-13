@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Client } from '@core/models/client';
+import { Subscription } from 'rxjs';
 import { NewClientComponent } from './new/new.client.component';
 import { RemoveClientComponent } from './remove/remove.client.component';
 
@@ -13,12 +14,14 @@ import { RemoveClientComponent } from './remove/remove.client.component';
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.scss'],
 })
-export class CustomersDashboardComponent implements AfterViewInit {
+export class CustomersDashboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
   client: Client;
   dataSource: MatTableDataSource<Client>;
+  subscription: Subscription;
+  dialogSubscription: Subscription;
   displayedColumns: string[] = [
     'name',
     'id',
@@ -33,7 +36,11 @@ export class CustomersDashboardComponent implements AfterViewInit {
   constructor(public fbutil: FirebaseUtil, public dialog: MatDialog) {
     this.dataSource = new MatTableDataSource();
     this.subscribeToUpdates();
-    this.dialog.afterAllClosed.subscribe(() => this.fetchClients());
+    this.dialogSubscription = this.dialog.afterAllClosed.subscribe(() => this.fetchClients());
+  }
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+    this.dialogSubscription.unsubscribe();
   }
 
   ngAfterViewInit(): void {
@@ -42,7 +49,7 @@ export class CustomersDashboardComponent implements AfterViewInit {
   }
 
   subscribeToUpdates() {
-    this.fbutil
+    this.subscription = this.fbutil
       .getClientRef('bizId')
       .snapshotChanges()
       .subscribe(() => {
