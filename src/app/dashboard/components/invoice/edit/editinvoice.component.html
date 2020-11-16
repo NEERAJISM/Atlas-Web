@@ -365,7 +365,7 @@
               [formControl]="controls[i]"
             />
 
-            <mat-autocomplete #autoProduct="matAutocomplete">
+            <mat-autocomplete #autoProduct="matAutocomplete" (optionSelected)="productSelected($event.option.value, i)" >
               <mat-option
                 *ngFor="let option of observables[i] | async"
                 [value]="option.name"
@@ -397,11 +397,12 @@
               placeholder="Pick one"
               aria-label="Number"
               [matAutocomplete]="autoUnit"
+              [formControl]="unitControls[i]"
             />
 
-            <mat-autocomplete #autoUnit="matAutocomplete">
-              <mat-option *ngFor="let option of optionsUnit" [value]="option">
-                {{ option }}
+            <mat-autocomplete #autoUnit="matAutocomplete" (optionSelected)="unitSelected($event.option.value, i)">
+              <mat-option *ngFor="let option of unitObservables[i] | async" [value]="option.unit">
+                {{ option.unit }}
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>

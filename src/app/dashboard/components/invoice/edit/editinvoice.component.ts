@@ -7,7 +7,7 @@ import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
 import { Client } from '@core/models/client';
 import { Item } from '@core/models/invoice';
-import { Product } from '@core/models/product';
+import { Product, Unit } from '@core/models/product';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
 import { Observable } from 'rxjs';
@@ -43,11 +43,15 @@ export class EditInvoiceComponent {
   clients: Client[] = [];
 
   controls: FormControl[] = [];
+  unitControls: FormControl[] = [];
+
+  productUnitMap: Map<string, Unit[]> = new Map();
+
   observables: Observable<Product[]>[] = [];
+  unitObservables: Observable<Unit[]>[] = [];
 
   optionsProduct: Product[] = [];
 
-  optionsUnit: string[] = ['250 ml', '500 ml', '1 L', '5 L'];
   optionsTax: string[] = [
     '0% (Tax-Exempt)',
     '5% (2.5% SGST + 2.5% CGST)',
@@ -443,6 +447,10 @@ export class EditInvoiceComponent {
 
   updateProducts(p: Product[]) {
     this.optionsProduct = p;
+    this.productUnitMap.clear();
+    p.forEach((product) =>
+      this.productUnitMap.set(product.name.toLowerCase(), product.units)
+    );
     this.addItem();
   }
 
@@ -472,10 +480,13 @@ export class EditInvoiceComponent {
     this.items.splice(index, 1);
     this.controls.splice(index, 1);
     this.observables.splice(index, 1);
+    this.unitObservables.splice(index, 1);
+    this.unitControls.splice(index, 1);
   }
 
   addFormControl() {
     const myControl = new FormControl();
+    const unitControl = new FormControl();
     const filteredOptions: Observable<Product[]> = myControl.valueChanges.pipe(
       startWith(''),
       map((value) => this._filter(this.optionsProduct, value))
@@ -483,11 +494,47 @@ export class EditInvoiceComponent {
 
     this.controls.push(myControl);
     this.observables.push(filteredOptions);
+    this.unitObservables.push(undefined);
+    this.unitControls.push(unitControl);
+  }
+
+  productSelected(value: string, index: number) {
+    if (value) {
+      const units: Unit[] = this.productUnitMap.get(value.toLowerCase());
+
+      const filteredOptions: Observable<Unit[]> = this.unitControls[
+        index
+      ].valueChanges.pipe(
+        startWith(''),
+        map((value) => this._filterUnit(units, value))
+      );
+
+      this.unitObservables[index] = filteredOptions;
+
+      // Added validaton to have atleast 1 unit
+      this.items[index].unit = units[0].unit;
+      this.items[index].price = units[0].price;
+    }
+  }
+
+  unitSelected(value: string, index: number) {
+    const item = this.items[index];
+    this.productUnitMap.get(item.name.toLowerCase()).forEach((unit) => {
+      if (unit.unit === value) {
+        item.price = unit.price;
+      }
+    });
   }
 
   private _filter(list: any[], value: string): Product[] {
     return list.filter((option) =>
       option.name.toLowerCase().includes(value.toLowerCase())
+    );
+  }
+
+  private _filterUnit(list: any[], value: string): Unit[] {
+    return list.filter((option) =>
+      option.unit.toLowerCase().includes(value.toLowerCase())
     );
   }
 
