@@ -26,7 +26,7 @@
     "@angular/service-worker": "^11.0.2",
     "animate.css": "^4.1.1",
     "bootstrap": "^4.5.3",
-    "chart.js": "^2.9.3",
+    "chart.js": "^2.9.4",
     "firebase": "^8.1.1",
     "jspdf": "^2.1.1",
     "jspdf-autotable": "^3.5.13",
