@@ -499,6 +499,27 @@
         </p>
       </div>
 
+      <!-- TAX -->
+
+      <div class="col-lg-1">
+        <p class="m-0">
+          <mat-form-field
+            class="my-form-field"
+            appearance="outline"
+            style="width: 100%"
+          >
+            <mat-label>TAX (&#8377;)</mat-label>
+            <input
+              readonly
+              name="taxValue_{{ i }}"
+              value="{{ calculate(item) }}"
+              matInput
+              type="number"
+            />
+          </mat-form-field>
+        </p>
+      </div>
+
       <!-- Total -->
 
       <div class="col-lg-1">
@@ -513,7 +534,6 @@
               readonly
               name="total_{{ i }}"
               [(ngModel)]="item.total"
-              value="{{ calculate(item) }}"
               matInput
               type="number"
             />
@@ -521,7 +541,7 @@
         </p>
       </div>
 
-      <div class="col-lg-1">
+      <div class="col">
         <button
           class="mt-2"
           mat-raised-button
@@ -547,6 +567,7 @@
       </button>
     </div>
   </div>
+
   <div class="row my-2 mb-5"></div>
 
   <div
@@ -581,5 +602,10 @@
       <i class="fas fa-times text-white py-3" style="font-size: 1.6em"></i>
       &nbsp; Cancel
     </button>
+
+    <div class="col-lg-2 ml-auto">
+      <h6 class="text-light">TAX : &#8377; {{calculateTotalTax()}}</h6>
+      <h5 class="text-light mb-0">Total : &#8377; {{calculateTotal()}}</h5>
+    </div>
   </div>
 </div>

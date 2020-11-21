@@ -465,7 +465,7 @@ export class EditInvoiceComponent {
 
     if (this.validateItems()) {
       this.openSnackBar('New item added!', 'Dismiss');
-      const item = {} as Item;
+      const item = new Item();
       item.qty = 1;
       item.discount = 0;
       item.tax = this.optionsTax[0];
@@ -539,23 +539,39 @@ export class EditInvoiceComponent {
   }
 
   calculate(item: Item): number {
-    item.total = Math.abs(item.qty) * Math.abs(item.price);
+    item.taxValue = 0;
+    item.total = Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
 
-    if (item.total <= 0) {
-      return item.total;
-    }
-
-    item.total -= Math.abs(item.discount);
     const index = this.optionsTax.indexOf(item.tax);
-
     if (index !== -1) {
-      item.total =
+      item.taxValue =
         Math.round(
-          (item.total * (1 + this.optionsTaxValue[index]) + Number.EPSILON) *
-            100
+          (item.total * this.optionsTaxValue[index] + Number.EPSILON) * 100
         ) / 100;
     }
-    return item.total;
+
+    item.total += item.taxValue;
+    return item.taxValue;
+  }
+
+  calculateTotalTax(): number {
+    let total = 0;
+    this.items.forEach((item) => {
+      if (item.taxValue) {
+        total += item.taxValue;
+      }
+    });
+    return total;
+  }
+
+  calculateTotal(): number {
+    let total = 0;
+    this.items.forEach((item) => {
+      if (item.total) {
+        total += item.total;
+      }
+    });
+    return total;
   }
 
   validateItems(): boolean {

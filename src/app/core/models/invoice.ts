@@ -15,7 +15,11 @@ export class InvoiceVersion {
     this.createdTime = copy.createdTime;
     this.lastUpdatedTime = copy.lastUpdatedTime;
 
-    copy.items.forEach((item) => this.items.push(new Item(item)));
+    copy.items.forEach((item) => {
+      const i = new Item();
+      i.copy(item);
+      this.items.push(i);
+    });
 
     this.packagingCharges = copy.packagingCharges;
     this.deliveryCharges = copy.deliveryCharges;
@@ -70,22 +74,6 @@ export class InvoiceVersion {
 }
 
 export class Item {
-  constructor(copy: Item) {
-    this.id = copy.id;
-    this.name = copy.name;
-
-    this.qty = copy.qty;
-    this.unit = copy.unit;
-
-    this.price = copy.price;
-
-    this.discount = copy.discount;
-    this.tax = copy.tax;
-    this.taxPercent = copy.taxPercent;
-
-    this.total = copy.total;
-  }
-
   id: string;
   name: string;
 
@@ -96,9 +84,27 @@ export class Item {
 
   discount: number;
   tax: string;
-  taxPercent: number;
+  taxValue: number;
 
   total: number;
+
+  constructor() {}
+
+  copy(copy: Item) {
+    this.id = copy.id;
+    this.name = copy.name;
+
+    this.qty = copy.qty;
+    this.unit = copy.unit;
+
+    this.price = copy.price;
+
+    this.discount = copy.discount;
+    this.tax = copy.tax;
+    this.taxValue = copy.taxValue;
+
+    this.total = copy.total;
+  }
 }
 
 export class InvoiceAddress {
