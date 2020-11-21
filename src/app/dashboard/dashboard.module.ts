@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 
 import { CoreModule } from '../core/core.module';
 import { CommonModule } from '@angular/common';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -53,7 +52,6 @@ import { RemoveProductComponent } from './components/inventory/remove/remove.pro
 
 @NgModule({
   imports: [
-    NgbModule,
     BrowserModule,
     FormsModule,
     ReactiveFormsModule,
