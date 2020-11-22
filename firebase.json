@@ -5,20 +5,6 @@
   },
   "hosting": [
     {
-      "public": "dist/atlas",
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ],
-      "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
-      ]
-    },
-    {
       "target": "atlas",
       "public": "dist/atlas",
       "ignore": [
