@@ -27,6 +27,13 @@ export class FirebaseUtil {
       .collection(Constants.PRODUCTS);
   }
 
+  getInvoiceRef(bizId: string): AngularFirestoreCollection {
+    return this.firestore
+      .collection(Constants.INVOICE_DB)
+      .doc(bizId)
+      .collection(Constants.INVOICES);
+  }
+
   toJson(obj: any) {
     return JSON.parse(JSON.stringify(obj));
   }

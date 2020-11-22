@@ -1,8 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { CommonUtil } from '@core/common.util';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
 import { Client } from '@core/models/client';
@@ -20,27 +21,21 @@ import { InvoicePreviewComponent } from './preview/invoice.preview.component';
   styleUrls: ['./editinvoice.component.scss'],
 })
 export class EditInvoiceComponent {
-  @ViewChild('htmlData') htmlData: ElementRef;
-
-  pdf: ArrayBuffer;
-  doc: jsPDF;
-
-  selected = 'None';
-
-  client: Client = new Client();
-  clientControl: FormControl = new FormControl();
-  clientObservable: Observable<Client[]>;
-
-  shippingAddress: Address = new Address();
-
+  // Invoice Dates
   invoiceDate: Date = new Date();
   dueDate: Date = new Date();
 
+  // Client Section
   clientPreview = 'Customer Details';
   clientDefault = 'Customer Details';
-
   combinedAddress = '';
+
   clients: Client[] = [];
+  clientControl: FormControl = new FormControl();
+  clientObservable: Observable<Client[]>;
+
+  client: Client = new Client();
+  shippingAddress: Address = new Address();
 
   controls: FormControl[] = [];
   unitControls: FormControl[] = [];
@@ -65,8 +60,9 @@ export class EditInvoiceComponent {
 
   items: Item[] = [];
 
-  title = 'jspdf-autotable-demo';
+  /////////////////////////////////////////////////////////////////
 
+  title = 'jspdf-autotable-demo';
   headOwnerAddress = [['Krishna Borewell']];
   dataOwnerAddress = [
     ['C\\o Balkrishna Patidar, Gamda Brahmaniya'],
@@ -77,7 +73,7 @@ export class EditInvoiceComponent {
 
   headInvoiceDtails = [['Invoice # 1254-5621']];
   dataInvoiceDtails = [
-    ['Issue Date     : 20 Sep 2020'],
+    ['Issue Date     : '],
     ['Due   Date     : 20 Sep 2020'],
     ['Supply Place : Sagwara'],
     ['Supply State : Rajasthan'],
@@ -118,14 +114,14 @@ export class EditInvoiceComponent {
   head = [
     [
       'No.',
-      'Item Description',
+      'Item Description (Unit)',
       'Code',
       'Qty',
       'Price',
       'Total',
       'SGST',
       'CGST',
-      'Total + Tax',
+      'Total (Tax Inc)',
     ],
   ];
 
@@ -378,8 +374,9 @@ export class EditInvoiceComponent {
   constructor(
     private router: Router,
     private snackBar: MatSnackBar,
-    public dialog: MatDialog,
-    public fbutil: FirebaseUtil
+    private dialog: MatDialog,
+    private fbutil: FirebaseUtil,
+    private util: CommonUtil
   ) {
     this.fetchClients();
     this.fetchProducts();
@@ -464,7 +461,7 @@ export class EditInvoiceComponent {
     }
 
     if (this.validateItems()) {
-      this.openSnackBar('New item added!', 'Dismiss');
+      this.util.showSnackBar('New item added!', 'Dismiss');
       const item = new Item();
       item.qty = 1;
       item.discount = 0;
@@ -472,7 +469,7 @@ export class EditInvoiceComponent {
       this.items.push(item);
       this.addFormControl();
     } else {
-      this.openSnackBar('Please enter valid values', 'Dismiss');
+      this.util.showSnackBar('Please enter valid values', 'Dismiss');
     }
   }
 
@@ -540,7 +537,8 @@ export class EditInvoiceComponent {
 
   calculate(item: Item): number {
     item.taxValue = 0;
-    item.total = Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
+    item.total =
+      Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
 
     const index = this.optionsTax.indexOf(item.tax);
     if (index !== -1) {
@@ -614,22 +612,18 @@ export class EditInvoiceComponent {
     return false;
   }
 
-  public generatePDF(): void {
+  public generatePDF(): jsPDF {
     const options: jsPDFOptions = {};
     options.compress = true;
+    const doc: jsPDF = new jsPDF(options);
 
-    this.doc = new jsPDF(options);
+    // TODO remove all comments
+    // Comes from settings Icon - default is colorful backfround with initials
+    // Icon / logo creator - font + color or photo
+    doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
 
-    this.doc.addImage(
-      '../../assets/icons/atlas-small.png',
-      'PNG',
-      7,
-      12,
-      17,
-      17
-    );
-
-    (this.doc as any).autoTable({
+    // setup
+    (doc as any).autoTable({
       startY: 9,
       head: this.headOwnerAddress,
       body: this.dataOwnerAddress,
@@ -643,7 +637,18 @@ export class EditInvoiceComponent {
       },
     });
 
-    (this.doc as any).autoTable({
+    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(
+      this.dueDate
+    );
+    const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(
+      this.dueDate
+    );
+    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(
+      this.dueDate
+    );
+    this.headInvoiceDtails[0][0] += da + '-' + mo + '-' + ye;
+
+    (doc as any).autoTable({
       startY: 9,
       head: this.headInvoiceDtails,
       body: this.dataInvoiceDtails,
@@ -657,11 +662,11 @@ export class EditInvoiceComponent {
       },
     });
 
-    this.doc.line(10, 42, 85, 42);
-    this.doc.text('TAX INVOICE', 90, 44);
-    this.doc.line(130, 42, 200, 42);
+    doc.line(10, 42, 85, 42);
+    doc.text('TAX INVOICE', 90, 44);
+    doc.line(130, 42, 200, 42);
 
-    (this.doc as any).autoTable({
+    (doc as any).autoTable({
       startY: 50,
       head: this.headSellerAddress,
       body: this.dataSellerAddress,
@@ -675,7 +680,7 @@ export class EditInvoiceComponent {
       },
     });
 
-    (this.doc as any).autoTable({
+    (doc as any).autoTable({
       startY: 80,
       head: this.head,
       body: this.data,
@@ -685,9 +690,9 @@ export class EditInvoiceComponent {
       styles: { fontSize: '9' },
     });
 
-    let finalY = (this.doc as any).lastAutoTable.finalY;
+    let finalY = (doc as any).lastAutoTable.finalY;
 
-    (this.doc as any).autoTable({
+    (doc as any).autoTable({
       startY: finalY + 5,
       body: this.bodyTotal,
       theme: 'plain',
@@ -699,48 +704,40 @@ export class EditInvoiceComponent {
       },
     });
 
-    finalY = (this.doc as any).lastAutoTable.finalY;
-    this.doc.setFontSize(12);
-    this.doc.line(145, finalY + 20, 195, finalY + 20);
-    this.doc.text('Authorized Signature', 150, finalY + 30);
+    finalY = (doc as any).lastAutoTable.finalY;
+    doc.setFontSize(12);
+    doc.line(145, finalY + 20, 195, finalY + 20);
+    doc.text('Authorized Signature', 150, finalY + 30);
 
     // Footer
-
-    this.doc.setFontSize(9);
-    const pageCount = (this.doc as any).internal.getNumberOfPages();
+    doc.setFontSize(9);
+    const pageCount = (doc as any).internal.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
-      this.doc.setPage(i);
-      this.doc.text('Powered by Atlas®', 10, 290);
-      this.doc.text('Page ' + i + ' of ' + pageCount, 180, 290);
+      doc.setPage(i);
+      doc.text('Powered by Atlas®', 10, 290);
+      doc.text('Page ' + i + ' of ' + pageCount, 180, 290);
     }
+
+    return doc;
   }
 
   public downloadPDF(): void {
-    this.generatePDF();
-    this.doc.save('atlas.pdf');
-  }
-
-  openSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 2000,
-      horizontalPosition: 'center',
-      verticalPosition: 'top',
-    });
+    this.generatePDF().save('atlas.pdf');
   }
 
   openPreviewDialog() {
     if (!this.isValidInvoice()) {
-      this.openSnackBar(
+      this.util.showSnackBar(
         'Missing fields required to generate invoice!',
         'Dismiss'
       );
       return;
     }
 
-    this.generatePDF();
-    this.pdf = this.doc.output('arraybuffer');
+    const invoice = this.generatePDF();
+    const pdf: ArrayBuffer = invoice.output('arraybuffer');
     this.dialog.open(InvoicePreviewComponent, {
-      data: this.pdf,
+      data: pdf,
       position: { top: '20px' },
     });
   }
@@ -799,14 +796,7 @@ export class EditInvoiceComponent {
       this.dueDate.getDate() < this.invoiceDate.getDate()
     ) {
       this.dueDate = new Date(this.invoiceDate);
-      this.openSnackBar('Invalid Due Date', '');
+      this.util.showSnackBar('Invalid Due Date', '');
     }
   }
-
-  // addressChange(event) {
-  //   if (event && typeof event === 'string') {
-  //     this.address = Object.assign({}, this.addressDefaultJson);
-  //     this.address.line1 = event;
-  //   }
-  // }
 }
