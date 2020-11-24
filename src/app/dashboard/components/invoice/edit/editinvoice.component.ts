@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { CommonUtil } from '@core/common.util';
+import { Constants } from '@core/constants';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
 import { Client } from '@core/models/client';
@@ -58,6 +59,10 @@ export class EditInvoiceComponent {
 
   open = true;
 
+  states = Constants.states;
+
+  supplyPlace = '';
+  supplyState = '';
   items: Item[] = [];
 
   /////////////////////////////////////////////////////////////////
@@ -71,12 +76,20 @@ export class EditInvoiceComponent {
     ['Mob : +91 - 8877073059'],
   ];
 
+  headInvoiceDtailsDefault = [['Invoice # 1254-5621']];
+  dataInvoiceDtailsDefault = [
+    ['Issue Date     : '],
+    ['Due   Date     : '],
+    ['Supply Place : '],
+    ['Supply State : '],
+  ];
+
   headInvoiceDtails = [['Invoice # 1254-5621']];
   dataInvoiceDtails = [
     ['Issue Date     : '],
-    ['Due   Date     : 20 Sep 2020'],
-    ['Supply Place : Sagwara'],
-    ['Supply State : Rajasthan'],
+    ['Due   Date     : '],
+    ['Supply Place : '],
+    ['Supply State : '],
   ];
 
   headSellerAddress = [
@@ -84,22 +97,10 @@ export class EditInvoiceComponent {
   ];
 
   dataSellerAddress = [
-    [
-      'Neeraj Patidar',
-      'Co Balkrishna Patidar, Gamda Brahmaniya',
-      '27,Lakshmi Marg, Amal ka kanta,',
-    ],
-    [
-      'PAN : JHSVJHSV521',
-      'Sagwara, Dungarpur (Raj) - 314025',
-      'Udaipur (Raj) - 313001',
-    ],
-    // ['Email : 8patidarneeraj@gmail.com', 'Email : 8patidarneeraj@gmail.com', 'Email : rajatjainakhawat@gmail.com'],
-    [
-      'Email : 8patidarneeraj@gmail.com',
-      'Mob : +91 - 8877073059',
-      'Mob : +91 - 9929307208',
-    ],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', ''],
+    ['', '', '', '']
   ];
 
   bodyTotal = [
@@ -594,6 +595,8 @@ export class EditInvoiceComponent {
     if (
       this.invoiceDate &&
       this.dueDate &&
+      this.supplyState.length > 0 &&
+      this.supplyPlace.length > 0 &&
       this.client &&
       this.client.name &&
       this.client.name.length > 0 &&
@@ -637,16 +640,26 @@ export class EditInvoiceComponent {
       },
     });
 
-    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(
-      this.dueDate
-    );
-    const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(
-      this.dueDate
-    );
-    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(
-      this.dueDate
-    );
-    this.headInvoiceDtails[0][0] += da + '-' + mo + '-' + ye;
+    this.dataInvoiceDtails[0][0] = this.dataInvoiceDtailsDefault[0][0] + this.getFormattedDate(this.invoiceDate);
+    this.dataInvoiceDtails[1][0] = this.dataInvoiceDtailsDefault[1][0] + this.getFormattedDate(this.dueDate);
+
+    this.dataInvoiceDtails[2][0] += this.supplyPlace;
+    this.dataInvoiceDtails[3][0] += this.supplyState;
+
+    this.dataSellerAddress[0][0] = this.client.name;
+    this.dataSellerAddress[1][0] = 'PAN : ' + (this.client.gst ? this.client.gst : '');
+    this.dataSellerAddress[2][0] = 'Email : ' + (this.client.email ? this.client.email : '');
+    this.dataSellerAddress[3][0] = 'Mobile : ' + (this.client.mobile ? '+91 - ' + this.client.mobile : '');
+
+    this.dataSellerAddress[0][1] = this.client.address.line1 ? this.client.address.line1 : '';
+    this.dataSellerAddress[1][1] = this.client.address.line2 ? this.client.address.line2 : '';
+    this.dataSellerAddress[2][1] = this.client.address.district + ' - ' + this.client.address.pin;
+    this.dataSellerAddress[3][1] = this.client.address.state;
+
+    this.dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
+    this.dataSellerAddress[1][2] = this.shippingAddress.line2 ? this.shippingAddress.line2 : '';
+    this.dataSellerAddress[2][2] = this.shippingAddress.district + ' - ' + this.shippingAddress.pin;
+    this.dataSellerAddress[3][2] = this.shippingAddress.state;
 
     (doc as any).autoTable({
       startY: 9,
@@ -796,7 +809,20 @@ export class EditInvoiceComponent {
       this.dueDate.getDate() < this.invoiceDate.getDate()
     ) {
       this.dueDate = new Date(this.invoiceDate);
-      this.util.showSnackBar('Invalid Due Date', '');
+      this.util.showSnackBar("Due date can't be less than Invoice date.", '');
     }
+  }
+
+  getFormattedDate(date: Date): string {
+    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(
+      date
+    );
+    const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(
+      date
+    );
+    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(
+      date
+    );
+    return da + ' ' + mo + ' ' + ye;
   }
 }

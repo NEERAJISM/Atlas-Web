@@ -9,6 +9,7 @@
           [(ngModel)]="invoiceDate"
           [matDatepicker]="picker"
           (click)="picker.open()"
+          (dateChange)="checkDueDate()"
           onkeydown="event.preventDefault()"
         />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -33,6 +34,42 @@
         ></mat-datepicker-toggle>
         <mat-datepicker touchUi #picker_due></mat-datepicker>
       </mat-form-field>
+    </div>
+
+    <div class="col-lg-2">
+      <p class="m-0">
+        <mat-form-field
+          class="my-form-field"
+          appearance="outline"
+          style="width: 100%"
+        >
+          <mat-label>Supply state</mat-label>
+          <mat-select required name="supplyState" [(ngModel)]="supplyState">
+            <mat-option *ngFor="let state of states" [value]="state">
+              {{ state }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="col-lg-2">
+      <p class="m-0">
+        <mat-form-field
+          class="my-form-field"
+          appearance="outline"
+          style="width: 100%"
+        >
+        <mat-label>Supply place</mat-label>
+          <input
+            name="supplyPlace"
+            [(ngModel)]="supplyPlace"
+            matInput
+            required
+            type="text"
+          />
+        </mat-form-field>
+      </p>
     </div>
   </div>
 
@@ -365,7 +402,10 @@
               [formControl]="controls[i]"
             />
 
-            <mat-autocomplete #autoProduct="matAutocomplete" (optionSelected)="productSelected($event.option.value, i)" >
+            <mat-autocomplete
+              #autoProduct="matAutocomplete"
+              (optionSelected)="productSelected($event.option.value, i)"
+            >
               <mat-option
                 *ngFor="let option of observables[i] | async"
                 [value]="option.name"
@@ -400,8 +440,14 @@
               [formControl]="unitControls[i]"
             />
 
-            <mat-autocomplete #autoUnit="matAutocomplete" (optionSelected)="unitSelected($event.option.value, i)">
-              <mat-option *ngFor="let option of unitObservables[i] | async" [value]="option.unit">
+            <mat-autocomplete
+              #autoUnit="matAutocomplete"
+              (optionSelected)="unitSelected($event.option.value, i)"
+            >
+              <mat-option
+                *ngFor="let option of unitObservables[i] | async"
+                [value]="option.unit"
+              >
                 {{ option.unit }}
               </mat-option>
             </mat-autocomplete>
@@ -604,8 +650,8 @@
     </button>
 
     <div class="col-lg-2 ml-auto">
-      <h6 class="text-light">TAX : &#8377; {{calculateTotalTax()}}</h6>
-      <h5 class="text-light mb-0">Total : &#8377; {{calculateTotal()}}</h5>
+      <h6 class="text-light">TAX : &#8377; {{ calculateTotalTax() }}</h6>
+      <h5 class="text-light mb-0">Total : &#8377; {{ calculateTotal() }}</h5>
     </div>
   </div>
 </div>
