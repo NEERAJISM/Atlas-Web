@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { CommonUtil } from '@core/common.util';
 import { Constants } from '@core/constants';
@@ -64,6 +63,7 @@ export class EditInvoiceComponent {
   supplyPlace = '';
   supplyState = '';
   items: Item[] = [];
+  data = [];
 
   /////////////////////////////////////////////////////////////////
 
@@ -120,261 +120,14 @@ export class EditInvoiceComponent {
       'Qty',
       'Price',
       'Total',
-      'SGST',
-      'CGST',
-      'Total (Tax Inc)',
+      'Discount',
+      'Tax / GST',
+      'Total (Inc. Tax)',
     ],
-  ];
-
-  data = [
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      1,
-      'Sulphuric Acid 500 ml bottle',
-      532,
-      5,
-      500.0,
-      2500.0,
-      '225.0\n(9%)',
-      '225.0\n(9%)',
-      2950.0,
-    ],
-    [
-      ,
-      'SHIPPING + PACKAGING CHARGES',
-      ,
-      ,
-      50.0,
-      ,
-      '4.5\n(9%)',
-      '4.5\n(9%)',
-      59.0,
-    ],
-    [, 'TOTAL', , , 15000.0, , '4050\n(9%)', '4050\n(9%)', 21500.0],
   ];
 
   constructor(
     private router: Router,
-    private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private fbutil: FirebaseUtil,
     private util: CommonUtil
@@ -687,11 +440,12 @@ export class EditInvoiceComponent {
       margin: { left: 7, right: 7 },
       headStyles: { fontSize: '11', textColor: '#01579b' },
       styles: {
-        // cellWidth: 95,
         fontSize: '10',
         cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
       },
     });
+
+    this.generateItemData();
 
     (doc as any).autoTable({
       startY: 80,
@@ -824,5 +578,33 @@ export class EditInvoiceComponent {
       date
     );
     return da + ' ' + mo + ' ' + ye;
+  }
+
+  generateItemData() {
+    const dataArr = [];
+    let counter = 1;
+
+    this.items.forEach((item) => {
+      const dataItem = [];
+
+      dataItem.push(counter);
+      dataItem.push(item.name + '\n(' + item.unit + ')');
+      dataItem.push(item.id);
+      dataItem.push(item.qty);
+      dataItem.push(item.price);
+      dataItem.push(item.price * item.qty);
+      dataItem.push(item.discount);
+
+      // Trimming off other value after total tax
+      dataItem.push(item.taxValue + '\n(' + item.tax.substring(0, 2) + ')');
+      dataItem.push(item.total);
+
+      dataArr.push(dataItem);
+      counter++;
+    });
+
+    // TODO add total row at the end
+
+    this.data = dataArr;
   }
 }
