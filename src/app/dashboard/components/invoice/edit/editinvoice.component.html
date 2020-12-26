@@ -71,6 +71,23 @@
         </mat-form-field>
       </p>
     </div>
+
+    <div class="col-lg-2">
+      <p class="m-0">
+        <mat-form-field
+          class="my-form-field"
+          appearance="outline"
+          style="width: 100%"
+        >
+          <mat-label>Payment Status</mat-label>
+          <mat-select required name="paymentStatus" [(ngModel)]="paymentStatus">
+            <mat-option *ngFor="let term of paymentTerms" [value]="term">
+              {{ term }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+    </div>
   </div>
 
   <mat-accordion class="example-headers-align">

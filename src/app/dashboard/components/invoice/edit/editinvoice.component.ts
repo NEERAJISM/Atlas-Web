@@ -59,7 +59,16 @@ export class EditInvoiceComponent {
   open = true;
 
   states = Constants.states;
+  paymentTerms: string[] = [
+    'Paid',
+    'Due in 7 days',
+    'Due in 15 days',
+    'Due in 30 days',
+    'Due in 45 days',
+    'Due in 60 days'
+  ];
 
+  paymentStatus = this.paymentTerms[0];
   supplyPlace = '';
   supplyState = '';
   items: Item[] = [];
@@ -76,50 +85,34 @@ export class EditInvoiceComponent {
     ['Mob : +91 - 8877073059'],
   ];
 
-  headInvoiceDtailsDefault = [['Invoice # 1254-5621']];
-  dataInvoiceDtailsDefault = [
-    ['Issue Date     : '],
-    ['Due   Date     : '],
-    ['Supply Place : '],
-    ['Supply State : '],
-  ];
+  headInvoiceDetails = [['Invoice # 1254-5621']];
 
-  headInvoiceDtails = [['Invoice # 1254-5621']];
-  dataInvoiceDtails = [
-    ['Issue Date     : '],
-    ['Due   Date     : '],
-    ['Supply Place : '],
-    ['Supply State : '],
-  ];
-
-  headSellerAddress = [
-    ['Customer Name', 'Billing Address', 'Shipping Address'],
-  ];
-
-  dataSellerAddress = [
-    ['', '', '', ''],
-    ['', '', '', ''],
-    ['', '', '', ''],
-    ['', '', '', '']
-  ];
-
+  totalAmount = 0;
+  totalTax = 0;
+  total = 0;
   bodyTotal = [
-    ['Total Amount', '14,000.0'],
-    ['Tax (SGST + CGST)', '945.0 (@18%)'],
-    [
-      'Final Amount (Total + Tax)',
-      '11,033.0\n(Eleven Thousand Thirty-three Rupees Only)',
-    ],
+    ['Total Amount', ''],
+    ['Tax (SGST + CGST)', ''],
+    ['Final Amount (Total + Tax)', '']
   ];
 
-  head = [
+  dataInvoiceDetails = [
+    'Issue Date     : ',
+    'Due   Date     : ',
+    'Supply Place : ',
+    'Supply State : '
+  ];
+
+  invoiceBuyerDefault: string[] = ['Customer Name', 'Billing Address', 'Shipping Address'];
+
+  invoiceItemHead = [
     [
       'No.',
       'Item Description (Unit)',
       'Code',
       'Qty',
       'Price',
-      'Total',
+      'Amount',
       'Discount',
       'Tax / GST',
       'Total (Inc. Tax)',
@@ -393,31 +386,49 @@ export class EditInvoiceComponent {
       },
     });
 
-    this.dataInvoiceDtails[0][0] = this.dataInvoiceDtailsDefault[0][0] + this.getFormattedDate(this.invoiceDate);
-    this.dataInvoiceDtails[1][0] = this.dataInvoiceDtailsDefault[1][0] + this.getFormattedDate(this.dueDate);
+    let dataInvoiceDetails = [];
+    dataInvoiceDetails[0] = [];
+    dataInvoiceDetails[1] = [];
+    dataInvoiceDetails[2] = [];
+    dataInvoiceDetails[3] = [];
+    dataInvoiceDetails[0][0] = this.dataInvoiceDetails[0] + this.getFormattedDate(this.invoiceDate);
+    dataInvoiceDetails[1][0] = this.dataInvoiceDetails[1] + this.getFormattedDate(this.dueDate);
+    dataInvoiceDetails[2][0] = this.dataInvoiceDetails[2] + this.supplyPlace;
+    dataInvoiceDetails[3][0] = this.dataInvoiceDetails[3] + this.supplyState;
 
-    this.dataInvoiceDtails[2][0] += this.supplyPlace;
-    this.dataInvoiceDtails[3][0] += this.supplyState;
+    let isValidShippingAddress = this.isValidAddress(this.shippingAddress);
 
-    this.dataSellerAddress[0][0] = this.client.name;
-    this.dataSellerAddress[1][0] = 'PAN : ' + (this.client.gst ? this.client.gst : '');
-    this.dataSellerAddress[2][0] = 'Email : ' + (this.client.email ? this.client.email : '');
-    this.dataSellerAddress[3][0] = 'Mobile : ' + (this.client.mobile ? '+91 - ' + this.client.mobile : '');
+    let clone = [...this.invoiceBuyerDefault];
+    if (!isValidShippingAddress) {
+      clone.splice(2, 1);
+    }
+    let headSellerAddress = [];
+    headSellerAddress[0] = clone;
 
-    this.dataSellerAddress[0][1] = this.client.address.line1 ? this.client.address.line1 : '';
-    this.dataSellerAddress[1][1] = this.client.address.line2 ? this.client.address.line2 : '';
-    this.dataSellerAddress[2][1] = this.client.address.district + ' - ' + this.client.address.pin;
-    this.dataSellerAddress[3][1] = this.client.address.state;
+    let dataSellerAddress = this.getAddressArray();
 
-    this.dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
-    this.dataSellerAddress[1][2] = this.shippingAddress.line2 ? this.shippingAddress.line2 : '';
-    this.dataSellerAddress[2][2] = this.shippingAddress.district + ' - ' + this.shippingAddress.pin;
-    this.dataSellerAddress[3][2] = this.shippingAddress.state;
+    dataSellerAddress[0][0] = this.client.name;
+    dataSellerAddress[1][0] = 'PAN : ' + (this.client.gst ? this.client.gst : '');
+    dataSellerAddress[2][0] = 'Email : ' + (this.client.email ? this.client.email : '');
+    dataSellerAddress[3][0] = 'Mobile : ' + (this.client.mobile ? '+91 - ' + this.client.mobile : '');
+
+    dataSellerAddress[0][1] = this.client.address.line1 ? this.client.address.line1 : '';
+    dataSellerAddress[1][1] = this.client.address.line2 ? this.client.address.line2 : '';
+    dataSellerAddress[2][1] = this.client.address.district + ' - ' + this.client.address.pin;
+    dataSellerAddress[3][1] = this.client.address.state;
+
+    // if valid Shipping address
+    if (isValidShippingAddress) {
+      dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
+      dataSellerAddress[1][2] = this.shippingAddress.line2 ? this.shippingAddress.line2 : '';
+      dataSellerAddress[2][2] = this.shippingAddress.district + ' - ' + this.shippingAddress.pin;
+      dataSellerAddress[3][2] = this.shippingAddress.state;
+    }
 
     (doc as any).autoTable({
       startY: 9,
-      head: this.headInvoiceDtails,
-      body: this.dataInvoiceDtails,
+      head: this.headInvoiceDetails,
+      body: dataInvoiceDetails,
       theme: 'plain',
       margin: { left: 150 },
       headStyles: { fontSize: '12', textColor: '#01579b' },
@@ -434,8 +445,8 @@ export class EditInvoiceComponent {
 
     (doc as any).autoTable({
       startY: 50,
-      head: this.headSellerAddress,
-      body: this.dataSellerAddress,
+      head: headSellerAddress,
+      body: dataSellerAddress,
       theme: 'plain',
       margin: { left: 7, right: 7 },
       headStyles: { fontSize: '11', textColor: '#01579b' },
@@ -449,7 +460,7 @@ export class EditInvoiceComponent {
 
     (doc as any).autoTable({
       startY: 80,
-      head: this.head,
+      head: this.invoiceItemHead,
       body: this.data,
       theme: 'striped',
       margin: { left: 8, right: 8 },
@@ -458,6 +469,13 @@ export class EditInvoiceComponent {
     });
 
     let finalY = (doc as any).lastAutoTable.finalY;
+
+    this.bodyTotal[0][1] = String(this.totalAmount);
+    this.bodyTotal[1][1] = String(this.totalTax);
+
+    let tot = Math.floor(this.total);
+    let dec = Math.floor((this.total - tot) * 100);
+    this.bodyTotal[2][1] = this.total + '\n' + this.inWords(tot) + 'Rupees ' + (dec > 0 ? this.inWords(dec) + 'Paise ' : '');
 
     (doc as any).autoTable({
       startY: finalY + 5,
@@ -583,6 +601,9 @@ export class EditInvoiceComponent {
   generateItemData() {
     const dataArr = [];
     let counter = 1;
+    this.totalAmount = 0;
+    this.totalTax = 0;
+    this.total = 0;
 
     this.items.forEach((item) => {
       const dataItem = [];
@@ -592,12 +613,18 @@ export class EditInvoiceComponent {
       dataItem.push(item.id);
       dataItem.push(item.qty);
       dataItem.push(item.price);
-      dataItem.push(item.price * item.qty);
+
+      let a = item.price * item.qty;
+      dataItem.push(a);
       dataItem.push(item.discount);
+      this.totalAmount += (a - item.discount);
 
       // Trimming off other value after total tax
-      dataItem.push(item.taxValue + '\n(' + item.tax.substring(0, 2) + ')');
+      dataItem.push(item.taxValue + '\n(' + item.tax.substring(0, 3).trim() + ')');
+      this.totalTax += item.taxValue;
+
       dataItem.push(item.total);
+      this.total += item.total;
 
       dataArr.push(dataItem);
       counter++;
@@ -606,5 +633,40 @@ export class EditInvoiceComponent {
     // TODO add total row at the end
 
     this.data = dataArr;
+  }
+
+  isValidAddress(address: Address): boolean {
+    if (
+      address.line1 && address.line1.length > 0 &&
+      address.line2 && address.line2.length > 0 &&
+      address.district && address.district.length > 0 &&
+      address.state && address.state.length > 0 &&
+      address.pin
+    ) return true;
+
+    return false
+  }
+
+  getAddressArray(): string[][] {
+    let a = [];
+    for (var i = 0; i < 4; i++) {
+      a[i] = [];
+    }
+    return a;
+  }
+
+  inWords(num) {
+    if ((num = num.toString()).length > 9) return '';
+    let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    let a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    let b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+
+    if (!n) return; var str = '';
+    str += (Number(n[1]) != 0) ? (a[n[1]] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+    str += (Number(n[1]) != 0) ? (a[n[2]] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+    str += (Number(n[3]) != 0) ? (a[n[3]] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+    str += (Number(n[4]) != 0) ? (a[n[4]] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+    str += (Number(n[5]) != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+    return str;
   }
 }

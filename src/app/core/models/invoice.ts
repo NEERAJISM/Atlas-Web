@@ -11,38 +11,16 @@ export class Invoice {
 }
 
 export class InvoiceVersion {
-  constructor(copy: InvoiceVersion) {
-    this.createdTime = copy.createdTime;
-    this.lastUpdatedTime = copy.lastUpdatedTime;
-
-    copy.items.forEach((item) => {
-      const i = new Item();
-      i.copy(item);
-      this.items.push(i);
-    });
-
-    this.packagingCharges = copy.packagingCharges;
-    this.deliveryCharges = copy.deliveryCharges;
-    this.otherCharges = copy.otherCharges;
-    this.otherChargesDesc = copy.otherChargesDesc;
-
-    this.chargesTax = copy.chargesTax;
-    this.chargesTaxPercent = copy.chargesTaxPercent;
-
-    this.totalTaxableValue = copy.totalTaxableValue;
-    this.totalTax = copy.totalTax;
-    this.total = copy.total;
-
-    this.toBePaidWithinDays = copy.toBePaidWithinDays;
-    this.isPaid = copy.isPaid;
-    this.signId = copy.signId;
-  }
-
   createdTime: string;
   lastUpdatedTime: string;
 
   invoiceDate: string;
   dueDate: string;
+
+  supplyState: string;
+  supplyPlace: string;
+
+  dueDays: number;
 
   customerName: string;
   id: string;
@@ -67,10 +45,53 @@ export class InvoiceVersion {
   totalTax: number;
   total: number;
 
-  toBePaidWithinDays: number;
-  isPaid: boolean;
-
   signId: string;
+
+  constructor(copy: InvoiceVersion) {
+    this.createdTime = copy.createdTime;
+    this.lastUpdatedTime = copy.lastUpdatedTime;
+
+    this.invoiceDate = copy.invoiceDate;
+    this.dueDate = copy.dueDate;
+
+    this.supplyState = copy.supplyState;
+    this.supplyPlace = copy.supplyPlace;
+
+    this.dueDays = copy.dueDays;
+
+
+    this.customerName = copy.customerName;
+    this.id = copy.id;
+    this.mobile = copy.mobile;
+    this.email = copy.email;
+
+    this.billingAddress = new InvoiceAddress();
+    this.billingAddress.copy(copy.billingAddress);
+
+    this.shippingAddress = new InvoiceAddress();
+    this.shippingAddress.copy(copy.shippingAddress);
+
+    
+    copy.items.forEach((item) => {
+      const i = new Item();
+      i.copy(item);
+      this.items.push(i);
+    });
+
+    this.packagingCharges = copy.packagingCharges;
+    this.deliveryCharges = copy.deliveryCharges;
+    this.otherCharges = copy.otherCharges;
+    this.otherChargesDesc = copy.otherChargesDesc;
+
+    this.chargesTax = copy.chargesTax;
+    this.chargesTaxPercent = copy.chargesTaxPercent;
+
+    this.totalTaxableValue = copy.totalTaxableValue;
+    this.totalTax = copy.totalTax;
+    this.total = copy.total;
+
+    this.signId = copy.signId;
+  }
 }
 
 export class Item {
@@ -88,7 +109,7 @@ export class Item {
 
   total: number;
 
-  constructor() {}
+  constructor() { }
 
   copy(copy: Item) {
     this.id = copy.id;
@@ -113,4 +134,12 @@ export class InvoiceAddress {
   pin: number;
   district: string;
   state: string;
+
+  copy(copy: InvoiceAddress) {
+    this.line1 = copy.line1;
+    this.line2 = copy.line2;
+    this.pin = copy.pin;
+    this.district = copy.district;
+    this.state = copy.state;
+  }
 }
