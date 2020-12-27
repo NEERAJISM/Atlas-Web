@@ -31,11 +31,13 @@ export class EditInvoiceComponent {
   combinedAddress = '';
 
   clients: Client[] = [];
+  clientsMap: Map<string, Client> = new Map();
   clientControl: FormControl = new FormControl();
   clientObservable: Observable<Client[]>;
 
   client: Client = new Client();
   shippingAddress: Address = new Address();
+  sameAsBuyersAdress: boolean = false;
 
   controls: FormControl[] = [];
   unitControls: FormControl[] = [];
@@ -146,8 +148,18 @@ export class EditInvoiceComponent {
       .finally(() => this.updateClients(result));
   }
 
+  clientNameChange(event: string) {
+    if (event && this.clientsMap.has(event.toLowerCase())) {
+      this.client.copy(this.clientsMap.get(event.toLowerCase()));
+    } else {
+      this.client = new Client();
+      this.client.name = event;
+    }
+  }
+
   updateClients(c: Client[]) {
     this.clients = c;
+    c.forEach(client => this.clientsMap.set(client.name.toLowerCase(), client));
 
     this.clientControl.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
@@ -570,7 +582,12 @@ export class EditInvoiceComponent {
   }
 
   sameAsBuyerCheck() {
-    this.shippingAddress = this.client.address;
+    this.sameAsBuyersAdress = !this.sameAsBuyersAdress;
+    if (this.sameAsBuyersAdress) {
+      this.shippingAddress.copy(this.client.address);
+    } else {
+      this.shippingAddress = new Address();
+    }
   }
 
   checkDueDate() {

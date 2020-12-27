@@ -126,7 +126,8 @@
                   <input
                     matInput
                     required
-                    [(ngModel)]="client"
+                    [ngModel]="client.name"
+                    (ngModelChange)="clientNameChange($event)"
                     type="text"
                     name="customerName"
                     [matAutocomplete]="autoClient"
@@ -135,11 +136,10 @@
 
                   <mat-autocomplete
                     #autoClient="matAutocomplete"
-                    [displayWith]="getClientOptionText"
                   >
                     <mat-option
                       *ngFor="let option of clientObservable | async"
-                      [value]="option"
+                      [value]="option.name"
                     >
                       {{ option.name }}
                     </mat-option>
