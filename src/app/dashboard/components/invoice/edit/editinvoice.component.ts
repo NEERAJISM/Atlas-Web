@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -26,10 +26,6 @@ export class EditInvoiceComponent {
   dueDate: Date = new Date();
 
   // Client Section
-  clientPreview = 'Customer Details';
-  clientDefault = 'Customer Details';
-  combinedAddress = '';
-
   clients: Client[] = [];
   clientsMap: Map<string, Client> = new Map();
   clientControl: FormControl = new FormControl();
@@ -37,7 +33,7 @@ export class EditInvoiceComponent {
 
   client: Client = new Client();
   shippingAddress: Address = new Address();
-  sameAsBuyersAdress: boolean = false;
+  sameAsBuyersAdress = false;
 
   controls: FormControl[] = [];
   unitControls: FormControl[] = [];
@@ -57,8 +53,6 @@ export class EditInvoiceComponent {
     '28% (14% SGST + 14% CGST)',
   ];
   optionsTaxValue: number[] = [0, 0.05, 0.12, 0.18, 0.28];
-
-  open = true;
 
   states = Constants.states;
   paymentTerms: string[] = [
@@ -125,7 +119,8 @@ export class EditInvoiceComponent {
     private router: Router,
     private dialog: MatDialog,
     private fbutil: FirebaseUtil,
-    private util: CommonUtil
+    private util: CommonUtil,
+    private elRef: ElementRef
   ) {
     this.fetchClients();
     this.fetchProducts();
@@ -215,18 +210,14 @@ export class EditInvoiceComponent {
   }
 
   addItem() {
-    if (this.open && this.items.length >= 1) {
-      this.expansionClosed();
-    }
-
     if (this.validateItems()) {
-      this.util.showSnackBar('New item added!', 'Dismiss');
       const item = new Item();
       item.qty = 1;
       item.discount = 0;
       item.tax = this.optionsTax[0];
       this.items.push(item);
       this.addFormControl();
+      setTimeout(() => { this.elRef.nativeElement.parentElement.scrollTop = this.elRef.nativeElement.parentElement.scrollHeight; }, 100);
     } else {
       this.util.showSnackBar('Please enter valid values', 'Dismiss');
     }
@@ -545,40 +536,6 @@ export class EditInvoiceComponent {
 
   getAddressOptionText(option: Address) {
     return option ? option.line1 : '';
-  }
-
-  expansionClosed() {
-    this.open = false;
-    let result = '';
-    if (!this.open && this.client.address) {
-      if (this.client.address.line1) {
-        result += ' Address - ';
-        result += this.client.address.line1;
-      }
-      if (this.client.address.line2) {
-        result += ' , ';
-        result += this.client.address.line2;
-      }
-      if (this.client.address.district) {
-        result += ' , ';
-        result += this.client.address.district;
-      }
-      if (this.client.address.pin) {
-        result += ' - ';
-        result += this.client.address.pin;
-      }
-    }
-    this.combinedAddress = result;
-
-    if (this.client.name) {
-      this.clientPreview = this.client.name;
-    } else {
-      this.clientPreview = this.clientDefault;
-    }
-  }
-
-  toggleExpansion() {
-    this.open = !this.open;
   }
 
   sameAsBuyerCheck() {

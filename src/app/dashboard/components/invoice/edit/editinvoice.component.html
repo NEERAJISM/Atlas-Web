@@ -1,5 +1,5 @@
 <div class="container-fluid mt-2">
-  <div class="row mb-3">
+  <div class="row mb-4">
     <div class="col-lg-2">
       <mat-form-field appearance="outline">
         <mat-label>Invoice date</mat-label>
@@ -90,303 +90,288 @@
     </div>
   </div>
 
-  <mat-accordion class="example-headers-align">
-    <mat-expansion-panel
-      [expanded]="open"
-      (opened)="open = true"
-      (closed)="expansionClosed()"
-    >
-      <mat-expansion-panel-header>
-        <mat-panel-title> {{ clientPreview }} </mat-panel-title>
-        <mat-panel-description>
-          {{ combinedAddress }}
-        </mat-panel-description>
-      </mat-expansion-panel-header>
+  <div class="row">
+    <!-- Customer Details -->
 
+    <div class="col col-lg-4">
       <div class="row">
-        <!-- Customer Details -->
-
-        <div class="col col-lg-4">
-          <div class="row">
-            <div class="col">
-              <h5>Customer</h5>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-12">
-              <p class="m-0">
-                <mat-form-field
-                  class="my-form-field"
-                  appearance="outline"
-                  style="width: 100%"
-                >
-                  <mat-label>Select / Type Customer name</mat-label>
-
-                  <input
-                    matInput
-                    required
-                    [ngModel]="client.name"
-                    (ngModelChange)="clientNameChange($event)"
-                    type="text"
-                    name="customerName"
-                    [matAutocomplete]="autoClient"
-                    [formControl]="clientControl"
-                  />
-
-                  <mat-autocomplete
-                    #autoClient="matAutocomplete"
-                  >
-                    <mat-option
-                      *ngFor="let option of clientObservable | async"
-                      [value]="option.name"
-                    >
-                      {{ option.name }}
-                    </mat-option>
-                  </mat-autocomplete>
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col">
-              <p class="m-0">
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>GSTIN / PAN</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.gst"
-                    type="text"
-                    name="customerID"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-5">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Mobile No.</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.mobile"
-                    required
-                    type="text"
-                    name="customerMobile"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-            <div class="col-lg-7 pl-0">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Email-Id</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.email"
-                    type="email"
-                    name="customerEmail"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Billing Address -->
-
-        <div class="col col-lg-4">
-          <div class="row">
-            <div class="col">
-              <h5>Billing Address</h5>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-12">
-              <p class="m-0">
-                <mat-form-field
-                  class="my-form-field"
-                  appearance="outline"
-                  style="width: 100%"
-                >
-                  <mat-label>Address line 1</mat-label>
-
-                  <input
-                    matInput
-                    required
-                    [(ngModel)]="client.address.line1"
-                    type="text"
-                    name="billingAddress_1"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-9">
-              <p class="m-0">
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Address line 2</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.address.line2"
-                    type="text"
-                    name="billingAddress_2"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-            <div class="col-lg-3 pl-0">
-              <p class="m-0">
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Pincode</mat-label>
-                  <input
-                    matInput
-                    required
-                    [(ngModel)]="client.address.pin"
-                    type="number"
-                    name="billingAddress_pincode"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-6 pr-0">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>District</mat-label>
-                  <input
-                    matInput
-                    required
-                    [(ngModel)]="client.address.district"
-                    type="text"
-                    name="billingAddress_district"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-            <div class="col-lg-6">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>State</mat-label>
-                  <input
-                    matInput
-                    required
-                    [(ngModel)]="client.address.state"
-                    type="text"
-                    name="billingAddress_state"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Shipping Address -->
-
-        <div class="col col-lg-4">
-          <div class="row">
-            <div class="col-lg-6">
-              <h5>Shipping Address</h5>
-            </div>
-            <div class="col-lg-6" style="display: grid; justify-content: end">
-              <mat-checkbox class="example-margin" (change)="sameAsBuyerCheck()"
-                >Same as Buyer address</mat-checkbox
-              >
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-12">
-              <p class="m-0">
-                <mat-form-field
-                  class="my-form-field"
-                  appearance="outline"
-                  style="width: 100%"
-                >
-                  <mat-label>Address line 1</mat-label>
-
-                  <input
-                    matInput
-                    [(ngModel)]="shippingAddress.line1"
-                    type="text"
-                    name="shippingAddress_1"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-9">
-              <p class="m-0">
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Address line 2</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="shippingAddress.line2"
-                    type="text"
-                    name="shippingAddress_2"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-            <div class="col-lg-3 pl-0">
-              <p class="m-0">
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Pincode</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="shippingAddress.pin"
-                    type="number"
-                    name="shippingAddress_pincode"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col-lg-6">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>District</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="shippingAddress.district"
-                    type="text"
-                    name="shippingAddress_district"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-            <div class="col-lg-6">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>State</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="shippingAddress.state"
-                    type="text"
-                    name="shippingAddress_pincode"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-          </div>
+        <div class="col">
+          <h5>Customer Details</h5>
         </div>
       </div>
-    </mat-expansion-panel>
-  </mat-accordion>
 
-  <h5 class="my-3 font-weight-light">Item Summary</h5>
+      <div class="row">
+        <div class="col-lg-12">
+          <p class="m-0">
+            <mat-form-field
+              class="my-form-field"
+              appearance="outline"
+              style="width: 100%"
+            >
+              <mat-label>Select / Type Customer name</mat-label>
+
+              <input
+                matInput
+                required
+                [ngModel]="client.name"
+                (ngModelChange)="clientNameChange($event)"
+                type="text"
+                name="customerName"
+                [matAutocomplete]="autoClient"
+                [formControl]="clientControl"
+              />
+
+              <mat-autocomplete
+                #autoClient="matAutocomplete"
+              >
+                <mat-option
+                  *ngFor="let option of clientObservable | async"
+                  [value]="option.name"
+                >
+                  {{ option.name }}
+                </mat-option>
+              </mat-autocomplete>
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <p class="m-0">
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>GSTIN / PAN</mat-label>
+              <input
+                matInput
+                [(ngModel)]="client.gst"
+                type="text"
+                name="customerID"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-5">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Mobile No.</mat-label>
+              <input
+                matInput
+                [(ngModel)]="client.mobile"
+                required
+                type="text"
+                name="customerMobile"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+        <div class="col-lg-7 pl-0">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Email-Id</mat-label>
+              <input
+                matInput
+                [(ngModel)]="client.email"
+                type="email"
+                name="customerEmail"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Billing Address -->
+
+    <div class="col col-lg-4">
+      <div class="row">
+        <div class="col">
+          <h5>Billing Address</h5>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <p class="m-0">
+            <mat-form-field
+              class="my-form-field"
+              appearance="outline"
+              style="width: 100%"
+            >
+              <mat-label>Address line 1</mat-label>
+
+              <input
+                matInput
+                required
+                [(ngModel)]="client.address.line1"
+                type="text"
+                name="billingAddress_1"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-9">
+          <p class="m-0">
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Address line 2</mat-label>
+              <input
+                matInput
+                [(ngModel)]="client.address.line2"
+                type="text"
+                name="billingAddress_2"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+        <div class="col-lg-3 pl-0">
+          <p class="m-0">
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Pincode</mat-label>
+              <input
+                matInput
+                required
+                [(ngModel)]="client.address.pin"
+                type="number"
+                name="billingAddress_pincode"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6 pr-0">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>District</mat-label>
+              <input
+                matInput
+                required
+                [(ngModel)]="client.address.district"
+                type="text"
+                name="billingAddress_district"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+        <div class="col-lg-6">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>State</mat-label>
+              <input
+                matInput
+                required
+                [(ngModel)]="client.address.state"
+                type="text"
+                name="billingAddress_state"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shipping Address -->
+
+    <div class="col col-lg-4">
+      <div class="row">
+        <div class="col-lg-6">
+          <h5>Shipping Address</h5>
+        </div>
+        <div class="col-lg-6" style="display: grid; justify-content: end">
+          <mat-checkbox class="example-margin" (change)="sameAsBuyerCheck()"
+            >Same as Buyer address</mat-checkbox
+          >
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <p class="m-0">
+            <mat-form-field
+              class="my-form-field"
+              appearance="outline"
+              style="width: 100%"
+            >
+              <mat-label>Address line 1</mat-label>
+
+              <input
+                matInput
+                [(ngModel)]="shippingAddress.line1"
+                type="text"
+                name="shippingAddress_1"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-9">
+          <p class="m-0">
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Address line 2</mat-label>
+              <input
+                matInput
+                [(ngModel)]="shippingAddress.line2"
+                type="text"
+                name="shippingAddress_2"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+        <div class="col-lg-3 pl-0">
+          <p class="m-0">
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Pincode</mat-label>
+              <input
+                matInput
+                [(ngModel)]="shippingAddress.pin"
+                type="number"
+                name="shippingAddress_pincode"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>District</mat-label>
+              <input
+                matInput
+                [(ngModel)]="shippingAddress.district"
+                type="text"
+                name="shippingAddress_district"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+        <div class="col-lg-6">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>State</mat-label>
+              <input
+                matInput
+                [(ngModel)]="shippingAddress.state"
+                type="text"
+                name="shippingAddress_pincode"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h5 class="my-3">Item Summary</h5>
 
   <!-- Form Begins -->
 
