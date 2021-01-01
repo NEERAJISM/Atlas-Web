@@ -53,11 +53,11 @@ export class EditInvoiceComponent {
   optionsProduct: Product[] = [];
 
   optionsTax: string[] = [
-    '0% (Tax-Exempt)',
-    '5% (2.5% SGST + 2.5% CGST)',
-    '12% (6% SGST + 6% CGST)',
-    '18% (9% SGST + 9% CGST)',
-    '28% (14% SGST + 14% CGST)',
+    '0% GST',
+    '5% GST',
+    '12% GST',
+    '18% GST',
+    '28% GST',
   ];
   optionsTaxValue: number[] = [0, 0.05, 0.12, 0.18, 0.28];
 
