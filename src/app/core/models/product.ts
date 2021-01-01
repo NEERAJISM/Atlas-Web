@@ -7,7 +7,7 @@ export class Product {
 
   // TODO add [] of photos
 
-  units: Unit[];
+  units: Unit[] = [];
 }
 
 export class Unit {

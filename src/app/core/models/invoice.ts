@@ -30,7 +30,7 @@ export class InvoiceVersion {
   billingAddress: InvoiceAddress;
   shippingAddress: InvoiceAddress;
 
-  items: Item[];
+  items: Item[] = [];
 
   packagingCharges: number;
   deliveryCharges: number;

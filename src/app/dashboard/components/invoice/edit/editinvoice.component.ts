@@ -6,6 +6,7 @@ import { CommonUtil } from '@core/common.util';
 import { Constants } from '@core/constants';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
+import { Business } from '@core/models/business';
 import { Client } from '@core/models/client';
 import { Item } from '@core/models/invoice';
 import { Product, Unit } from '@core/models/product';
@@ -24,6 +25,13 @@ export class EditInvoiceComponent {
   // Invoice Dates
   invoiceDate: Date = new Date();
   dueDate: Date = new Date();
+  business: Business;
+
+  isInvoiceDetailValid = true;
+  isCustomerDetailValid = false;
+  isBillingAddressValid = false;
+  isShippingAddressValid = false;
+  isItemSummaryValid = false;
 
   // Client Section
   clients: Client[] = [];
@@ -33,7 +41,6 @@ export class EditInvoiceComponent {
 
   client: Client = new Client();
   shippingAddress: Address = new Address();
-  sameAsBuyersAdress = false;
 
   controls: FormControl[] = [];
   unitControls: FormControl[] = [];
@@ -67,18 +74,19 @@ export class EditInvoiceComponent {
   paymentStatus = this.paymentTerms[0];
   supplyPlace = '';
   supplyState = '';
+  useSameAsShippingAddress = true;
   items: Item[] = [];
   data = [];
 
   /////////////////////////////////////////////////////////////////
 
   title = 'jspdf-autotable-demo';
-  headOwnerAddress = [['Krishna Borewell']];
+  headOwnerAddress = [['']];
   dataOwnerAddress = [
-    ['C\\o Balkrishna Patidar, Gamda Brahmaniya'],
-    ['Sagwara, Dungarpur (Raj) - 314025'],
-    ['Email : 8patidarneeraj@gmail.com'],
-    ['Mob : +91 - 8877073059'],
+    [''],
+    [''],
+    [''],
+    [''],
   ];
 
   headInvoiceDetails = [['Invoice # 1254-5621']];
@@ -88,7 +96,7 @@ export class EditInvoiceComponent {
   total = 0;
   bodyTotal = [
     ['Total Amount', ''],
-    ['Tax (SGST + CGST)', ''],
+    ['', ''],
     ['Final Amount (Total + Tax)', '']
   ];
 
@@ -96,7 +104,7 @@ export class EditInvoiceComponent {
     'Issue Date     : ',
     'Due   Date     : ',
     'Supply Place : ',
-    'Supply State : '
+    'Supply State  : '
   ];
 
   invoiceBuyerDefault: string[] = ['Customer Name', 'Billing Address', 'Shipping Address'];
@@ -124,6 +132,7 @@ export class EditInvoiceComponent {
   ) {
     this.fetchClients();
     this.fetchProducts();
+    this.getBusinessInfo();
   }
 
   fetchClients() {
@@ -150,6 +159,7 @@ export class EditInvoiceComponent {
       this.client = new Client();
       this.client.name = event;
     }
+    this.customerDetailChange();
   }
 
   updateClients(c: Client[]) {
@@ -217,6 +227,7 @@ export class EditInvoiceComponent {
       item.tax = this.optionsTax[0];
       this.items.push(item);
       this.addFormControl();
+      this.isItemSummaryValid = false;
       setTimeout(() => { this.elRef.nativeElement.parentElement.scrollTop = this.elRef.nativeElement.parentElement.scrollHeight; }, 100);
     } else {
       this.util.showSnackBar('Please enter valid values', 'Dismiss');
@@ -229,6 +240,7 @@ export class EditInvoiceComponent {
     this.observables.splice(index, 1);
     this.unitObservables.splice(index, 1);
     this.unitControls.splice(index, 1);
+    this.itemChange();
   }
 
   addFormControl() {
@@ -286,6 +298,7 @@ export class EditInvoiceComponent {
   }
 
   calculate(item: Item): number {
+    this.itemChange();
     item.taxValue = 0;
     item.total =
       Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
@@ -374,6 +387,13 @@ export class EditInvoiceComponent {
     // Icon / logo creator - font + color or photo
     doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
 
+    this.headOwnerAddress[0][0] = this.business.name;
+
+    this.dataOwnerAddress[0][0] = this.business.addresses[0].line1 + ', ' + this.business.addresses[0].line2;
+    this.dataOwnerAddress[1][0] = this.business.addresses[0].district + ' (' + this.business.addresses[0].state + ') - ' + this.business.addresses[0].pin;
+    this.dataOwnerAddress[2][0] = 'Email : ' + this.business.email;
+    this.dataOwnerAddress[3][0] = 'Tel : ' + this.business.phone + ', Mob : ' + this.business.mobile;
+
     // setup
     (doc as any).autoTable({
       startY: 9,
@@ -399,14 +419,8 @@ export class EditInvoiceComponent {
     dataInvoiceDetails[2][0] = this.dataInvoiceDetails[2] + this.supplyPlace;
     dataInvoiceDetails[3][0] = this.dataInvoiceDetails[3] + this.supplyState;
 
-    let isValidShippingAddress = this.isValidAddress(this.shippingAddress);
-
-    let clone = [...this.invoiceBuyerDefault];
-    if (!isValidShippingAddress) {
-      clone.splice(2, 1);
-    }
     let headSellerAddress = [];
-    headSellerAddress[0] = clone;
+    headSellerAddress[0] = this.invoiceBuyerDefault;
 
     let dataSellerAddress = this.getAddressArray();
 
@@ -420,13 +434,13 @@ export class EditInvoiceComponent {
     dataSellerAddress[2][1] = this.client.address.district + ' - ' + this.client.address.pin;
     dataSellerAddress[3][1] = this.client.address.state;
 
-    // if valid Shipping address
-    if (isValidShippingAddress) {
-      dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
-      dataSellerAddress[1][2] = this.shippingAddress.line2 ? this.shippingAddress.line2 : '';
-      dataSellerAddress[2][2] = this.shippingAddress.district + ' - ' + this.shippingAddress.pin;
-      dataSellerAddress[3][2] = this.shippingAddress.state;
+    if (this.useSameAsShippingAddress) {
+      this.shippingAddress.copy(this.client.address);
     }
+    dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
+    dataSellerAddress[1][2] = this.shippingAddress.line2 ? this.shippingAddress.line2 : '';
+    dataSellerAddress[2][2] = this.shippingAddress.district + ' - ' + this.shippingAddress.pin;
+    dataSellerAddress[3][2] = this.shippingAddress.state;
 
     (doc as any).autoTable({
       startY: 9,
@@ -474,6 +488,12 @@ export class EditInvoiceComponent {
     let finalY = (doc as any).lastAutoTable.finalY;
 
     this.bodyTotal[0][1] = String(this.totalAmount);
+
+    if (this.supplyState === this.shippingAddress.state) {
+      this.bodyTotal[1][0] = Constants.TAX_STRING_SGST;
+    } else {
+      this.bodyTotal[1][0] = Constants.TAX_STRING_IGST;
+    }
     this.bodyTotal[1][1] = String(this.totalTax);
 
     let tot = Math.floor(this.total);
@@ -536,15 +556,6 @@ export class EditInvoiceComponent {
 
   getAddressOptionText(option: Address) {
     return option ? option.line1 : '';
-  }
-
-  sameAsBuyerCheck() {
-    this.sameAsBuyersAdress = !this.sameAsBuyersAdress;
-    if (this.sameAsBuyersAdress) {
-      this.shippingAddress.copy(this.client.address);
-    } else {
-      this.shippingAddress = new Address();
-    }
   }
 
   checkDueDate() {
@@ -642,5 +653,75 @@ export class EditInvoiceComponent {
     str += (Number(n[4]) != 0) ? (a[n[4]] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
     str += (Number(n[5]) != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
     return str;
+  }
+
+  getBusinessInfo() {
+    let b = new Business();
+    b.name = "Krishna Enterprises";
+    b.email = "8patidarneeraj@gmail.com";
+    b.mobile = "+91 - 8877073059";
+    b.phone = "02964 - 230354";
+
+    let a = new Address();
+    a.line1 = "C\\o Balkrishna Patidar";
+    a.line2 = "Gamda Brahmaniya, Sagwara";
+    a.district = "Dungarpur";
+    a.state = "Rajasthan";
+    a.pin = 314025;
+    b.addresses[0] = a;
+
+    this.business = b;
+    this.supplyPlace = b.addresses[0].district;
+    this.supplyState = b.addresses[0].state;
+  }
+
+  supplyPlaceChange() {
+    if (this.supplyPlace) {
+      this.isInvoiceDetailValid = true;
+    } else {
+      this.isInvoiceDetailValid = false;
+    }
+  }
+
+  customerDetailChange() {
+    if (this.client.name && this.client.mobile) {
+      this.isCustomerDetailValid = true;
+    } else {
+      this.isCustomerDetailValid = false;
+    }
+    this.billingAddressChange();
+  }
+
+  billingAddressChange() {
+    if (this.client.address.line1 && this.client.address.pin && this.client.address.district && this.client.address.state) {
+      this.isBillingAddressValid = true;
+    } else {
+      this.isBillingAddressValid = false;
+    }
+  }
+
+  shippingAddressChange() {
+    if (this.shippingAddress.line1 && this.shippingAddress.pin && this.shippingAddress.district && this.shippingAddress.state) {
+      this.isItemSummaryValid = true;
+    } else {
+      this.isItemSummaryValid = false;
+    }
+  }
+
+  itemChange() {
+    for (const item of this.items) {
+      if (
+        item.name &&
+        item.unit &&
+        item.price != null && item.price >= 0 &&
+        item.qty
+      ) {
+        continue;
+      } else {
+        this.isItemSummaryValid = false;
+        return;
+      }
+    }
+    this.isItemSummaryValid = true;
   }
 }

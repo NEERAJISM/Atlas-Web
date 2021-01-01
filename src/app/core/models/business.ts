@@ -6,12 +6,16 @@ export class Business {
 
   name: string;
   web: string;
+
+  mobile: string;
+  phone: string;
+  email: string;
   // TODO Array of images of business
 
   paid: boolean;
   expiry: string;
 
-  users: string[];
+  users: string[] = [];
 
-  addresses: Address[];
+  addresses: Address[] = [];
 }

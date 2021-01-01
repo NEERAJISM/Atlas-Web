@@ -10,6 +10,9 @@ export class Constants {
   static PRODUCTS = 'Products';
   static INVOICES = 'Invoices';
 
+  static TAX_STRING_SGST = 'Tax (SGST + CGST)';
+  static TAX_STRING_IGST = 'Tax (IGST)';
+
   static states: string[] = [
     'Andhra Pradesh',
     'Arunachal Pradesh',
