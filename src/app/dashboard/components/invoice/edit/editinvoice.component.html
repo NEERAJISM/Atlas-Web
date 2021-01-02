@@ -51,12 +51,11 @@
     <div class="col-lg-2">
       <p class="m-0">
         <mat-form-field
-          class="my-form-field"
           appearance="outline"
           style="width: 100%"
         >
           <mat-label>Supply state</mat-label>
-          <mat-select required name="supplyState" [(ngModel)]="supplyState">
+          <mat-select class="mat-input-element" required name="supplyState" [(ngModel)]="supplyState">
             <mat-option *ngFor="let state of states" [value]="state">
               {{ state }}
             </mat-option>
@@ -68,7 +67,6 @@
     <div class="col-lg-2">
       <p class="m-0">
         <mat-form-field
-          class="my-form-field"
           appearance="outline"
           style="width: 100%"
         >
@@ -88,12 +86,11 @@
     <div class="col-lg-2">
       <p class="m-0">
         <mat-form-field
-          class="my-form-field"
           appearance="outline"
           style="width: 100%"
         >
           <mat-label>Payment Status</mat-label>
-          <mat-select required name="paymentStatus" [(ngModel)]="paymentStatus">
+          <mat-select class="mat-input-element" required name="paymentStatus" [(ngModel)]="paymentStatus">
             <mat-option *ngFor="let term of paymentTerms" [value]="term">
               {{ term }}
             </mat-option>
@@ -117,7 +114,6 @@
         <div class="col-lg-12">
           <p class="m-0">
             <mat-form-field
-              class="my-form-field"
               appearance="outline"
               style="width: 100%"
             >
@@ -224,7 +220,6 @@
         <div class="col-lg-12">
           <p class="m-0">
             <mat-form-field
-              class="my-form-field"
               appearance="outline"
               style="width: 100%"
             >
@@ -294,7 +289,7 @@
           <p>
             <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>State</mat-label>
-              <mat-select required name="billingAddress_state" [(ngModel)]="client.address.state" (ngModelChange)="billingAddressChange()">
+              <mat-select class="mat-input-element" required name="billingAddress_state" [(ngModel)]="client.address.state" (ngModelChange)="billingAddressChange()">
                 <mat-option *ngFor="let state of states" [value]="state">
                   {{ state }}
                 </mat-option>
@@ -318,7 +313,6 @@
         <div class="col-lg-12">
           <p class="m-0">
             <mat-form-field
-              class="my-form-field"
               appearance="outline"
               style="width: 100%"
             >
@@ -388,7 +382,7 @@
           <p>
             <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>State</mat-label>
-              <mat-select required name="shippingAddress_state" [(ngModel)]="shippingAddress.state" (ngModelChange)="shippingAddressChange()">
+              <mat-select class="mat-input-element" required name="shippingAddress_state" [(ngModel)]="shippingAddress.state" (ngModelChange)="shippingAddressChange()">
                 <mat-option *ngFor="let state of states" [value]="state">
                   {{ state }}
                 </mat-option>
@@ -415,7 +409,6 @@
       <div class="col-lg-4">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -454,7 +447,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -493,7 +485,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -517,7 +508,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -541,7 +531,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -563,7 +552,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -583,7 +571,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
@@ -604,7 +591,6 @@
       <div class="col-lg-1">
         <p class="m-0">
           <mat-form-field
-            class="my-form-field"
             appearance="outline"
             style="width: 100%"
           >
