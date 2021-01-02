@@ -22,18 +22,32 @@ import { InvoicePreviewComponent } from './preview/invoice.preview.component';
   styleUrls: ['./editinvoice.component.scss'],
 })
 export class EditInvoiceComponent {
-  // Invoice Dates
-  invoiceDate: Date = new Date();
-  dueDate: Date = new Date();
-  business: Business;
-
-  isInvoiceDetailValid = true;
+  isInvoiceDetailValid = false;
   isCustomerDetailValid = false;
   isBillingAddressValid = false;
   isShippingAddressValid = false;
   isItemSummaryValid = false;
 
-  // Client Section
+  // Invoice Dates
+  invoiceDate: Date = new Date();
+  dueDate: Date = new Date();
+
+  business: Business;
+  supplyPlace = '';
+  supplyState = '';
+  states = Constants.states;
+
+  paymentTerms: string[] = [
+    'Paid',
+    'Due in 7 days',
+    'Due in 15 days',
+    'Due in 30 days',
+    'Due in 45 days',
+    'Due in 60 days'
+  ];
+  paymentStatus = this.paymentTerms[0];
+
+  // Client Details
   clients: Client[] = [];
   clientsMap: Map<string, Client> = new Map();
   clientControl: FormControl = new FormControl();
@@ -41,15 +55,15 @@ export class EditInvoiceComponent {
 
   client: Client = new Client();
   shippingAddress: Address = new Address();
+  useSameAsShippingAddress = true;
 
+  // Item Summary
   controls: FormControl[] = [];
-  unitControls: FormControl[] = [];
-
-  productUnitMap: Map<string, Unit[]> = new Map();
-
   observables: Observable<Product[]>[] = [];
+  unitControls: FormControl[] = [];
   unitObservables: Observable<Unit[]>[] = [];
 
+  productUnitMap: Map<string, Unit[]> = new Map();
   optionsProduct: Product[] = [];
 
   optionsTax: string[] = [
@@ -61,44 +75,16 @@ export class EditInvoiceComponent {
   ];
   optionsTaxValue: number[] = [0, 0.05, 0.12, 0.18, 0.28];
 
-  states = Constants.states;
-  paymentTerms: string[] = [
-    'Paid',
-    'Due in 7 days',
-    'Due in 15 days',
-    'Due in 30 days',
-    'Due in 45 days',
-    'Due in 60 days'
-  ];
-
-  paymentStatus = this.paymentTerms[0];
-  supplyPlace = '';
-  supplyState = '';
-  useSameAsShippingAddress = true;
   items: Item[] = [];
   data = [];
 
-  /////////////////////////////////////////////////////////////////
+  //////////////////////////// PDF /////////////////////////////////////
 
   title = 'jspdf-autotable-demo';
   headOwnerAddress = [['']];
-  dataOwnerAddress = [
-    [''],
-    [''],
-    [''],
-    [''],
-  ];
+  dataOwnerAddress = [[''], [''], [''], ['']];
 
   headInvoiceDetails = [['Invoice # 1254-5621']];
-
-  totalAmount = 0;
-  totalTax = 0;
-  total = 0;
-  bodyTotal = [
-    ['Total Amount', ''],
-    ['', ''],
-    ['Final Amount (Total + Tax)', '']
-  ];
 
   dataInvoiceDetails = [
     'Issue Date     : ',
@@ -123,6 +109,15 @@ export class EditInvoiceComponent {
     ],
   ];
 
+  totalAmount = 0;
+  totalTax = 0;
+  total = 0;
+  bodyTotal = [
+    ['Total Amount', ''],
+    ['', ''],
+    ['Final Amount (Total + Tax)', '']
+  ];
+
   constructor(
     private router: Router,
     private dialog: MatDialog,
@@ -130,9 +125,9 @@ export class EditInvoiceComponent {
     private util: CommonUtil,
     private elRef: ElementRef
   ) {
+    this.getBusinessInfo();
     this.fetchClients();
     this.fetchProducts();
-    this.getBusinessInfo();
   }
 
   fetchClients() {
@@ -265,7 +260,7 @@ export class EditInvoiceComponent {
         index
       ].valueChanges.pipe(
         startWith(''),
-        map((value) => this._filterUnit(units, value))
+        map((v) => this._filterUnit(units, v))
       );
 
       this.unitObservables[index] = filteredOptions;
@@ -341,9 +336,7 @@ export class EditInvoiceComponent {
         item.name &&
         item.unit &&
         item.price &&
-        item.qty &&
-        item.tax &&
-        item.total
+        item.qty
       ) {
         continue;
       } else {
@@ -370,7 +363,8 @@ export class EditInvoiceComponent {
       this.client.address.district.length > 0 &&
       this.client.address.state &&
       this.client.address.state.length > 0 &&
-      this.client.address.pin
+      this.client.address.pin &&
+      this.items.length > 0
     ) {
       return this.validateItems();
     }
@@ -390,11 +384,11 @@ export class EditInvoiceComponent {
     this.headOwnerAddress[0][0] = this.business.name;
 
     this.dataOwnerAddress[0][0] = this.business.addresses[0].line1 + ', ' + this.business.addresses[0].line2;
-    this.dataOwnerAddress[1][0] = this.business.addresses[0].district + ' (' + this.business.addresses[0].state + ') - ' + this.business.addresses[0].pin;
+    this.dataOwnerAddress[1][0] = this.business.addresses[0].district + ' (' + this.business.addresses[0].state + ') - ' +
+                                  this.business.addresses[0].pin;
     this.dataOwnerAddress[2][0] = 'Email : ' + this.business.email;
     this.dataOwnerAddress[3][0] = 'Tel : ' + this.business.phone + ', Mob : ' + this.business.mobile;
 
-    // setup
     (doc as any).autoTable({
       startY: 9,
       head: this.headOwnerAddress,
@@ -409,7 +403,7 @@ export class EditInvoiceComponent {
       },
     });
 
-    let dataInvoiceDetails = [];
+    const dataInvoiceDetails = [];
     dataInvoiceDetails[0] = [];
     dataInvoiceDetails[1] = [];
     dataInvoiceDetails[2] = [];
@@ -419,10 +413,10 @@ export class EditInvoiceComponent {
     dataInvoiceDetails[2][0] = this.dataInvoiceDetails[2] + this.supplyPlace;
     dataInvoiceDetails[3][0] = this.dataInvoiceDetails[3] + this.supplyState;
 
-    let headSellerAddress = [];
+    const headSellerAddress = [];
     headSellerAddress[0] = this.invoiceBuyerDefault;
 
-    let dataSellerAddress = this.getAddressArray();
+    const dataSellerAddress = this.getAddressArray();
 
     dataSellerAddress[0][0] = this.client.name;
     dataSellerAddress[1][0] = 'PAN : ' + (this.client.gst ? this.client.gst : '');
@@ -496,8 +490,8 @@ export class EditInvoiceComponent {
     }
     this.bodyTotal[1][1] = String(this.totalTax);
 
-    let tot = Math.floor(this.total);
-    let dec = Math.floor((this.total - tot) * 100);
+    const tot = Math.floor(this.total);
+    const dec = Math.floor((this.total - tot) * 100);
     this.bodyTotal[2][1] = this.total + '\n' + this.inWords(tot) + 'Rupees ' + (dec > 0 ? this.inWords(dec) + 'Paise ' : '');
 
     (doc as any).autoTable({
@@ -566,7 +560,7 @@ export class EditInvoiceComponent {
       this.dueDate.getDate() < this.invoiceDate.getDate()
     ) {
       this.dueDate = new Date(this.invoiceDate);
-      this.util.showSnackBar("Due date can't be less than Invoice date.", '');
+      this.util.showSnackBar('Due date can\'t be less than Invoice date.', '');
     }
   }
 
@@ -599,7 +593,7 @@ export class EditInvoiceComponent {
       dataItem.push(item.qty);
       dataItem.push(item.price);
 
-      let a = item.price * item.qty;
+      const a = item.price * item.qty;
       dataItem.push(a);
       dataItem.push(item.discount);
       this.totalAmount += (a - item.discount);
@@ -615,64 +609,62 @@ export class EditInvoiceComponent {
       counter++;
     });
 
-    // TODO add total row at the end
-
     this.data = dataArr;
   }
 
   isValidAddress(address: Address): boolean {
-    if (
+    return (
       address.line1 && address.line1.length > 0 &&
       address.line2 && address.line2.length > 0 &&
       address.district && address.district.length > 0 &&
       address.state && address.state.length > 0 &&
       address.pin
-    ) return true;
-
-    return false
+    ) ? true : false;
   }
 
   getAddressArray(): string[][] {
-    let a = [];
-    for (var i = 0; i < 4; i++) {
+    const a = [];
+    for (let i = 0; i < 4; i++) {
       a[i] = [];
     }
     return a;
   }
 
-  inWords(num) {
-    if ((num = num.toString()).length > 9) return '';
-    let n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-    let a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
-    let b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  inWords(num: string | number) {
+    if ((num = num.toString()).length > 9) { return ''; }
+    const n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
+    const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
-    if (!n) return; var str = '';
-    str += (Number(n[1]) != 0) ? (a[n[1]] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
-    str += (Number(n[1]) != 0) ? (a[n[2]] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
-    str += (Number(n[3]) != 0) ? (a[n[3]] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
-    str += (Number(n[4]) != 0) ? (a[n[4]] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
-    str += (Number(n[5]) != 0) ? ((str != '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
+    if (!n) { return; } let str = '';
+    str += (Number(n[1]) !== 0) ? (a[n[1]] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
+    str += (Number(n[1]) !== 0) ? (a[n[2]] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
+    str += (Number(n[3]) !== 0) ? (a[n[3]] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
+    str += (Number(n[4]) !== 0) ? (a[n[4]] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
+    str += (Number(n[5]) !== 0) ? ((str !== '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
     return str;
   }
 
   getBusinessInfo() {
-    let b = new Business();
-    b.name = "Krishna Enterprises";
-    b.email = "8patidarneeraj@gmail.com";
-    b.mobile = "+91 - 8877073059";
-    b.phone = "02964 - 230354";
+    const b = new Business();
+    b.name = 'Krishna Enterprises';
+    b.email = '8patidarneeraj@gmail.com';
+    b.mobile = '+91 - 8877073059';
+    b.phone = '02964 - 230354';
 
-    let a = new Address();
-    a.line1 = "C\\o Balkrishna Patidar";
-    a.line2 = "Gamda Brahmaniya, Sagwara";
-    a.district = "Dungarpur";
-    a.state = "Rajasthan";
+    const a = new Address();
+    a.line1 = 'C\\o Balkrishna Patidar';
+    a.line2 = 'Gamda Brahmaniya, Sagwara';
+    a.district = 'Dungarpur';
+    a.state = 'Rajasthan';
     a.pin = 314025;
     b.addresses[0] = a;
 
     this.business = b;
     this.supplyPlace = b.addresses[0].district;
     this.supplyState = b.addresses[0].state;
+
+    this.isInvoiceDetailValid = (this.supplyPlace && this.supplyState) ? true : false;
   }
 
   supplyPlaceChange() {
@@ -722,6 +714,6 @@ export class EditInvoiceComponent {
         return;
       }
     }
-    this.isItemSummaryValid = true;
+    this.isItemSummaryValid = (this.items.length === 0) ? false : true;
   }
 }

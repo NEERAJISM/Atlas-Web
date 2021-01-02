@@ -1,7 +1,7 @@
 <div class="container-fluid mt-2">
   <div class="row">
     <div class="col">
-      <h5>Invoice Details  <i *ngIf="isInvoiceDetailValid" class="fas fa-check-circle text-success"></i><i *ngIf="!isInvoiceDetailValid" class="fas fa-exclamation-circle text-danger"></i></h5>
+      <h5>Invoice Details  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isInvoiceDetailValid === false, 'fa-check-circle text-success' : isInvoiceDetailValid === true}"></i></h5>
     </div>
   </div>
   <div class="row mb-5">
@@ -106,7 +106,7 @@
     <div class="col col-lg-4">
       <div class="row">
         <div class="col">
-          <h5>Customer Details <i *ngIf="isCustomerDetailValid" class="fas fa-check-circle text-success"></i><i *ngIf="!isCustomerDetailValid" class="fas fa-exclamation-circle text-danger"></i></h5>
+          <h5>Customer Details <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isCustomerDetailValid === false, 'fa-check-circle text-success' : isCustomerDetailValid === true}"></i></h5>
         </div>
       </div>
 
@@ -147,7 +147,7 @@
         <div class="col-lg-5">
           <p class="m-0">
             <mat-form-field appearance="outline" style="width: 100%">
-              <mat-label>PAN</mat-label>
+              <mat-label>PAN (optional)</mat-label>
               <input
                 matInput
                 [(ngModel)]="client.pan"
@@ -160,7 +160,7 @@
         <div class="col-lg-7 pl-0">
           <p class="m-0">
             <mat-form-field appearance="outline" style="width: 100%">
-              <mat-label>GSTIN</mat-label>
+              <mat-label>GSTIN (optional)</mat-label>
               <input
                 matInput
                 [(ngModel)]="client.gst"
@@ -176,7 +176,7 @@
         <div class="col-lg-5">
           <p>
             <mat-form-field appearance="outline" style="width: 100%">
-              <mat-label>Mobile No.</mat-label>
+              <mat-label>Mobile No. (10 digit)</mat-label>
               <input
                 matInput
                 [(ngModel)]="client.mobile"
@@ -209,7 +209,7 @@
     <div class="col col-lg-4">
       <div class="row">
         <div class="col-lg-6">
-          <h5>Billing Address <i *ngIf="isBillingAddressValid" class="fas fa-check-circle text-success"></i><i *ngIf="!isBillingAddressValid" class="fas fa-exclamation-circle text-danger"></i></h5>
+          <h5>Billing Address <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isBillingAddressValid === false, 'fa-check-circle text-success' : isBillingAddressValid === true}"></i></h5>
         </div>
         <div class="col-lg-6" style="display: grid; justify-content: end">
           <mat-checkbox [(ngModel)] = "useSameAsShippingAddress">Use same as shipping address</mat-checkbox>
@@ -242,7 +242,7 @@
         <div class="col-lg-9">
           <p class="m-0">
             <mat-form-field appearance="outline" style="width: 100%">
-              <mat-label>Address line 2</mat-label>
+              <mat-label>Address line 2 (optional)</mat-label>
               <input
                 matInput
                 [(ngModel)]="client.address.line2"
@@ -305,7 +305,7 @@
     <div class="col col-lg-4" *ngIf="!useSameAsShippingAddress">
       <div class="row">
         <div class="col-lg-6">
-          <h5>Shipping Address  <i *ngIf="isShippingAddressValid" class="fas fa-check-circle text-success"></i><i *ngIf="!isShippingAddressValid" class="fas fa-exclamation-circle text-danger"></i></h5>
+          <h5>Shipping Address  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isShippingAddressValid === false, 'fa-check-circle text-success' : isShippingAddressValid === true}"></i></h5>
         </div>
       </div>
 
@@ -335,7 +335,7 @@
         <div class="col-lg-9">
           <p class="m-0">
             <mat-form-field appearance="outline" style="width: 100%">
-              <mat-label>Address line 2</mat-label>
+              <mat-label>Address line 2 (optional)</mat-label>
               <input
                 matInput
                 [(ngModel)]="shippingAddress.line2"
@@ -394,7 +394,7 @@
     </div>
   </div>
 
-  <h5 class="my-4">Item Summary  <i *ngIf="isItemSummaryValid" class="fas fa-check-circle text-success"></i><i *ngIf="!isItemSummaryValid" class="fas fa-exclamation-circle text-danger"></i></h5>
+  <h5 class="my-4">Item Summary  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isItemSummaryValid === false, 'fa-check-circle text-success' : isItemSummaryValid === true}"></i></h5>
 
   <!-- Form Begins -->
 
