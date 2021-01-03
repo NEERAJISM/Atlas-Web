@@ -8,7 +8,7 @@ import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
 import { Business } from '@core/models/business';
 import { Client } from '@core/models/client';
-import { Item } from '@core/models/invoice';
+import { Invoice, InvoiceVersion, Item } from '@core/models/invoice';
 import { Product, Unit } from '@core/models/product';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
@@ -22,6 +22,9 @@ import { InvoicePreviewComponent } from './preview/invoice.preview.component';
   styleUrls: ['./editinvoice.component.scss'],
 })
 export class EditInvoiceComponent {
+  invoice: Invoice = new Invoice();
+  existingInvoice = true;
+
   isInvoiceDetailValid = false;
   isCustomerDetailValid = false;
   isBillingAddressValid = false;
@@ -385,7 +388,7 @@ export class EditInvoiceComponent {
 
     this.dataOwnerAddress[0][0] = this.business.addresses[0].line1 + ', ' + this.business.addresses[0].line2;
     this.dataOwnerAddress[1][0] = this.business.addresses[0].district + ' (' + this.business.addresses[0].state + ') - ' +
-                                  this.business.addresses[0].pin;
+      this.business.addresses[0].pin;
     this.dataOwnerAddress[2][0] = 'Email : ' + this.business.email;
     this.dataOwnerAddress[3][0] = 'Tel : ' + this.business.phone + ', Mob : ' + this.business.mobile;
 
@@ -538,10 +541,63 @@ export class EditInvoiceComponent {
 
     const invoice = this.generatePDF();
     const pdf: ArrayBuffer = invoice.output('arraybuffer');
-    this.dialog.open(InvoicePreviewComponent, {
+    const dialogRef = this.dialog.open(InvoicePreviewComponent, {
       data: pdf,
       position: { top: '20px' },
     });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.event === 'Save') {
+        this.createAndSaveInvoice(false);
+      }
+    });
+  }
+
+  createAndSaveInvoice(saveAsDraft: boolean) {
+    const timestamp = Date.now();
+
+    let version: InvoiceVersion;
+    if (this.existingInvoice && this.invoice.allVersions.length > 0) {
+      version = this.invoice.allVersions[this.invoice.allVersions.length - 1];
+
+      if (!version.isDraft) {
+        version = new InvoiceVersion();
+        version.createdTimeUtc = timestamp;
+        this.invoice.allVersions.push(version);
+      }
+    } else {
+      // TODO generate invoice no using counter
+      this.invoice.invoiceNo = '12345';
+      this.invoice.id = this.fbutil.getId();
+
+      version = new InvoiceVersion();
+      version.createdTimeUtc = timestamp;
+      this.invoice.allVersions.push(version);
+    }
+
+    version.isDraft = saveAsDraft;
+    version.lastUpdatedTimeUtc = timestamp;
+
+    version.invoiceDate = this.invoiceDate.toDateString();
+    version.dueDate = this.dueDate.toDateString();
+    version.supplyState = this.supplyState;
+    version.supplyPlace = this.supplyPlace;
+    version.paymentTerms = this.paymentStatus;
+
+    version.client = this.client;
+    version.shippingAddress = this.shippingAddress;
+    version.items = this.items;
+
+    version.totalTaxableValue = this.totalAmount;
+    version.totalTax = this.totalTax;
+    version.total = this.total;
+
+    this.fbutil
+      .getInvoiceRef('bizId')
+      .doc(this.invoice.id)
+      .set(this.fbutil.toJson(this.invoice))
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
   }
 
   getClientOptionText(option: Client) {
