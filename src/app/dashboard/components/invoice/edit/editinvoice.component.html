@@ -1,7 +1,7 @@
 <div class="container-fluid mt-2">
   <div class="row">
     <div class="col">
-      <h5>Invoice Details  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isInvoiceDetailValid === false, 'fa-check-circle text-success' : isInvoiceDetailValid === true}"></i></h5>
+      <h5>Invoice Details  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isInvoiceDetailValid, 'fa-check-circle text-success' : isInvoiceDetailValid }"></i></h5>
     </div>
   </div>
   <div class="row mb-5">
@@ -90,8 +90,8 @@
           style="width: 100%"
         >
           <mat-label>Payment Status</mat-label>
-          <mat-select class="mat-input-element" required name="paymentStatus" [(ngModel)]="paymentStatus">
-            <mat-option *ngFor="let term of paymentTerms" [value]="term">
+          <mat-select class="mat-input-element" required name="paymentTerms" [(ngModel)]="paymentTerms">
+            <mat-option *ngFor="let term of allPaymentTerms" [value]="term">
               {{ term }}
             </mat-option>
           </mat-select>
@@ -106,7 +106,7 @@
     <div class="col col-lg-4">
       <div class="row">
         <div class="col">
-          <h5>Customer Details <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isCustomerDetailValid === false, 'fa-check-circle text-success' : isCustomerDetailValid === true}"></i></h5>
+          <h5>Customer Details <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isCustomerDetailValid, 'fa-check-circle text-success' : isCustomerDetailValid}"></i></h5>
         </div>
       </div>
 
@@ -179,7 +179,7 @@
               <mat-label>Mobile No. (10 digit)</mat-label>
               <input
                 matInput
-                [(ngModel)]="client.mobile"
+                [ngModel]="client.mobile"
                 (ngModelChange)="customerDetailChange()"
                 required
                 type="text"
@@ -209,10 +209,10 @@
     <div class="col col-lg-4">
       <div class="row">
         <div class="col-lg-6">
-          <h5>Billing Address <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isBillingAddressValid === false, 'fa-check-circle text-success' : isBillingAddressValid === true}"></i></h5>
+          <h5>Billing Address <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isBillingAddressValid, 'fa-check-circle text-success' : isBillingAddressValid}"></i></h5>
         </div>
         <div class="col-lg-6" style="display: grid; justify-content: end">
-          <mat-checkbox [(ngModel)] = "useSameAsShippingAddress">Use same as shipping address</mat-checkbox>
+          <mat-checkbox [(ngModel)] = "shippingAddressSame">Use same as shipping address</mat-checkbox>
         </div>
       </div>
 
@@ -302,10 +302,10 @@
 
     <!-- Shipping Address -->
 
-    <div class="col col-lg-4" *ngIf="!useSameAsShippingAddress">
+    <div class="col col-lg-4" *ngIf="!shippingAddressSame">
       <div class="row">
         <div class="col-lg-6">
-          <h5>Shipping Address  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isShippingAddressValid === false, 'fa-check-circle text-success' : isShippingAddressValid === true}"></i></h5>
+          <h5>Shipping Address  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isShippingAddressValid , 'fa-check-circle text-success' : isShippingAddressValid}"></i></h5>
         </div>
       </div>
 
@@ -394,7 +394,7 @@
     </div>
   </div>
 
-  <h5 class="my-4">Item Summary  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : isItemSummaryValid === false, 'fa-check-circle text-success' : isItemSummaryValid === true}"></i></h5>
+  <h5 class="my-4">Item Summary  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isItemSummaryValid, 'fa-check-circle text-success' : isItemSummaryValid}"></i></h5>
 
   <!-- Form Begins -->
 

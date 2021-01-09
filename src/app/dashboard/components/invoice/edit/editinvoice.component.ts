@@ -14,6 +14,7 @@ import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { InvoiceService } from '../invoice.service';
 import { InvoicePreviewComponent } from './preview/invoice.preview.component';
 
 @Component({
@@ -23,7 +24,7 @@ import { InvoicePreviewComponent } from './preview/invoice.preview.component';
 })
 export class EditInvoiceComponent {
   invoice: Invoice = new Invoice();
-  existingInvoice = true;
+  existingInvoice = false;
 
   isInvoiceDetailValid = false;
   isCustomerDetailValid = false;
@@ -40,7 +41,7 @@ export class EditInvoiceComponent {
   supplyState = '';
   states = Constants.states;
 
-  paymentTerms: string[] = [
+  allPaymentTerms: string[] = [
     'Paid',
     'Due in 7 days',
     'Due in 15 days',
@@ -48,7 +49,7 @@ export class EditInvoiceComponent {
     'Due in 45 days',
     'Due in 60 days'
   ];
-  paymentStatus = this.paymentTerms[0];
+  paymentTerms = this.allPaymentTerms[0];
 
   // Client Details
   clients: Client[] = [];
@@ -58,7 +59,7 @@ export class EditInvoiceComponent {
 
   client: Client = new Client();
   shippingAddress: Address = new Address();
-  useSameAsShippingAddress = true;
+  shippingAddressSame = true;
 
   // Item Summary
   controls: FormControl[] = [];
@@ -126,11 +127,59 @@ export class EditInvoiceComponent {
     private dialog: MatDialog,
     private fbutil: FirebaseUtil,
     private util: CommonUtil,
-    private elRef: ElementRef
+    private elRef: ElementRef,
+    private invoiceService: InvoiceService
   ) {
     this.getBusinessInfo();
     this.fetchClients();
     this.fetchProducts();
+    this.fetchInvoice();
+  }
+
+  fetchInvoice() {
+    if (!this.invoiceService.invoiceId) {
+      this.addItem();
+      return;
+    }
+
+    this.existingInvoice = true;
+    this.fbutil.getInvoiceRef('bizId')
+      .doc(this.invoiceService.invoiceId).get().forEach((invoice) => {
+        if (invoice.exists) {
+          const i = new Invoice();
+          Object.assign(i, invoice.data());
+          if (i.allVersions && i.allVersions.length > 0) {
+            this.updateFieldsForExistingInvoice(i.allVersions[i.allVersions.length - 1]);
+          }
+        }
+      }).catch(e => {
+        this.addItem();
+        console.log(e);
+      });
+  }
+
+  updateFieldsForExistingInvoice(i: InvoiceVersion) {
+    this.dueDate = new Date(i.dueDate);
+    this.invoiceDate = new Date(i.invoiceDate);
+    this.supplyState = i.supplyState;
+    this.supplyPlace = i.supplyPlace;
+    this.paymentTerms = i.paymentTerms;
+
+    this.client.copy(i.client);
+    this.shippingAddress = i.shippingAddress;
+    this.shippingAddressSame = i.shippingAddressSame;
+    this.isShippingAddressValid = true;
+
+    if (i.items) {
+      for (let j = 0; j < i.items.length; j++) {
+        this.addFormControl();
+      }
+      this.items = i.items;
+    }
+
+    this.total = i.total;
+    this.totalTax = i.totalTax;
+    this.totalAmount = i.totalTaxableValue;
   }
 
   fetchClients() {
@@ -166,7 +215,6 @@ export class EditInvoiceComponent {
 
     this.clientControl.valueChanges.subscribe((value) => {
       if (typeof value === 'string') {
-        this.client = new Client();
         this.client.name = value;
       }
     });
@@ -210,7 +258,6 @@ export class EditInvoiceComponent {
     p.forEach((product) =>
       this.productUnitMap.set(product.name.toLowerCase(), product.units)
     );
-    this.addItem();
   }
 
   goBackToInvoiceComponent() {
@@ -431,7 +478,7 @@ export class EditInvoiceComponent {
     dataSellerAddress[2][1] = this.client.address.district + ' - ' + this.client.address.pin;
     dataSellerAddress[3][1] = this.client.address.state;
 
-    if (this.useSameAsShippingAddress) {
+    if (this.shippingAddressSame) {
       this.shippingAddress.copy(this.client.address);
     }
     dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
@@ -582,10 +629,11 @@ export class EditInvoiceComponent {
     version.dueDate = this.dueDate.toDateString();
     version.supplyState = this.supplyState;
     version.supplyPlace = this.supplyPlace;
-    version.paymentTerms = this.paymentStatus;
+    version.paymentTerms = this.paymentTerms;
 
     version.client = this.client;
     version.shippingAddress = this.shippingAddress;
+    version.shippingAddressSame = this.shippingAddressSame;
     version.items = this.items;
 
     version.totalTaxableValue = this.totalAmount;

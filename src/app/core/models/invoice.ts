@@ -24,6 +24,7 @@ export class InvoiceVersion {
 
   client: Client = new Client();
   shippingAddress: Address = new Address();
+  shippingAddressSame = true;
 
   items: Item[] = [];
 

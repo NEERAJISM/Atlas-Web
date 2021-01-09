@@ -49,6 +49,7 @@ import { NewClientComponent } from './components/customers/new/new.client.compon
 import { RemoveClientComponent } from './components/customers/remove/remove.client.component';
 import { NewProductComponent } from './components/inventory/new/new.product.component';
 import { RemoveProductComponent } from './components/inventory/remove/remove.product.component';
+import { InvoiceService } from './components/invoice/invoice.service';
 
 @NgModule({
   imports: [
@@ -111,6 +112,6 @@ import { RemoveProductComponent } from './components/inventory/remove/remove.pro
     TaxDashboardComponent,
     SupportDashboardComponent,
   ],
-  providers : [{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}]
+  providers : [{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}, InvoiceService]
 })
 export class DashboardModule {}

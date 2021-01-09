@@ -3,6 +3,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { InvoiceService } from './invoice.service';
 
 export interface UserData {
   id: string;
@@ -66,7 +67,7 @@ export class InvoiceDashboardComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private invoiceService: InvoiceService) {
     // Create 100 users
     const users = Array.from({ length: 100 }, (_, k) => createNewUser(k + 1));
 
@@ -89,6 +90,7 @@ export class InvoiceDashboardComponent implements OnInit {
   }
 
   loadNewInvoiceComponent(){
+    this.invoiceService.invoiceId = 'artTETzm73iPUQ77cPyY';
     this.router.navigateByUrl('/dashboard/invoice/edit');
   }
 }
