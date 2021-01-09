@@ -146,10 +146,9 @@ export class EditInvoiceComponent {
     this.fbutil.getInvoiceRef('bizId')
       .doc(this.invoiceService.invoiceId).get().forEach((invoice) => {
         if (invoice.exists) {
-          const i = new Invoice();
-          Object.assign(i, invoice.data());
-          if (i.allVersions && i.allVersions.length > 0) {
-            this.updateFieldsForExistingInvoice(i.allVersions[i.allVersions.length - 1]);
+          Object.assign(this.invoice, invoice.data());
+          if (this.invoice.allVersions && this.invoice.allVersions.length > 0) {
+            this.updateFieldsForExistingInvoice(this.invoice.allVersions[this.invoice.allVersions.length - 1]);
           }
         }
       }).catch(e => {
@@ -171,7 +170,7 @@ export class EditInvoiceComponent {
     this.isShippingAddressValid = true;
 
     if (i.items) {
-      for (let j = 0; j < i.items.length; j++) {
+      for (let j in i.items) {
         this.addFormControl();
       }
       this.items = i.items;
@@ -573,9 +572,9 @@ export class EditInvoiceComponent {
     return doc;
   }
 
-  public downloadPDF(): void {
-    this.generatePDF().save('atlas.pdf');
-  }
+  // public downloadPDF(): void {
+  //   this.generatePDF().save('atlas.pdf');
+  // }
 
   openPreviewDialog() {
     if (!this.isValidInvoice()) {
@@ -598,6 +597,10 @@ export class EditInvoiceComponent {
         this.createAndSaveInvoice(false);
       }
     });
+  }
+
+  saveAsDraft(){
+    this.createAndSaveInvoice(true);
   }
 
   createAndSaveInvoice(saveAsDraft: boolean) {
@@ -644,8 +647,11 @@ export class EditInvoiceComponent {
       .getInvoiceRef('bizId')
       .doc(this.invoice.id)
       .set(this.fbutil.toJson(this.invoice))
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+      .then(() => this.goBackToInvoiceComponent())
+      .catch((e) => {
+        console.log(e);
+        this.util.showSnackBar('Error while saving data', 'Close');
+      });
   }
 
   getClientOptionText(option: Client) {
