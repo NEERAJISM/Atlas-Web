@@ -22,6 +22,7 @@
   <div class="row mt-2">
     <div class="col">
       <div class="mat-elevation-z8">
+        <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
         <table mat-table [dataSource]="dataSource" matSort>
           <ng-container matColumnDef="name">
             <th style="width: 15%" mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
@@ -100,7 +101,6 @@
           </tr>
         </table>
 
-        <mat-paginator [pageSizeOptions]="[10, 25, 100]"></mat-paginator>
       </div>
     </div>
   </div>

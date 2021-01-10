@@ -35,13 +35,16 @@ export class EditInvoiceComponent {
   // Invoice Dates
   invoiceDate: Date = new Date();
   dueDate: Date = new Date();
+  customDueDate = false;
 
   business: Business;
   supplyPlace = '';
   supplyState = '';
   states = Constants.states;
 
+  // Also update "getDueDte" function in this class
   allPaymentTerms: string[] = [
+    'Custom Select',
     'Paid',
     'Due in 7 days',
     'Due in 15 days',
@@ -49,7 +52,8 @@ export class EditInvoiceComponent {
     'Due in 45 days',
     'Due in 60 days'
   ];
-  paymentTerms = this.allPaymentTerms[0];
+
+  paymentTerms = this.allPaymentTerms[1];
 
   // Client Details
   clients: Client[] = [];
@@ -153,6 +157,7 @@ export class EditInvoiceComponent {
         }
       }).catch(e => {
         this.addItem();
+        this.util.showSnackBar('Error while loading invoice data!', 'Close');
         console.log(e);
       });
   }
@@ -163,6 +168,7 @@ export class EditInvoiceComponent {
     this.supplyState = i.supplyState;
     this.supplyPlace = i.supplyPlace;
     this.paymentTerms = i.paymentTerms;
+    this.customDueDate = (i.paymentTerms === this.allPaymentTerms[0]);
 
     this.client.copy(i.client);
     this.shippingAddress = i.shippingAddress;
@@ -170,7 +176,7 @@ export class EditInvoiceComponent {
     this.isShippingAddressValid = true;
 
     if (i.items) {
-      for (let j in i.items) {
+      for (const j of i.items) {
         this.addFormControl();
       }
       this.items = i.items;
@@ -599,7 +605,7 @@ export class EditInvoiceComponent {
     });
   }
 
-  saveAsDraft(){
+  saveAsDraft() {
     this.createAndSaveInvoice(true);
   }
 
@@ -669,8 +675,7 @@ export class EditInvoiceComponent {
       this.dueDate.getMonth() < this.invoiceDate.getMonth() ||
       this.dueDate.getDate() < this.invoiceDate.getDate()
     ) {
-      this.dueDate = new Date(this.invoiceDate);
-      this.util.showSnackBar('Due date can\'t be less than Invoice date.', '');
+      this.dueDate = this.getDueDate();
     }
   }
 
@@ -825,5 +830,35 @@ export class EditInvoiceComponent {
       }
     }
     this.isItemSummaryValid = (this.items.length === 0) ? false : true;
+  }
+
+  paymentStatusChange() {
+    this.customDueDate = (this.paymentTerms === this.allPaymentTerms[0]);
+    this.dueDate = this.getDueDate();
+  }
+
+  getDueDate() {
+    let days = 0;
+    switch (this.paymentTerms) {
+      case this.allPaymentTerms[2]:
+        days = 7;
+        break;
+      case this.allPaymentTerms[3]:
+        days = 15;
+        break;
+      case this.allPaymentTerms[4]:
+        days = 30;
+        break;
+      case this.allPaymentTerms[5]:
+        days = 45;
+        break;
+      case this.allPaymentTerms[6]:
+        days = 60;
+        break;
+    }
+
+    const result = new Date(this.invoiceDate);
+    result.setDate(result.getDate() + days);
+    return result;
   }
 }

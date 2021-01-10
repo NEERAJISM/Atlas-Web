@@ -7,7 +7,7 @@ import { CommonUtil } from './common.util';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
-  imports: [AngularFirestoreModule, MatSnackBarModule],
+  imports: [AngularFirestoreModule.enablePersistence(), MatSnackBarModule],
   declarations: [SplashComponent, PageNotFoundComponent],
   exports: [SplashComponent, PageNotFoundComponent],
   providers: [FirebaseUtil, CommonUtil],

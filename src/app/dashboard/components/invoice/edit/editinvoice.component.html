@@ -1,7 +1,16 @@
 <div class="container-fluid mt-2">
-  <div class="row">
+  <div class="row mt-4">
     <div class="col">
-      <h5>Invoice Details  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isInvoiceDetailValid, 'fa-check-circle text-success' : isInvoiceDetailValid }"></i></h5>
+      <h5>
+        Invoice Details
+        <i
+          class="fas"
+          [ngClass]="{
+            'fa-exclamation-circle text-danger': !isInvoiceDetailValid,
+            'fa-check-circle text-success': isInvoiceDetailValid
+          }"
+        ></i>
+      </h5>
     </div>
   </div>
   <div class="row mb-5">
@@ -30,6 +39,59 @@
     <div class="col-lg-2">
       <p class="m-0">
         <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Supply state</mat-label>
+          <mat-select
+            class="mat-input-element"
+            required
+            name="supplyState"
+            [(ngModel)]="supplyState"
+          >
+            <mat-option *ngFor="let state of states" [value]="state">
+              {{ state }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="col-lg-2">
+      <p class="m-0">
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Supply place</mat-label>
+          <input
+            name="supplyPlace"
+            [(ngModel)]="supplyPlace"
+            (ngModelChange)="supplyPlaceChange()"
+            matInput
+            required
+            type="text"
+          />
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="col-lg-2">
+      <p class="m-0">
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>Payment Status</mat-label>
+          <mat-select
+            class="mat-input-element"
+            required
+            name="paymentTerms"
+            [(ngModel)]="paymentTerms"
+            (ngModelChange)="paymentStatusChange()"
+          >
+            <mat-option *ngFor="let term of allPaymentTerms" [value]="term">
+              {{ term }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </p>
+    </div>
+
+    <div class="col-lg-2" *ngIf="customDueDate">
+      <p class="m-0">
+        <mat-form-field appearance="outline" style="width: 100%">
           <mat-label>Due date</mat-label>
           <input
             matInput
@@ -47,57 +109,6 @@
         </mat-form-field>
       </p>
     </div>
-
-    <div class="col-lg-2">
-      <p class="m-0">
-        <mat-form-field
-          appearance="outline"
-          style="width: 100%"
-        >
-          <mat-label>Supply state</mat-label>
-          <mat-select class="mat-input-element" required name="supplyState" [(ngModel)]="supplyState">
-            <mat-option *ngFor="let state of states" [value]="state">
-              {{ state }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </p>
-    </div>
-
-    <div class="col-lg-2">
-      <p class="m-0">
-        <mat-form-field
-          appearance="outline"
-          style="width: 100%"
-        >
-          <mat-label>Supply place</mat-label>
-          <input
-            name="supplyPlace"
-            [(ngModel)]="supplyPlace"
-            (ngModelChange)="supplyPlaceChange()"
-            matInput
-            required
-            type="text"
-          />
-        </mat-form-field>
-      </p>
-    </div>
-
-    <div class="col-lg-2">
-      <p class="m-0">
-        <mat-form-field
-          appearance="outline"
-          style="width: 100%"
-        >
-          <mat-label>Payment Status</mat-label>
-          <mat-select class="mat-input-element" required name="paymentTerms" [(ngModel)]="paymentTerms">
-            <mat-option *ngFor="let term of allPaymentTerms" [value]="term">
-              {{ term }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-      </p>
-    </div>
   </div>
 
   <div class="row">
@@ -106,17 +117,23 @@
     <div class="col col-lg-4">
       <div class="row">
         <div class="col">
-          <h5>Customer Details <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isCustomerDetailValid, 'fa-check-circle text-success' : isCustomerDetailValid}"></i></h5>
+          <h5>
+            Customer Details
+            <i
+              class="fas"
+              [ngClass]="{
+                'fa-exclamation-circle text-danger': !isCustomerDetailValid,
+                'fa-check-circle text-success': isCustomerDetailValid
+              }"
+            ></i>
+          </h5>
         </div>
       </div>
 
       <div class="row">
         <div class="col-lg-12">
           <p class="m-0">
-            <mat-form-field
-              appearance="outline"
-              style="width: 100%"
-            >
+            <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>Select / Type Customer name</mat-label>
 
               <input
@@ -209,20 +226,28 @@
     <div class="col col-lg-4">
       <div class="row">
         <div class="col-lg-6">
-          <h5>Billing Address <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isBillingAddressValid, 'fa-check-circle text-success' : isBillingAddressValid}"></i></h5>
+          <h5>
+            Billing Address
+            <i
+              class="fas"
+              [ngClass]="{
+                'fa-exclamation-circle text-danger': !isBillingAddressValid,
+                'fa-check-circle text-success': isBillingAddressValid
+              }"
+            ></i>
+          </h5>
         </div>
         <div class="col-lg-6" style="display: grid; justify-content: end">
-          <mat-checkbox [(ngModel)] = "shippingAddressSame">Use same as shipping address</mat-checkbox>
+          <mat-checkbox [(ngModel)]="shippingAddressSame"
+            >Use same as shipping address</mat-checkbox
+          >
         </div>
       </div>
 
       <div class="row">
         <div class="col-lg-12">
           <p class="m-0">
-            <mat-form-field
-              appearance="outline"
-              style="width: 100%"
-            >
+            <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>Address line 1</mat-label>
 
               <input
@@ -289,14 +314,20 @@
           <p>
             <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>State</mat-label>
-              <mat-select class="mat-input-element" required name="billingAddress_state" [(ngModel)]="client.address.state" (ngModelChange)="billingAddressChange()">
+              <mat-select
+                class="mat-input-element"
+                required
+                name="billingAddress_state"
+                [(ngModel)]="client.address.state"
+                (ngModelChange)="billingAddressChange()"
+              >
                 <mat-option *ngFor="let state of states" [value]="state">
                   {{ state }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
           </p>
-        </div>            
+        </div>
       </div>
     </div>
 
@@ -305,17 +336,23 @@
     <div class="col col-lg-4" *ngIf="!shippingAddressSame">
       <div class="row">
         <div class="col-lg-6">
-          <h5>Shipping Address  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isShippingAddressValid , 'fa-check-circle text-success' : isShippingAddressValid}"></i></h5>
+          <h5>
+            Shipping Address
+            <i
+              class="fas"
+              [ngClass]="{
+                'fa-exclamation-circle text-danger': !isShippingAddressValid,
+                'fa-check-circle text-success': isShippingAddressValid
+              }"
+            ></i>
+          </h5>
         </div>
       </div>
 
       <div class="row">
         <div class="col-lg-12">
           <p class="m-0">
-            <mat-form-field
-              appearance="outline"
-              style="width: 100%"
-            >
+            <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>Address line 1</mat-label>
 
               <input
@@ -382,7 +419,13 @@
           <p>
             <mat-form-field appearance="outline" style="width: 100%">
               <mat-label>State</mat-label>
-              <mat-select class="mat-input-element" required name="shippingAddress_state" [(ngModel)]="shippingAddress.state" (ngModelChange)="shippingAddressChange()">
+              <mat-select
+                class="mat-input-element"
+                required
+                name="shippingAddress_state"
+                [(ngModel)]="shippingAddress.state"
+                (ngModelChange)="shippingAddressChange()"
+              >
                 <mat-option *ngFor="let state of states" [value]="state">
                   {{ state }}
                 </mat-option>
@@ -394,7 +437,16 @@
     </div>
   </div>
 
-  <h5 class="my-4">Item Summary  <i class="fas" [ngClass]="{'fa-exclamation-circle text-danger' : !isItemSummaryValid, 'fa-check-circle text-success' : isItemSummaryValid}"></i></h5>
+  <h5 class="my-4">
+    Item Summary
+    <i
+      class="fas"
+      [ngClass]="{
+        'fa-exclamation-circle text-danger': !isItemSummaryValid,
+        'fa-check-circle text-success': isItemSummaryValid
+      }"
+    ></i>
+  </h5>
 
   <!-- Form Begins -->
 
@@ -408,10 +460,7 @@
 
       <div class="col-lg-4">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label> Type / Select Product name</mat-label>
 
             <input
@@ -446,10 +495,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Unit</mat-label>
 
             <input
@@ -484,10 +530,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Price (&#8377;)</mat-label>
             <input
               name="price_{{ i }}"
@@ -507,10 +550,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Qty / Pcs</mat-label>
             <input
               name="qty_{{ i }}"
@@ -530,10 +570,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Discount (&#8377;)</mat-label>
             <input
               name="discount_{{ i }}"
@@ -551,10 +588,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>TAX / GST (%)</mat-label>
 
             <mat-select required name="tax_{{ i }}" [(ngModel)]="item.tax">
@@ -570,10 +604,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>TAX (&#8377;)</mat-label>
             <input
               readonly
@@ -590,10 +621,7 @@
 
       <div class="col-lg-1">
         <p class="m-0">
-          <mat-form-field
-            appearance="outline"
-            style="width: 100%"
-          >
+          <mat-form-field appearance="outline" style="width: 100%">
             <mat-label>Total (&#8377;)</mat-label>
             <input
               readonly
@@ -639,7 +667,11 @@
     class="row p-2"
     style="background-color: #123548; position: fixed; bottom: 0; width: 100%"
   >
-    <button class="ml-3 btn-success" mat-raised-button (click)="openPreviewDialog()">
+    <button
+      class="ml-3 btn-success"
+      mat-raised-button
+      (click)="openPreviewDialog()"
+    >
       <i class="fas fa-check text-white py-3" style="font-size: 1.6em"></i>
       &nbsp; Create Invoice
     </button>
