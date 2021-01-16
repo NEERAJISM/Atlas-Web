@@ -1,11 +1,15 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { CommonUtil } from '@core/common.util';
 import { FirebaseUtil } from '@core/firebaseutil';
+import { Invoice } from '@core/models/invoice';
 import { InvoicePreview } from '@core/models/invoice.preview';
 import { Subscription } from 'rxjs';
+import { InvoicePreviewComponent } from './edit/preview/invoice.preview.component';
 import { InvoiceService } from './invoice.service';
 
 @Component({
@@ -13,7 +17,7 @@ import { InvoiceService } from './invoice.service';
   templateUrl: './invoice.component.html',
   styleUrls: ['./invoice.component.scss'],
 })
-export class InvoiceDashboardComponent  implements AfterViewInit, OnDestroy {
+export class InvoiceDashboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -31,7 +35,12 @@ export class InvoiceDashboardComponent  implements AfterViewInit, OnDestroy {
     'actions',
   ];
 
-  constructor(private fbutil: FirebaseUtil, private router: Router, private invoiceService: InvoiceService) {
+  constructor(
+    private fbutil: FirebaseUtil,
+    private router: Router,
+    private invoiceService: InvoiceService,
+    private dialog: MatDialog,
+    private util: CommonUtil) {
     this.dataSource = new MatTableDataSource();
     this.subscribeToUpdates();
   }
@@ -91,16 +100,48 @@ export class InvoiceDashboardComponent  implements AfterViewInit, OnDestroy {
     }
   }
 
-  getDateString(date: number){
+  getDateString(date: number) {
     const d = new Date(date);
     return d.toLocaleString();
   }
 
-  preview(invoice){
-
+  preview(id: string) {
+    this.fbutil.getInvoiceRef('bizId').doc(id).get().forEach((invoice) => {
+      if (invoice.exists) {
+        const i: Invoice = new Invoice();
+        Object.assign(i, invoice.data());
+        this.openPreviewDialog(i);
+      }
+    }).catch(e => {
+      this.util.showSnackBar('Error while loading invoice data!', 'Close');
+      console.log(e);
+    });
   }
 
-  edit(invoice: InvoicePreview){
+  openPreviewDialog(invoice: Invoice) {
+    const invoicePdf = this.invoiceService.generatePDF(invoice);
+    const pdf: ArrayBuffer = invoicePdf.output('arraybuffer');
+    const dialogRef = this.dialog.open(InvoicePreviewComponent, {
+      data: pdf,
+      position: { top: '20px' },
+    });
+  }
+
+  edit(invoice: InvoicePreview) {
     this.loadNewInvoiceComponent(invoice.id);
   }
+
+  mail(invoice: InvoicePreview) {
+
+  }
+
+  download(invoice: InvoicePreview) {
+    //   this.generatePDF().save('atlas.pdf');
+  }
+
+  print(invoice: InvoicePreview) {
+
+  }
+
+
 }

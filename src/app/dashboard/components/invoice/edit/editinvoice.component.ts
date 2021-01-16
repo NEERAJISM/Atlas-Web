@@ -11,7 +11,6 @@ import { Client } from '@core/models/client';
 import { Invoice, InvoiceVersion, Item } from '@core/models/invoice';
 import { InvoicePreview } from '@core/models/invoice.preview';
 import { Product, Unit } from '@core/models/product';
-import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -25,6 +24,7 @@ import { InvoicePreviewComponent } from './preview/invoice.preview.component';
 })
 export class EditInvoiceComponent {
   invoice: Invoice = new Invoice();
+  preview: InvoicePreview = new InvoicePreview();
   existingInvoice = false;
 
   isInvoiceDetailValid = false;
@@ -87,45 +87,9 @@ export class EditInvoiceComponent {
   items: Item[] = [];
   data = [];
 
-  //////////////////////////// PDF /////////////////////////////////////
-
-  title = 'jspdf-autotable-demo';
-  headOwnerAddress = [['']];
-  dataOwnerAddress = [[''], [''], [''], ['']];
-
-  headInvoiceDetails = [['Invoice # 1254-5621']];
-
-  dataInvoiceDetails = [
-    'Issue Date     : ',
-    'Due   Date     : ',
-    'Supply Place : ',
-    'Supply State  : '
-  ];
-
-  invoiceBuyerDefault: string[] = ['Customer Name', 'Billing Address', 'Shipping Address'];
-
-  invoiceItemHead = [
-    [
-      'No.',
-      'Item Description (Unit)',
-      'Code',
-      'Qty',
-      'Price',
-      'Amount',
-      'Discount',
-      'Tax / GST',
-      'Total (Inc. Tax)',
-    ],
-  ];
-
   totalAmount = 0;
   totalTax = 0;
   total = 0;
-  bodyTotal = [
-    ['Total Amount', ''],
-    ['', ''],
-    ['Final Amount (Total + Tax)', '']
-  ];
 
   constructor(
     private router: Router,
@@ -171,8 +135,28 @@ export class EditInvoiceComponent {
     this.paymentTerms = i.paymentTerms;
     this.customDueDate = (i.paymentTerms === this.allPaymentTerms[0]);
 
-    this.client.copy(i.client);
-    this.shippingAddress = i.shippingAddress;
+    this.client.name = i.client.name;
+    this.client.pan = i.client.pan;
+    this.client.gst = i.client.gst;
+    this.client.mobile = i.client.mobile;
+    this.client.email = i.client.email;
+
+    this.client.address.line1 = i.client.address.line1;
+    this.client.address.line2 = i.client.address.line2;
+    this.client.address.pin = i.client.address.pin;
+    this.client.address.district = i.client.address.district;
+    this.client.address.state = i.client.address.state;
+    this.client.address.lon = i.client.address.lon;
+    this.client.address.lat = i.client.address.lat;
+
+    this.shippingAddress.line1 = i.shippingAddress.line1;
+    this.shippingAddress.line2 = i.shippingAddress.line2;
+    this.shippingAddress.pin = i.shippingAddress.pin;
+    this.shippingAddress.district = i.shippingAddress.district;
+    this.shippingAddress.state = i.shippingAddress.state;
+    this.shippingAddress.lon = i.shippingAddress.lon;
+    this.shippingAddress.lat = i.shippingAddress.lat;
+
     this.shippingAddressSame = i.shippingAddressSame;
     this.isShippingAddressValid = true;
 
@@ -207,7 +191,21 @@ export class EditInvoiceComponent {
 
   clientNameChange(event: string) {
     if (event && this.clientsMap.has(event.toLowerCase())) {
-      this.client.copy(this.clientsMap.get(event.toLowerCase()));
+      const c: Client = this.clientsMap.get(event.toLowerCase());
+
+      this.client.name = c.name;
+      this.client.pan = c.pan;
+      this.client.gst = c.gst;
+      this.client.mobile = c.mobile;
+      this.client.email = c.email;
+
+      this.client.address.line1 = c.address.line1;
+      this.client.address.line2 = c.address.line2;
+      this.client.address.pin = c.address.pin;
+      this.client.address.district = c.address.district;
+      this.client.address.state = c.address.state;
+      this.client.address.lon = c.address.lon;
+      this.client.address.lat = c.address.lat;
     } else {
       this.client = new Client();
       this.client.name = event;
@@ -427,162 +425,6 @@ export class EditInvoiceComponent {
     return false;
   }
 
-  public generatePDF(): jsPDF {
-    const options: jsPDFOptions = {};
-    options.compress = true;
-    const doc: jsPDF = new jsPDF(options);
-
-    // TODO remove all comments
-    // Comes from settings Icon - default is colorful backfround with initials
-    // Icon / logo creator - font + color or photo
-    doc.addImage('../../assets/icons/atlas-small.png', 'PNG', 7, 12, 17, 17);
-
-    this.headOwnerAddress[0][0] = this.business.name;
-
-    this.dataOwnerAddress[0][0] = this.business.addresses[0].line1 + ', ' + this.business.addresses[0].line2;
-    this.dataOwnerAddress[1][0] = this.business.addresses[0].district + ' (' + this.business.addresses[0].state + ') - ' +
-      this.business.addresses[0].pin;
-    this.dataOwnerAddress[2][0] = 'Email : ' + this.business.email;
-    this.dataOwnerAddress[3][0] = 'Tel : ' + this.business.phone + ', Mob : ' + this.business.mobile;
-
-    (doc as any).autoTable({
-      startY: 9,
-      head: this.headOwnerAddress,
-      body: this.dataOwnerAddress,
-      theme: 'plain',
-      margin: { left: 27 },
-      headStyles: { fontSize: '12', textColor: '#01579b' },
-      styles: {
-        cellWidth: 95,
-        fontSize: '10',
-        cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
-      },
-    });
-
-    const dataInvoiceDetails = [];
-    dataInvoiceDetails[0] = [];
-    dataInvoiceDetails[1] = [];
-    dataInvoiceDetails[2] = [];
-    dataInvoiceDetails[3] = [];
-    dataInvoiceDetails[0][0] = this.dataInvoiceDetails[0] + this.getFormattedDate(this.invoiceDate);
-    dataInvoiceDetails[1][0] = this.dataInvoiceDetails[1] + this.getFormattedDate(this.dueDate);
-    dataInvoiceDetails[2][0] = this.dataInvoiceDetails[2] + this.supplyPlace;
-    dataInvoiceDetails[3][0] = this.dataInvoiceDetails[3] + this.supplyState;
-
-    const headSellerAddress = [];
-    headSellerAddress[0] = this.invoiceBuyerDefault;
-
-    const dataSellerAddress = this.getAddressArray();
-
-    dataSellerAddress[0][0] = this.client.name;
-    dataSellerAddress[1][0] = 'PAN : ' + (this.client.gst ? this.client.gst : '');
-    dataSellerAddress[2][0] = 'Email : ' + (this.client.email ? this.client.email : '');
-    dataSellerAddress[3][0] = 'Mobile : ' + (this.client.mobile ? '+91 - ' + this.client.mobile : '');
-
-    dataSellerAddress[0][1] = this.client.address.line1 ? this.client.address.line1 : '';
-    dataSellerAddress[1][1] = this.client.address.line2 ? this.client.address.line2 : '';
-    dataSellerAddress[2][1] = this.client.address.district + ' - ' + this.client.address.pin;
-    dataSellerAddress[3][1] = this.client.address.state;
-
-    if (this.shippingAddressSame) {
-      this.shippingAddress.copy(this.client.address);
-    }
-    dataSellerAddress[0][2] = this.shippingAddress.line1 ? this.shippingAddress.line1 : '';
-    dataSellerAddress[1][2] = this.shippingAddress.line2 ? this.shippingAddress.line2 : '';
-    dataSellerAddress[2][2] = this.shippingAddress.district + ' - ' + this.shippingAddress.pin;
-    dataSellerAddress[3][2] = this.shippingAddress.state;
-
-    (doc as any).autoTable({
-      startY: 9,
-      head: this.headInvoiceDetails,
-      body: dataInvoiceDetails,
-      theme: 'plain',
-      margin: { left: 150 },
-      headStyles: { fontSize: '12', textColor: '#01579b' },
-      styles: {
-        cellWidth: 95,
-        fontSize: '10',
-        cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
-      },
-    });
-
-    doc.line(10, 42, 85, 42);
-    doc.text('TAX INVOICE', 90, 44);
-    doc.line(130, 42, 200, 42);
-
-    (doc as any).autoTable({
-      startY: 50,
-      head: headSellerAddress,
-      body: dataSellerAddress,
-      theme: 'plain',
-      margin: { left: 7, right: 7 },
-      headStyles: { fontSize: '11', textColor: '#01579b' },
-      styles: {
-        fontSize: '10',
-        cellPadding: { top: 1, right: 1, bottom: 0, left: 1 },
-      },
-    });
-
-    this.generateItemData();
-
-    (doc as any).autoTable({
-      startY: 80,
-      head: this.invoiceItemHead,
-      body: this.data,
-      theme: 'striped',
-      margin: { left: 8, right: 8 },
-      headStyles: { fontSize: '10' },
-      styles: { fontSize: '9' },
-    });
-
-    let finalY = (doc as any).lastAutoTable.finalY;
-
-    this.bodyTotal[0][1] = String(this.totalAmount);
-
-    if (this.supplyState === this.shippingAddress.state) {
-      this.bodyTotal[1][0] = Constants.TAX_STRING_SGST;
-    } else {
-      this.bodyTotal[1][0] = Constants.TAX_STRING_IGST;
-    }
-    this.bodyTotal[1][1] = String(this.totalTax);
-
-    const tot = Math.floor(this.total);
-    const dec = Math.floor((this.total - tot) * 100);
-    this.bodyTotal[2][1] = this.total + '\n' + this.inWords(tot) + 'Rupees ' + (dec > 0 ? this.inWords(dec) + 'Paise ' : '');
-
-    (doc as any).autoTable({
-      startY: finalY + 5,
-      body: this.bodyTotal,
-      theme: 'plain',
-      styles: {
-        cellWidth: 'wrap',
-        fontStyle: 'bold',
-        fontSize: '11',
-        halign: 'right',
-      },
-    });
-
-    finalY = (doc as any).lastAutoTable.finalY;
-    doc.setFontSize(12);
-    doc.line(145, finalY + 20, 195, finalY + 20);
-    doc.text('Authorized Signature', 150, finalY + 30);
-
-    // Footer
-    doc.setFontSize(9);
-    const pageCount = (doc as any).internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.text('Powered by Atlas®', 10, 290);
-      doc.text('Page ' + i + ' of ' + pageCount, 180, 290);
-    }
-
-    return doc;
-  }
-
-  // public downloadPDF(): void {
-  //   this.generatePDF().save('atlas.pdf');
-  // }
-
   openPreviewDialog() {
     if (!this.isValidInvoice()) {
       this.util.showSnackBar(
@@ -592,7 +434,8 @@ export class EditInvoiceComponent {
       return;
     }
 
-    const invoice = this.generatePDF();
+    this.updateInvoice(false);
+    const invoice = this.invoiceService.generatePDF(this.invoice);
     const pdf: ArrayBuffer = invoice.output('arraybuffer');
     const dialogRef = this.dialog.open(InvoicePreviewComponent, {
       data: pdf,
@@ -600,17 +443,18 @@ export class EditInvoiceComponent {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if (result.event === 'Save') {
-        this.createAndSaveInvoice(false);
+      if (result && result.event === 'Save') {
+        this.createAndSaveInvoice();
       }
     });
   }
 
   saveAsDraft() {
-    this.createAndSaveInvoice(true);
+    this.updateInvoice(true);
+    this.createAndSaveInvoice();
   }
 
-  createAndSaveInvoice(saveAsDraft: boolean) {
+  updateInvoice(saveAsDraft: boolean) {
     const timestamp = Date.now();
 
     let version: InvoiceVersion;
@@ -646,24 +490,26 @@ export class EditInvoiceComponent {
     version.shippingAddressSame = this.shippingAddressSame;
     version.items = this.items;
 
+    this.generateItemTotal();
     version.totalTaxableValue = this.totalAmount;
     version.totalTax = this.totalTax;
     version.total = this.total;
 
-    const preview: InvoicePreview = new InvoicePreview();
-    preview.id = this.invoice.id;
-    preview.invoiceNo = this.invoice.invoiceNo;
-    preview.isDraft = saveAsDraft;
-    preview.client = version.client.name;
-    preview.address = version.client.address.district + ', ' + version.client.address.state + ' - ' + version.client.address.pin;
-    preview.amount = version.total;
-    preview.invoiceDate = version.invoiceDate;
-    preview.dueDate = version.dueDate;
-    preview.lastUpdatedTimeUtc = timestamp;
+    this.preview.id = this.invoice.id;
+    this.preview.invoiceNo = this.invoice.invoiceNo;
+    this.preview.isDraft = saveAsDraft;
+    this.preview.client = version.client.name;
+    this.preview.address = version.client.address.district + ', ' + version.client.address.state + ' - ' + version.client.address.pin;
+    this.preview.amount = version.total;
+    this.preview.invoiceDate = version.invoiceDate;
+    this.preview.dueDate = version.dueDate;
+    this.preview.lastUpdatedTimeUtc = timestamp;
+  }
 
+  createAndSaveInvoice() {
     this.fbutil.getInvoicePreviewRef('bizId')
-      .doc(this.invoice.id)
-      .set(this.fbutil.toJson(preview));
+      .doc(this.preview.id)
+      .set(this.fbutil.toJson(this.preview));
 
     this.fbutil
       .getInvoiceRef('bizId')
@@ -695,52 +541,17 @@ export class EditInvoiceComponent {
     }
   }
 
-  getFormattedDate(date: Date): string {
-    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(
-      date
-    );
-    const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(
-      date
-    );
-    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(
-      date
-    );
-    return da + ' ' + mo + ' ' + ye;
-  }
-
-  generateItemData() {
-    const dataArr = [];
-    let counter = 1;
+  generateItemTotal() {
     this.totalAmount = 0;
     this.totalTax = 0;
     this.total = 0;
 
     this.items.forEach((item) => {
-      const dataItem = [];
-
-      dataItem.push(counter);
-      dataItem.push(item.name + '\n(' + item.unit + ')');
-      dataItem.push(item.id);
-      dataItem.push(item.qty);
-      dataItem.push(item.price);
-
       const a = item.price * item.qty;
-      dataItem.push(a);
-      dataItem.push(item.discount);
       this.totalAmount += (a - item.discount);
-
-      // Trimming off other value after total tax
-      dataItem.push(item.taxValue + '\n(' + item.tax.substring(0, 3).trim() + ')');
       this.totalTax += item.taxValue;
-
-      dataItem.push(item.total);
       this.total += item.total;
-
-      dataArr.push(dataItem);
-      counter++;
     });
-
-    this.data = dataArr;
   }
 
   isValidAddress(address: Address): boolean {
@@ -753,47 +564,10 @@ export class EditInvoiceComponent {
     ) ? true : false;
   }
 
-  getAddressArray(): string[][] {
-    const a = [];
-    for (let i = 0; i < 4; i++) {
-      a[i] = [];
-    }
-    return a;
-  }
-
-  inWords(num: string | number) {
-    if ((num = num.toString()).length > 9) { return ''; }
-    const n = ('000000000' + num).substr(-9).match(/^(\d{2})(\d{2})(\d{2})(\d{1})(\d{2})$/);
-    const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
-    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-
-    if (!n) { return; } let str = '';
-    str += (Number(n[1]) !== 0) ? (a[n[1]] || b[n[1][0]] + ' ' + a[n[1][1]]) + 'Crore ' : '';
-    str += (Number(n[1]) !== 0) ? (a[n[2]] || b[n[2][0]] + ' ' + a[n[2][1]]) + 'Lakh ' : '';
-    str += (Number(n[3]) !== 0) ? (a[n[3]] || b[n[3][0]] + ' ' + a[n[3][1]]) + 'Thousand ' : '';
-    str += (Number(n[4]) !== 0) ? (a[n[4]] || b[n[4][0]] + ' ' + a[n[4][1]]) + 'Hundred ' : '';
-    str += (Number(n[5]) !== 0) ? ((str !== '') ? 'and ' : '') + (a[Number(n[5])] || b[n[5][0]] + ' ' + a[n[5][1]]) : '';
-    return str;
-  }
-
   getBusinessInfo() {
-    const b = new Business();
-    b.name = 'Krishna Enterprises';
-    b.email = '8patidarneeraj@gmail.com';
-    b.mobile = '+91 - 8877073059';
-    b.phone = '02964 - 230354';
-
-    const a = new Address();
-    a.line1 = 'C\\o Balkrishna Patidar';
-    a.line2 = 'Gamda Brahmaniya, Sagwara';
-    a.district = 'Dungarpur';
-    a.state = 'Rajasthan';
-    a.pin = 314025;
-    b.addresses[0] = a;
-
-    this.business = b;
-    this.supplyPlace = b.addresses[0].district;
-    this.supplyState = b.addresses[0].state;
+    this.business = this.invoiceService.getBusinessInfo();
+    this.supplyPlace = this.business.addresses[0].district;
+    this.supplyState = this.business.addresses[0].state;
 
     this.isInvoiceDetailValid = (this.supplyPlace && this.supplyState) ? true : false;
   }
