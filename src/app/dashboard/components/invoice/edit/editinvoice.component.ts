@@ -142,7 +142,7 @@ export class EditInvoiceComponent {
   }
 
   fetchInvoice() {
-    if (!this.invoiceService.invoiceId) {
+    if (!this.invoiceService.invoiceId || this.invoiceService.invoiceId.length === 0) {
       this.addItem();
       return;
     }

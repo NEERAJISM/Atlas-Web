@@ -77,8 +77,8 @@ export class InvoiceDashboardComponent  implements AfterViewInit, OnDestroy {
     this.dataSource.sort = this.sort;
   }
 
-  loadNewInvoiceComponent() {
-    this.invoiceService.invoiceId = 'artTETzm73iPUQ77cPyY';
+  loadNewInvoiceComponent(id: string) {
+    this.invoiceService.invoiceId = id;
     this.router.navigateByUrl('/dashboard/invoice/edit');
   }
 
@@ -100,7 +100,7 @@ export class InvoiceDashboardComponent  implements AfterViewInit, OnDestroy {
 
   }
 
-  edit(invoice){
-
+  edit(invoice: InvoicePreview){
+    this.loadNewInvoiceComponent(invoice.id);
   }
 }
