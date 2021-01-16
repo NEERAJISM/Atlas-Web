@@ -4,11 +4,13 @@ export class Constants {
   static CLIENT_DB = 'ClientDB';
   static PRODUCT_DB = 'ProductDB';
   static INVOICE_DB = 'InvoiceDB';
+  static INVOICE_PREVIEW_DB = 'InvoicePreviewDB';
 
   static USERS = 'Users';
   static CLIENTS = 'Clients';
   static PRODUCTS = 'Products';
   static INVOICES = 'Invoices';
+  static INVOICE_PREVIEWS = 'InvoicePreviews';
 
   static TAX_STRING_SGST = 'Tax (SGST + CGST)';
   static TAX_STRING_IGST = 'Tax (IGST)';

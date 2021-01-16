@@ -9,6 +9,7 @@ import { Address } from '@core/models/address';
 import { Business } from '@core/models/business';
 import { Client } from '@core/models/client';
 import { Invoice, InvoiceVersion, Item } from '@core/models/invoice';
+import { InvoicePreview } from '@core/models/invoice.preview';
 import { Product, Unit } from '@core/models/product';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 import 'jspdf-autotable';
@@ -648,6 +649,21 @@ export class EditInvoiceComponent {
     version.totalTaxableValue = this.totalAmount;
     version.totalTax = this.totalTax;
     version.total = this.total;
+
+    const preview: InvoicePreview = new InvoicePreview();
+    preview.id = this.invoice.id;
+    preview.invoiceNo = this.invoice.invoiceNo;
+    preview.isDraft = saveAsDraft;
+    preview.client = version.client.name;
+    preview.address = version.client.address.district + ', ' + version.client.address.state + ' - ' + version.client.address.pin;
+    preview.amount = version.total;
+    preview.invoiceDate = version.invoiceDate;
+    preview.dueDate = version.dueDate;
+    preview.lastUpdatedTimeUtc = timestamp;
+
+    this.fbutil.getInvoicePreviewRef('bizId')
+      .doc(this.invoice.id)
+      .set(this.fbutil.toJson(preview));
 
     this.fbutil
       .getInvoiceRef('bizId')

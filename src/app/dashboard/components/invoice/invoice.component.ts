@@ -1,83 +1,85 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
+import { FirebaseUtil } from '@core/firebaseutil';
+import { InvoicePreview } from '@core/models/invoice.preview';
+import { Subscription } from 'rxjs';
 import { InvoiceService } from './invoice.service';
-
-export interface UserData {
-  id: string;
-  name: string;
-  progress: string;
-  color: string;
-}
-
-/** Constants used to fill up our data base. */
-const COLORS: string[] = [
-  'maroon',
-  'red',
-  'orange',
-  'yellow',
-  'olive',
-  'green',
-  'purple',
-  'fuchsia',
-  'lime',
-  'teal',
-  'aqua',
-  'blue',
-  'navy',
-  'black',
-  'gray',
-];
-const NAMES: string[] = [
-  'Maia',
-  'Asher',
-  'Olivia',
-  'Atticus',
-  'Amelia',
-  'Jack',
-  'Charlotte',
-  'Theodore',
-  'Isla',
-  'Oliver',
-  'Isabella',
-  'Jasper',
-  'Cora',
-  'Levi',
-  'Violet',
-  'Arthur',
-  'Mia',
-  'Thomas',
-  'Elizabeth',
-];
 
 @Component({
   selector: 'app-invoice',
   templateUrl: './invoice.component.html',
   styleUrls: ['./invoice.component.scss'],
 })
-export class InvoiceDashboardComponent implements OnInit {
-  value = 'Clear me';
-  pdfSrc = 'https://vadimdez.github.io/ng2-pdf-viewer/assets/pdf-test.pdf'
+export class InvoiceDashboardComponent  implements AfterViewInit, OnDestroy {
+  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild(MatSort) sort: MatSort;
 
-  displayedColumns: string[] = ['id', 'name', 'progress', 'color'];
-  dataSource: MatTableDataSource<UserData>;
+  invoice: InvoicePreview;
+  dataSource: MatTableDataSource<InvoicePreview>;
+  subscription: Subscription;
+  displayedColumns: string[] = [
+    'invoiceNo',
+    'client',
+    'address',
+    'amount',
+    'invoiceDate',
+    'dueDate',
+    'lastUpdate',
+    'actions',
+  ];
 
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-
-  constructor(private router: Router, private invoiceService: InvoiceService) {
-    // Create 100 users
-    const users = Array.from({ length: 100 }, (_, k) => createNewUser(k + 1));
-
-    // Assign the data to the data source for the table to render
-    this.dataSource = new MatTableDataSource(users);
+  constructor(private fbutil: FirebaseUtil, private router: Router, private invoiceService: InvoiceService) {
+    this.dataSource = new MatTableDataSource();
+    this.subscribeToUpdates();
   }
 
-  ngOnInit() {
+  ngOnDestroy(): void {
+    this.subscription.unsubscribe();
+  }
+
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+  }
+
+  subscribeToUpdates() {
+    this.subscription = this.fbutil
+      .getInvoicePreviewRef('bizId')
+      .snapshotChanges()
+      .subscribe(() => {
+        this.fetchInvoicePreviews();
+      });
+  }
+
+  fetchInvoicePreviews() {
+    const result: InvoicePreview[] = [];
+    this.fbutil
+      .getInvoicePreviewRef('bizId')
+      .get()
+      .forEach((res) =>
+        res.forEach((data) => {
+          const c = new InvoicePreview();
+          if (data.data()) {
+            Object.assign(c, data.data());
+            result.push(c);
+          }
+        })
+      )
+      .finally(() => this.update(result));
+  }
+
+  update(result: InvoicePreview[]) {
+    this.dataSource = new MatTableDataSource(result);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  loadNewInvoiceComponent() {
+    this.invoiceService.invoiceId = 'artTETzm73iPUQ77cPyY';
+    this.router.navigateByUrl('/dashboard/invoice/edit');
   }
 
   applyFilter(event: Event) {
@@ -89,24 +91,16 @@ export class InvoiceDashboardComponent implements OnInit {
     }
   }
 
-  loadNewInvoiceComponent(){
-    this.invoiceService.invoiceId = 'artTETzm73iPUQ77cPyY';
-    this.router.navigateByUrl('/dashboard/invoice/edit');
+  getDateString(date: number){
+    const d = new Date(date);
+    return d.toLocaleString();
   }
-}
 
-/** Builds and returns a new User. */
-function createNewUser(id: number): UserData {
-  const name =
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))] +
-    ' ' +
-    NAMES[Math.round(Math.random() * (NAMES.length - 1))].charAt(0) +
-    '.';
+  preview(invoice){
 
-  return {
-    id: id.toString(),
-    name: name,
-    progress: Math.round(Math.random() * 100).toString(),
-    color: COLORS[Math.round(Math.random() * (COLORS.length - 1))],
-  };
+  }
+
+  edit(invoice){
+
+  }
 }
