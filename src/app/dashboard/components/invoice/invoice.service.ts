@@ -5,6 +5,8 @@ import { Business } from '@core/models/business';
 import { Invoice, InvoiceVersion } from '@core/models/invoice';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 
+import { HttpClient } from '@angular/common/http';
+
 @Injectable()
 export class InvoiceService {
   invoiceId: string;
@@ -43,6 +45,8 @@ export class InvoiceService {
     ['', ''],
     ['Final Amount (Total + Tax)', '']
   ];
+
+  constructor(private http: HttpClient) { }
 
   public getBusinessInfo(): Business {
     const b = new Business();
@@ -289,5 +293,22 @@ export class InvoiceService {
     });
 
     return dataArr;
+  }
+
+  sendEmail(){
+    let key = '0445ED7941A25CD2AED36FA0FAEA2712BAB7B62980D56AE2F742E3C63EF77F7D9F6A3C3146CF23234632CCE713C2CE44';
+
+    let url = 'https://api.elasticemail.com/v2/email/send?apikey=' + key +
+    '&from=neerajism@cse.ism.ac.in&fromName=Neeraj&subject=ElasticEmailTest1&msgTo=mymailboxmark2@gmail.com&bodyHtml=<h3>This is a test email using Elastic</h3>&isTransactional=true';
+
+
+    let url2 = 'https://api.elasticemail.com/v2/sms/send?apikey=' + key + '&to=+918877073059&body=SMS from Elastic Email';
+    //8patidarneeraj@gmail.com
+    //mymailboxmark2@gmail.com
+
+    this.http.post(url, {responseType: 'json'})
+      .subscribe(r => console.log(r));
+
+
   }
 }

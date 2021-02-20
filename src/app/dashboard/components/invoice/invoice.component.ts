@@ -105,6 +105,10 @@ export class InvoiceDashboardComponent implements AfterViewInit, OnDestroy {
     return d.toLocaleString();
   }
 
+  edit(id: string) {
+    this.loadNewInvoiceComponent(id);
+  }
+
   preview(id: string) {
     this.fbutil.getInvoiceRef('bizId').doc(id).get().forEach((invoice) => {
       if (invoice.exists) {
@@ -127,21 +131,33 @@ export class InvoiceDashboardComponent implements AfterViewInit, OnDestroy {
     });
   }
 
-  edit(invoice: InvoicePreview) {
-    this.loadNewInvoiceComponent(invoice.id);
+  mail(id: string) {
+    this.invoiceService.sendEmail();
   }
 
-  mail(invoice: InvoicePreview) {
-
+  download(id: string) {
+    this.fbutil.getInvoiceRef('bizId').doc(id).get().forEach((invoice) => {
+      if (invoice.exists) {
+        const i: Invoice = new Invoice();
+        Object.assign(i, invoice.data());
+        this.invoiceService.generatePDF(i).save('atlas.pdf');
+      }
+    }).catch(e => {
+      this.util.showSnackBar('Error while loading invoice data!', 'Close');
+      console.log(e);
+    });
   }
 
-  download(invoice: InvoicePreview) {
-    //   this.generatePDF().save('atlas.pdf');
+  print(id: string) {
+    this.fbutil.getInvoiceRef('bizId').doc(id).get().forEach((invoice) => {
+      if (invoice.exists) {
+        const i: Invoice = new Invoice();
+        Object.assign(i, invoice.data());
+        this.invoiceService.generatePDF(i).output('dataurlnewwindow').open();
+      }
+    }).catch(e => {
+      this.util.showSnackBar('Error while loading invoice data!', 'Close');
+      console.log(e);
+    });
   }
-
-  print(invoice: InvoicePreview) {
-
-  }
-
-
 }

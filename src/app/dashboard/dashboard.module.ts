@@ -4,6 +4,7 @@ import { CoreModule } from '../core/core.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { ChartsModule } from 'ng2-charts';
 
@@ -54,6 +55,7 @@ import { InvoiceService } from './components/invoice/invoice.service';
 @NgModule({
   imports: [
     BrowserModule,
+    HttpClientModule,
     FormsModule,
     ReactiveFormsModule,
     CoreModule,
