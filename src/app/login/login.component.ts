@@ -33,8 +33,10 @@ export class LoginComponent {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(LoginDialogComponent, {
-      width: '300px',
+      height: '600px',
+      width: '1000px',
       data: { name: this.name, animal: this.animal },
+      panelClass: 'login-dialog-container'
     });
 
     dialogRef.afterClosed().subscribe((result) => {

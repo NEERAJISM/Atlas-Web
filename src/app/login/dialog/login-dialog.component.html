@@ -1,7 +1,151 @@
-<h5>Login to your Atlas Account</h5>
+<div class="row">
+  <!-- Slider -->
+  <div class="col-lg-7 px-0">
+    <ngb-carousel
+      [showNavigationIndicators]="false"
+      [wrap]="true"
+      [interval]="3000"
+      [animation]="true"
+    >
+      <ng-template ngbSlide>
+        <div>
+          <img
+            src="../../../assets/images/login/Login1.jpg"
+            alt="Random first slide"
+          />
+        </div>
+      </ng-template>
+      <ng-template ngbSlide>
+        <div>
+          <img
+            src="../../../assets/images/login/Login2.png"
+            alt="Random second slide"
+            class="w-100"
+          />
+        </div>
+      </ng-template>
+      <ng-template ngbSlide>
+        <div>
+          <img
+            src="../../../assets/images/login/Login3.jpg"
+            alt="Random third slide"
+            class="w-100"
+          />
+        </div>
+      </ng-template>
+    </ngb-carousel>
+  </div>
 
-<div mat-dialog-actions>
-  <button color="primary" mat-raised-button (click)="onClickLogin();">
-    Login
-  </button>
+  <!-- Login Form -->
+  <div class="col-lg-5 pl-4 pr-5">
+    <img
+      src="../../../assets/icons/atlas-small.png"
+      class="center mt-4"
+      style="width: 100px; height: 100px; display: block; margin: auto"
+    />
+    <h5 class="mt-4 mb-5 text-center text-secondary">
+      Login to your Atlas Account!
+    </h5>
+
+    <form class="example-form">
+      <mat-form-field class="example-full-width mb-1" appearance="outline">
+        <mat-label>Email Id</mat-label>
+        <input
+          style="font-size: 20px"
+          tabindex="-1"
+          type="email"
+          matInput
+          [(ngModel)]="email"
+          [formControl]="emailFormControl"
+          [errorStateMatcher]="matcher"
+          placeholder="Ex. user@example.com"
+        />
+        <mat-error
+          *ngIf="
+            emailFormControl.hasError('email') &&
+            !emailFormControl.hasError('required')
+          "
+        >
+          Please enter a valid email address
+        </mat-error>
+        <mat-error *ngIf="emailFormControl.hasError('required')">
+          Email is <strong>required</strong>
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field
+        *ngIf="!isForgotPassword"
+        class="example-full-width"
+        appearance="outline"
+      >
+        <mat-label>Password</mat-label>
+        <button tabindex="-1" mat-icon-button matSuffix (click)="hide = !hide">
+          <i
+            style="padding-bottom: 12px"
+            class="fas text-secondary"
+            [ngClass]="hide ? 'fa-eye' : 'fa-eye-slash'"
+          ></i>
+        </button>
+        <input
+          style="font-size: 20px"
+          tabindex="-1"
+          [type]="hide ? 'password' : 'text'"
+          matInput
+          [(ngModel)]="pass"
+          [formControl]="passwordFormControl"
+          [errorStateMatcher]="matcher"
+          placeholder="*******"
+        />
+        <mat-error *ngIf="passwordFormControl.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+        <mat-error
+          *ngIf="
+            passwordFormControl.hasError('minlength') &&
+            !passwordFormControl.hasError('required')
+          "
+        >
+          <strong>Minimum</strong> password length is 6
+        </mat-error>
+      </mat-form-field>
+    </form>
+
+    <div>
+      <a
+        *ngIf="!isForgotPassword"
+        href="javascript:void(0)"
+        (click)="forgotPassword()"
+        >Forgot Password?</a
+      >
+    </div>
+
+    <div class="row" mat-dialog-actions>
+      <button
+        tabindex="-1"
+        class="btn-primary login-font px-5"
+        style="margin: auto; border-radius: 15px"
+        mat-raised-button
+        (click)="onClickLogin()"
+      >
+        {{ isForgotPassword ? "Recover password via Email" : "Login" }}
+      </button>
+    </div>
+
+    <div class="mt-4">
+      <a
+        style="display: block; text-align: center"
+        *ngIf="isForgotPassword"
+        href="javascript:void(0)"
+        (click)="backToLogin()"
+        >Go back to Login</a
+      >
+    </div>
+
+    <div class="mt-5">
+      <p style="text-align: center">
+        <a href="javascript:void(0)" (click)="onClickRegister()">Click here</a>
+        to register a new account.
+      </p>
+    </div>
+  </div>
 </div>

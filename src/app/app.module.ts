@@ -10,6 +10,8 @@ import { FormsModule } from '@angular/forms';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { AngularFireModule } from '@angular/fire';
+import { AngularFireAuthModule } from '@angular/fire/auth';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,8 +24,9 @@ import { AngularFireModule } from '@angular/fire';
     LoginModule,
     DashboardModule,
     AngularFireModule.initializeApp(environment.firebaseConfig),
+    AngularFireAuthModule,
+    NgbModule
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
