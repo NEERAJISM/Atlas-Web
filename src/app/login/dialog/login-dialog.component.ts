@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
 import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { Constants } from '@core/constants';
 import { AuthService } from 'src/app/auth.service';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -31,7 +32,10 @@ export class LoginDialogComponent implements AfterViewInit {
 
   email: string;
   pass: string;
-  isForgotPassword: boolean = false;
+  isForgotPassword = false;
+
+  hasError = false;
+  error = '';
 
   constructor(
     public dialogRef: MatDialogRef<LoginDialogComponent>,
@@ -44,15 +48,40 @@ export class LoginDialogComponent implements AfterViewInit {
   }
 
   onClickLogin() {
-    if (this.email && this.email.length > 0) {
-      if (this.isForgotPassword) {
-        this.auth.forgotPassword(this.email);
-      } else if (this.pass && this.pass.length > 5) {
-        this.auth.signIn(this.email, this.pass)
-          .then(() =>this.dialogRef.close())
-          .catch(() => console.log("login error"));
-      }
+    this.hasError = false;
+
+    if (!this.email || this.email.length === 0 || this.emailFormControl.hasError('email')) {
+      this.hasError = true;
+      this.error = 'Invalid Email Address!';
+      return;
     }
+
+    if (this.isForgotPassword) {
+      this.auth.forgotPassword(this.email);
+      return;
+    }
+
+    if (!this.pass || this.pass.length < 6) {
+      this.hasError = true;
+      this.error = 'Invalid Password!';
+      return;
+    }
+
+    this.auth.signIn(this.email, this.pass)
+      .then((x) => {
+        if (Constants.SUCCESS === x) {
+          this.dialogRef.close();
+        } else {
+          this.hasError = true;
+          if (Constants.AUTH_NO_USER === x) {
+            this.error = 'No account found for this e-mail, Please register!';
+          } else if (Constants.AUTH_INVALID_PASSWORD === x) {
+            this.error = 'Incorrect Password!';
+          } else {
+            this.error = x;
+          }
+        }
+      });
   }
 
   onClickRegister() {
@@ -63,9 +92,11 @@ export class LoginDialogComponent implements AfterViewInit {
 
   forgotPassword() {
     this.isForgotPassword = true;
+    this.hasError = false;
   }
 
   backToLogin() {
     this.isForgotPassword = false;
+    this.hasError = false;
   }
 }

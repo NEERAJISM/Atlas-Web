@@ -132,6 +132,9 @@
     </div>
 
     <div class="mt-4">
+      <p *ngIf="hasError" class="text-danger" style="text-align: center">
+        {{ error }}
+      </p>
       <a
         style="display: block; text-align: center"
         *ngIf="isForgotPassword"
@@ -141,7 +144,7 @@
       >
     </div>
 
-    <div class="mt-5">
+    <div class="mt-4">
       <p style="text-align: center">
         <a href="javascript:void(0)" (click)="onClickRegister()">Click here</a>
         to register a new account.

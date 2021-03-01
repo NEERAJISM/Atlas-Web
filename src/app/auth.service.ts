@@ -2,6 +2,7 @@ import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { Constants } from '@core/constants';
 import firebase from 'firebase/app';
 
 @Injectable({
@@ -38,9 +39,10 @@ export class AuthService {
         this.ngZone.run(() => {
           this.router.navigateByUrl('/dashboard');
         });
+        return Constants.SUCCESS;
         // this.setUserData(result.user);
       }).catch((error) => {
-        window.alert(error.message);
+        return error.code;
       });
   }
 

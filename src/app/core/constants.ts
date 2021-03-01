@@ -1,4 +1,10 @@
 export class Constants {
+  static SUCCESS = 'Success';
+  static FAILURE = 'Failure';
+
+  static AUTH_NO_USER = 'auth/user-not-found';
+  static AUTH_INVALID_PASSWORD = 'auth/wrong-password';
+
   // Firebase
   static USER_DB = 'UserDB';
   static CLIENT_DB = 'ClientDB';
