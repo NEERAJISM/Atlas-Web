@@ -1,7 +1,7 @@
 <app-splash id="splash" *ngIf="!showContent"></app-splash>
 
 <!-- Caching the image first before load -->
-<img src="../../assets/images/landing5.jpg" style="display: none;" (load)="onImageLoadComplete()" *ngIf="!showContent">
+<img src="assets/images/landing5.jpg" style="display: none;" (load)="onImageLoadComplete()" *ngIf="!showContent">
 
 <!--Main Navigation-->
 <header *ngIf="showContent">
