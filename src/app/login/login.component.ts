@@ -1,5 +1,7 @@
 import { Component, ElementRef, HostListener, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Router } from '@angular/router';
+import { AuthService } from '../auth.service';
 import { LoginDialogComponent } from './dialog/login-dialog.component';
 
 @Component({
@@ -18,7 +20,7 @@ export class LoginComponent {
   animal: string;
   name: string;
 
-  constructor(public dialog: MatDialog) {
+  constructor(public dialog: MatDialog, private auth: AuthService, public router: Router) {
     this.showContent = false;
   }
 
@@ -31,11 +33,16 @@ export class LoginComponent {
     targetElement.scrollIntoView({ behavior: 'smooth' });
   }
 
-  openDialog(): void {
+  openModal(register: boolean): void {
+    if (this.auth.isLoggedIn) {
+      this.router.navigateByUrl('/dashboard');
+      return;
+    }
+
     const dialogRef = this.dialog.open(LoginDialogComponent, {
       height: '600px',
       width: '1000px',
-      data: { name: this.name, animal: this.animal },
+      data: register,
       panelClass: 'login-dialog-container'
     });
 
@@ -49,7 +56,7 @@ export class LoginComponent {
     const element = document.querySelector('.view');
     const navbarElement = document.querySelector('.navbar');
 
-    if ( element && window.pageYOffset < element.clientHeight - navbarElement.clientHeight ) {
+    if (element && window.pageYOffset < element.clientHeight - navbarElement.clientHeight) {
       navbarElement.classList.remove('bg-primary');
     } else {
       navbarElement.classList.add('bg-primary');

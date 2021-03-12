@@ -1,7 +1,7 @@
-import { AfterViewInit, ChangeDetectorRef, Component } from '@angular/core';
-import { FormControl, FormGroupDirective, NgForm, Validators } from '@angular/forms';
+import { AfterViewInit, ChangeDetectorRef, Component, Inject } from '@angular/core';
+import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, Validators } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants } from '@core/constants';
 import { AuthService } from 'src/app/auth.service';
 
@@ -9,6 +9,19 @@ export class MyErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
+
+export class MismatchValidator {
+  static mismatch(otherInputControl: AbstractControl): ValidatorFn {
+    return (inputControl: AbstractControl): { [key: string]: boolean } | null => {
+      if (inputControl.value !== undefined
+        && inputControl.value.trim() !== ''
+        && inputControl.value !== otherInputControl.value) {
+        return { mismatch: true };
+      }
+      return null;
+    };
   }
 }
 
@@ -30,18 +43,33 @@ export class LoginDialogComponent implements AfterViewInit {
     Validators.minLength(6)
   ]);
 
+  hide2 = true;
+  passwordFormControl2 = new FormControl('', [
+    Validators.required,
+    Validators.minLength(6),
+    MismatchValidator.mismatch(this.passwordFormControl)
+  ]);
+
   email: string;
   pass: string;
+  pass2: string;
   isForgotPassword = false;
+
+  isRegister = false;
 
   hasError = false;
   error = '';
 
   constructor(
     public dialogRef: MatDialogRef<LoginDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: boolean,
     private cdr: ChangeDetectorRef,
     private auth: AuthService
-  ) { }
+  ) {
+    if(data) {
+      this.onClickRegister();
+    }
+  }
 
   ngAfterViewInit(): void {
     this.cdr.detectChanges();
@@ -67,16 +95,39 @@ export class LoginDialogComponent implements AfterViewInit {
       return;
     }
 
-    this.auth.signIn(this.email, this.pass)
+    if (!this.isRegister) {
+      this.auth.signIn(this.email, this.pass)
+        .then((x) => {
+          if (Constants.SUCCESS === x) {
+            this.dialogRef.close();
+          } else {
+            this.hasError = true;
+            if (Constants.AUTH_NO_USER === x) {
+              this.error = 'No account found for this e-mail, Please register!';
+            } else if (Constants.AUTH_INVALID_PASSWORD === x) {
+              this.error = 'Incorrect Password!';
+            } else {
+              this.error = x;
+            }
+          }
+        });
+      return;
+    }
+
+    if (this.pass !== this.pass2) {
+      this.hasError = true;
+      this.error = 'Passwords do not match!';
+      return;
+    }
+
+    this.auth.signUp(this.email, this.pass)
       .then((x) => {
         if (Constants.SUCCESS === x) {
           this.dialogRef.close();
         } else {
           this.hasError = true;
-          if (Constants.AUTH_NO_USER === x) {
-            this.error = 'No account found for this e-mail, Please register!';
-          } else if (Constants.AUTH_INVALID_PASSWORD === x) {
-            this.error = 'Incorrect Password!';
+          if (Constants.AUTH_ALREADY_IN_USE === x) {
+            this.error = 'This e-mail id is already registered, Please login!';
           } else {
             this.error = x;
           }
@@ -85,9 +136,8 @@ export class LoginDialogComponent implements AfterViewInit {
   }
 
   onClickRegister() {
-    if (this.email && this.email.length > 0 && this.pass && this.pass.length > 5) {
-      this.auth.signUp(this.email, this.pass);
-    }
+    this.isRegister = true;
+    this.hasError = false;
   }
 
   forgotPassword() {
@@ -97,6 +147,11 @@ export class LoginDialogComponent implements AfterViewInit {
 
   backToLogin() {
     this.isForgotPassword = false;
+    this.isRegister = false;
     this.hasError = false;
+  }
+
+  passChange() {
+    this.passwordFormControl2.updateValueAndValidity();
   }
 }

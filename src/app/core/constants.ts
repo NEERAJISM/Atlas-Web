@@ -4,6 +4,7 @@ export class Constants {
 
   static AUTH_NO_USER = 'auth/user-not-found';
   static AUTH_INVALID_PASSWORD = 'auth/wrong-password';
+  static AUTH_ALREADY_IN_USE = 'auth/email-already-in-use';
 
   // Firebase
   static USER_DB = 'UserDB';

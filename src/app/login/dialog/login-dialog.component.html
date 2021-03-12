@@ -9,10 +9,7 @@
     >
       <ng-template ngbSlide>
         <div>
-          <img
-            src="assets/images/login/Login1.jpg"
-            alt="Random first slide"
-          />
+          <img src="assets/images/login/Login1.jpg" alt="Random first slide" />
         </div>
       </ng-template>
       <ng-template ngbSlide>
@@ -43,8 +40,8 @@
       class="center mt-4"
       style="width: 100px; height: 100px; display: block; margin: auto"
     />
-    <h5 class="mt-4 mb-5 text-center text-secondary">
-      Login to your Atlas Account!
+    <h5 class="my-3 text-center text-secondary">
+      {{isRegister ? "Register new" : "Login to your"}} Atlas Account!
     </h5>
 
     <form class="example-form">
@@ -92,6 +89,7 @@
           [type]="hide ? 'password' : 'text'"
           matInput
           [(ngModel)]="pass"
+          (ngModelChange)="passChange()"
           [formControl]="passwordFormControl"
           [errorStateMatcher]="matcher"
           placeholder="*******"
@@ -108,11 +106,62 @@
           <strong>Minimum</strong> password length is 6
         </mat-error>
       </mat-form-field>
+
+      <mat-form-field
+        *ngIf="isRegister"
+        class="example-full-width"
+        appearance="outline"
+      >
+        <mat-label>Confirm Password</mat-label>
+        <button
+          tabindex="-1"
+          mat-icon-button
+          matSuffix
+          (click)="hide2 = !hide2"
+        >
+          <i
+            style="padding-bottom: 12px"
+            class="fas text-secondary"
+            [ngClass]="hide2 ? 'fa-eye' : 'fa-eye-slash'"
+          ></i>
+        </button>
+        <input
+          style="font-size: 20px"
+          tabindex="-1"
+          [type]="hide2 ? 'password' : 'text'"
+          matInput
+          [(ngModel)]="pass2"
+          [formControl]="passwordFormControl2"
+          [errorStateMatcher]="matcher"
+          placeholder="*******"
+        />
+        <mat-error *ngIf="passwordFormControl2.hasError('required')">
+          Password is <strong>required</strong>
+        </mat-error>
+        <mat-error
+          *ngIf="
+            !passwordFormControl2.hasError('required') &&
+            passwordFormControl2.hasError('minlength')
+          "
+        >
+          <strong>Minimum</strong> password length is 6
+        </mat-error>
+
+        <mat-error
+          *ngIf="
+            !passwordFormControl2.hasError('required') &&
+            !passwordFormControl2.hasError('minlength') &&
+            passwordFormControl2.hasError('mismatch')
+          "
+        >
+          Passwords <strong>do not match</strong>
+        </mat-error>
+      </mat-form-field>
     </form>
 
     <div>
       <a
-        *ngIf="!isForgotPassword"
+        *ngIf="!isForgotPassword && !isRegister"
         href="javascript:void(0)"
         (click)="forgotPassword()"
         >Forgot Password?</a
@@ -127,7 +176,13 @@
         mat-raised-button
         (click)="onClickLogin()"
       >
-        {{ isForgotPassword ? "Recover password via Email" : "Login" }}
+        {{
+          isForgotPassword
+            ? "Recover password via Email"
+            : isRegister
+            ? "Register"
+            : "Login"
+        }}
       </button>
     </div>
 
@@ -137,14 +192,14 @@
       </p>
       <a
         style="display: block; text-align: center"
-        *ngIf="isForgotPassword"
+        *ngIf="isForgotPassword || isRegister"
         href="javascript:void(0)"
         (click)="backToLogin()"
-        >Go back to Login</a
+        >Go to Login</a
       >
     </div>
 
-    <div class="mt-4">
+    <div class="mt-4" *ngIf="!isRegister && !isForgotPassword">
       <p style="text-align: center">
         <a href="javascript:void(0)" (click)="onClickRegister()">Click here</a>
         to register a new account.

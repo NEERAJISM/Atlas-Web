@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
+import { AuthService } from 'src/app/auth.service';
 
 @Component({
   selector: 'app-dashboard-header',
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./header.component.scss'],
 })
 export class DashboardHeaderComponent {
-  constructor(private router: Router, public dialog: MatDialog) {}
+  constructor(public dialog: MatDialog) {}
 
   openLogoutDialog() {
     const dialogRef = this.dialog.open(LogoutDialogComponent, {
@@ -29,7 +29,7 @@ export class DashboardHeaderComponent {
 export class LogoutDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<LogoutDialogComponent>,
-    private router: Router
+    private auth: AuthService
   ) {}
 
   onNoClick(): void {
@@ -37,7 +37,7 @@ export class LogoutDialogComponent {
   }
 
   onClickLogin() {
-    this.router.navigateByUrl('');
+    this.auth.signOut();
     this.dialogRef.close();
   }
 }
