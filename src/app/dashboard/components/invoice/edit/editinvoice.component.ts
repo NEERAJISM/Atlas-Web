@@ -23,6 +23,8 @@ import { InvoicePreviewComponent } from './preview/invoice.preview.component';
   styleUrls: ['./editinvoice.component.scss'],
 })
 export class EditInvoiceComponent {
+  showSpinner = true;
+
   invoice: Invoice = new Invoice();
   preview: InvoicePreview = new InvoicePreview();
   existingInvoice = false;
@@ -108,6 +110,7 @@ export class EditInvoiceComponent {
   fetchInvoice() {
     if (!this.invoiceService.invoiceId || this.invoiceService.invoiceId.length === 0) {
       this.addItem();
+      this.showSpinner = false;
       return;
     }
 
@@ -123,7 +126,7 @@ export class EditInvoiceComponent {
       }).catch(e => {
         this.addItem();
         this.util.showSnackBar('Error while loading invoice data!', 'Close');
-        console.log(e);
+        this.showSpinner = false;
       });
   }
 
@@ -170,6 +173,8 @@ export class EditInvoiceComponent {
     this.total = i.total;
     this.totalTax = i.totalTax;
     this.totalAmount = i.totalTaxableValue;
+
+    this.showSpinner = false;
   }
 
   fetchClients() {

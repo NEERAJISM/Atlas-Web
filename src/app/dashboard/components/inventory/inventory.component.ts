@@ -15,6 +15,8 @@ import { RemoveProductComponent } from './remove/remove.product.component';
   styleUrls: ['./inventory.component.scss'],
 })
 export class InventoryDashboardComponent implements AfterViewInit, OnDestroy {
+  showSpinner = true;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -77,6 +79,8 @@ export class InventoryDashboardComponent implements AfterViewInit, OnDestroy {
     this.dataSource = new MatTableDataSource(result);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    this.showSpinner = false;
   }
 
   addNewProduct() {

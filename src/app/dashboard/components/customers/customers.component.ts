@@ -15,6 +15,8 @@ import { RemoveClientComponent } from './remove/remove.client.component';
   styleUrls: ['./customers.component.scss'],
 })
 export class CustomersDashboardComponent implements AfterViewInit, OnDestroy {
+  showSpinner = true;
+
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
 
@@ -78,6 +80,8 @@ export class CustomersDashboardComponent implements AfterViewInit, OnDestroy {
     this.dataSource = new MatTableDataSource(result);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    this.showSpinner = false;
   }
 
   applyFilter(event: Event) {

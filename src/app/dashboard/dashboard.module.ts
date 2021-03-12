@@ -83,7 +83,7 @@ import { InvoiceService } from './components/invoice/invoice.service';
     MatAutocompleteModule,
     MatSnackBarModule,
     MatDatepickerModule,
-    MatNativeDateModule
+    MatNativeDateModule,
   ],
   declarations: [
     DashboardComponent,
