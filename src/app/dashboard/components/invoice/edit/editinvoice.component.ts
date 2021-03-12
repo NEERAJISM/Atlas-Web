@@ -125,7 +125,7 @@ export class EditInvoiceComponent {
         }
       }).catch(e => {
         this.addItem();
-        this.util.showSnackBar('Error while loading invoice data!', 'Close');
+        this.util.showSnackBar('Error while loading invoice data!');
         this.showSpinner = false;
       });
   }
@@ -284,7 +284,7 @@ export class EditInvoiceComponent {
       this.isItemSummaryValid = false;
       setTimeout(() => { this.elRef.nativeElement.parentElement.scrollTop = this.elRef.nativeElement.parentElement.scrollHeight; }, 100);
     } else {
-      this.util.showSnackBar('Please enter valid values', 'Dismiss');
+      this.util.showSnackBar('Please enter valid values');
     }
   }
 
@@ -432,10 +432,7 @@ export class EditInvoiceComponent {
 
   openPreviewDialog() {
     if (!this.isValidInvoice()) {
-      this.util.showSnackBar(
-        'Missing fields required to generate invoice!',
-        'Dismiss'
-      );
+      this.util.showSnackBar('Missing fields required to generate invoice!');
       return;
     }
 
@@ -523,7 +520,7 @@ export class EditInvoiceComponent {
       .then(() => this.goBackToInvoiceComponent())
       .catch((e) => {
         console.log(e);
-        this.util.showSnackBar('Error while saving data', 'Close');
+        this.util.showSnackBar('Error while saving data');
       });
   }
 

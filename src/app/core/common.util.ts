@@ -3,11 +3,11 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
 export class CommonUtil {
-  constructor(private snackBar: MatSnackBar) {}
+  constructor(private snackBar: MatSnackBar) { }
 
-  showSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 2000,
+  showSnackBar(message: string, dur?: number) {
+    this.snackBar.open(message, 'Close', {
+      duration: dur ? dur : 2000,
       horizontalPosition: 'center',
       verticalPosition: 'top',
     });

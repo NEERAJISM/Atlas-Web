@@ -46,13 +46,13 @@ export class NewProductComponent {
     if (this.isValidUnits()) {
       this.product.units.push(new Unit());
     } else {
-      this.commonUtil.showSnackBar('Invalid units added!', 'Dismiss');
+      this.commonUtil.showSnackBar('Invalid units added!');
     }
   }
 
   removeUnit(index: number) {
     if (this.product.units.length === 1) {
-      this.commonUtil.showSnackBar('Atleast one unit required!', 'Dismiss');
+      this.commonUtil.showSnackBar('Atleast one unit required!');
     } else {
       this.product.units.splice(index, 1);
     }

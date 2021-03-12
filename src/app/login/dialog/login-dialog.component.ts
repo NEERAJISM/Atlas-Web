@@ -66,7 +66,7 @@ export class LoginDialogComponent implements AfterViewInit {
     private cdr: ChangeDetectorRef,
     private auth: AuthService
   ) {
-    if(data) {
+    if (data) {
       this.onClickRegister();
     }
   }
@@ -120,19 +120,21 @@ export class LoginDialogComponent implements AfterViewInit {
       return;
     }
 
-    this.auth.signUp(this.email, this.pass)
-      .then((x) => {
-        if (Constants.SUCCESS === x) {
-          this.dialogRef.close();
-        } else {
-          this.hasError = true;
-          if (Constants.AUTH_ALREADY_IN_USE === x) {
-            this.error = 'This e-mail id is already registered, Please login!';
+    if (this.isRegister) {
+      this.auth.signUp(this.email, this.pass)
+        .then((x) => {
+          if (Constants.SUCCESS === x) {
+            this.dialogRef.close();
           } else {
-            this.error = x;
+            this.hasError = true;
+            if (Constants.AUTH_ALREADY_IN_USE === x) {
+              this.error = 'This e-mail id is already registered, Please login!';
+            } else {
+              this.error = x;
+            }
           }
-        }
-      });
+        });
+    }
   }
 
   onClickRegister() {

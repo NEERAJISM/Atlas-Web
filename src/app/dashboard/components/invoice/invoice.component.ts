@@ -121,7 +121,7 @@ export class InvoiceDashboardComponent implements AfterViewInit, OnDestroy {
         this.openPreviewDialog(i);
       }
     }).catch(e => {
-      this.util.showSnackBar('Error while loading invoice data!', 'Close');
+      this.util.showSnackBar('Error while loading invoice data!');
       console.log(e);
     });
   }
@@ -147,7 +147,7 @@ export class InvoiceDashboardComponent implements AfterViewInit, OnDestroy {
         this.invoiceService.generatePDF(i).save('atlas.pdf');
       }
     }).catch(e => {
-      this.util.showSnackBar('Error while loading invoice data!', 'Close');
+      this.util.showSnackBar('Error while loading invoice data!');
       console.log(e);
     });
   }
@@ -160,7 +160,7 @@ export class InvoiceDashboardComponent implements AfterViewInit, OnDestroy {
         this.invoiceService.generatePDF(i).output('dataurlnewwindow').open();
       }
     }).catch(e => {
-      this.util.showSnackBar('Error while loading invoice data!', 'Close');
+      this.util.showSnackBar('Error while loading invoice data!');
       console.log(e);
     });
   }
