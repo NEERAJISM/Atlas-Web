@@ -75,16 +75,10 @@ export class EditInvoiceComponent {
   unitObservables: Observable<Unit[]>[] = [];
 
   productUnitMap: Map<string, Unit[]> = new Map();
+  productGSTMap: Map<string, string> = new Map();
   optionsProduct: Product[] = [];
 
-  optionsTax: string[] = [
-    '0% GST',
-    '5% GST',
-    '12% GST',
-    '18% GST',
-    '28% GST',
-  ];
-  optionsTaxValue: number[] = [0, 0.05, 0.12, 0.18, 0.28];
+  readonly optionsTax = Constants.optionsTax;
 
   items: Item[] = [];
   data = [];
@@ -264,9 +258,11 @@ export class EditInvoiceComponent {
   updateProducts(p: Product[]) {
     this.optionsProduct = p;
     this.productUnitMap.clear();
-    p.forEach((product) =>
-      this.productUnitMap.set(product.name.toLowerCase(), product.units)
-    );
+    this.productGSTMap.clear();
+    p.forEach((product) => {
+      this.productUnitMap.set(product.name.toLowerCase(), product.units);
+      this.productGSTMap.set(product.name.toLowerCase(), product.gst);
+    });
   }
 
   goBackToInvoiceComponent() {
@@ -278,7 +274,7 @@ export class EditInvoiceComponent {
       const item = new Item();
       item.qty = 1;
       item.discount = 0;
-      item.tax = this.optionsTax[0];
+      item.tax = Constants.optionsTax[0];
       this.items.push(item);
       this.addFormControl();
       this.isItemSummaryValid = false;
@@ -327,6 +323,7 @@ export class EditInvoiceComponent {
       // Added validaton to have atleast 1 unit
       this.items[index].unit = units[0].unit;
       this.items[index].price = units[0].price;
+      this.items[index].tax = this.productGSTMap.get(value.toLowerCase());
     }
   }
 
@@ -357,11 +354,11 @@ export class EditInvoiceComponent {
     item.total =
       Math.abs(item.qty) * Math.abs(item.price) - Math.abs(item.discount);
 
-    const index = this.optionsTax.indexOf(item.tax);
+    const index = Constants.optionsTax.indexOf(item.tax);
     if (index !== -1) {
       item.taxValue =
         Math.round(
-          (item.total * this.optionsTaxValue[index] + Number.EPSILON) * 100
+          (item.total * Constants.optionsTaxValue[index] + Number.EPSILON) * 100
         ) / 100;
     }
 

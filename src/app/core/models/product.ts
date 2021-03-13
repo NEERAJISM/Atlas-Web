@@ -4,10 +4,10 @@ export class Product {
   name: string;
   desc: string;
   serial: string;
-
-  // TODO add [] of photos
+  gst: string;
 
   units: Unit[] = [];
+  photoUrl: string[] = [];
 }
 
 export class Unit {

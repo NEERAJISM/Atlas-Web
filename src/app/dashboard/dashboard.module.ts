@@ -7,7 +7,6 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
 import { ChartsModule } from 'ng2-charts';
-
 import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -114,6 +113,8 @@ import { InvoiceService } from './components/invoice/invoice.service';
     TaxDashboardComponent,
     SupportDashboardComponent,
   ],
-  providers : [{provide: MAT_DATE_LOCALE, useValue: 'en-GB'}, InvoiceService]
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+    InvoiceService  ]
 })
-export class DashboardModule {}
+export class DashboardModule { }

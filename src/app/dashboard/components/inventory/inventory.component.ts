@@ -28,6 +28,7 @@ export class InventoryDashboardComponent implements AfterViewInit, OnDestroy {
     'name',
     'serial',
     'unit',
+    'gst',
     'price',
     'stock',
     'desc',
@@ -119,5 +120,12 @@ export class InventoryDashboardComponent implements AfterViewInit, OnDestroy {
       return desc.substr(0, 150);
     }
     return desc;
+  }
+
+  formatGST(gst: string) {
+    if (!gst) {
+      return '0%';
+    }
+    return gst.split(' ')[0];
   }
 }

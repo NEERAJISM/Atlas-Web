@@ -1,28 +1,29 @@
 export class Constants {
-  static SUCCESS = 'Success';
-  static FAILURE = 'Failure';
+  static readonly SUCCESS = 'Success';
+  static readonly FAILURE = 'Failure';
 
-  static AUTH_NO_USER = 'auth/user-not-found';
-  static AUTH_INVALID_PASSWORD = 'auth/wrong-password';
-  static AUTH_ALREADY_IN_USE = 'auth/email-already-in-use';
+  static readonly AUTH_NO_USER = 'auth/user-not-found';
+  static readonly AUTH_INVALID_PASSWORD = 'auth/wrong-password';
+  static readonly AUTH_ALREADY_IN_USE = 'auth/email-already-in-use';
+  static readonly AUTH_NETWORK_ISSUE = 'auth/network-request-failed';
 
   // Firebase
-  static USER_DB = 'UserDB';
-  static CLIENT_DB = 'ClientDB';
-  static PRODUCT_DB = 'ProductDB';
-  static INVOICE_DB = 'InvoiceDB';
-  static INVOICE_PREVIEW_DB = 'InvoicePreviewDB';
+  static readonly USER_DB = 'UserDB';
+  static readonly CLIENT_DB = 'ClientDB';
+  static readonly PRODUCT_DB = 'ProductDB';
+  static readonly INVOICE_DB = 'InvoiceDB';
+  static readonly INVOICE_PREVIEW_DB = 'InvoicePreviewDB';
 
-  static USERS = 'Users';
-  static CLIENTS = 'Clients';
-  static PRODUCTS = 'Products';
-  static INVOICES = 'Invoices';
-  static INVOICE_PREVIEWS = 'InvoicePreviews';
+  static readonly USERS = 'Users';
+  static readonly CLIENTS = 'Clients';
+  static readonly PRODUCTS = 'Products';
+  static readonly INVOICES = 'Invoices';
+  static readonly INVOICE_PREVIEWS = 'InvoicePreviews';
 
-  static TAX_STRING_SGST = 'Tax (SGST + CGST)';
-  static TAX_STRING_IGST = 'Tax (IGST)';
+  static readonly TAX_STRING_SGST = 'Tax (SGST + CGST)';
+  static readonly TAX_STRING_IGST = 'Tax (IGST)';
 
-  static states: string[] = [
+  static readonly states: string[] = [
     'Andhra Pradesh',
     'Arunachal Pradesh',
     'Assam',
@@ -60,4 +61,13 @@ export class Constants {
     'Lakshadweep',
     'Puducherry',
   ];
+
+  static readonly optionsTax: string[] = [
+    '0% GST',
+    '5% GST',
+    '12% GST',
+    '18% GST',
+    '28% GST',
+  ];
+  static readonly optionsTaxValue: number[] = [0, 0.05, 0.12, 0.18, 0.28];
 }

@@ -3,6 +3,7 @@ import { AbstractControl, FormControl, FormGroupDirective, NgForm, ValidatorFn, 
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Constants } from '@core/constants';
+import { FirebaseUtil } from '@core/firebaseutil';
 import { AuthService } from 'src/app/auth.service';
 
 export class MyErrorStateMatcher implements ErrorStateMatcher {
@@ -102,13 +103,7 @@ export class LoginDialogComponent implements AfterViewInit {
             this.dialogRef.close();
           } else {
             this.hasError = true;
-            if (Constants.AUTH_NO_USER === x) {
-              this.error = 'No account found for this e-mail, Please register!';
-            } else if (Constants.AUTH_INVALID_PASSWORD === x) {
-              this.error = 'Incorrect Password!';
-            } else {
-              this.error = x;
-            }
+            this.error = FirebaseUtil.errorCodeToMessageMapper(x);
           }
         });
       return;
@@ -127,11 +122,7 @@ export class LoginDialogComponent implements AfterViewInit {
             this.dialogRef.close();
           } else {
             this.hasError = true;
-            if (Constants.AUTH_ALREADY_IN_USE === x) {
-              this.error = 'This e-mail id is already registered, Please login!';
-            } else {
-              this.error = x;
-            }
+            this.error = FirebaseUtil.errorCodeToMessageMapper(x);
           }
         });
     }
