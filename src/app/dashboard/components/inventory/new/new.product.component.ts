@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CommonUtil } from '@core/common.util';
+import { Constants } from '@core/constants';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Product, Unit } from '@core/models/product';
 
@@ -12,6 +13,12 @@ import { Product, Unit } from '@core/models/product';
 export class NewProductComponent {
   product: Product;
   action = 'Add Product';
+
+  url;
+  imgFile;
+  placeholder = true;
+
+  readonly optionsTax = Constants.optionsTax;
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public data,
@@ -76,5 +83,37 @@ export class NewProductComponent {
       }
     });
     return isValid;
+  }
+
+  onFileChanged(event) {
+    const files = event.target.files;
+    if (files.length === 0) {
+      return;
+    }
+
+    if(files[0].size > 500000) {
+      this.imgFile = '';
+      this.commonUtil.showSnackBar('Please select a file less than 500KB');
+      return;
+    }
+
+    const mimeType = files[0].type;
+    if (mimeType.match(/image\/*/) == null) {
+      this.imgFile = '';
+      this.commonUtil.showSnackBar('Image format not supporte, use either jpg/jpeg/png');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(files[0]);
+    reader.onload = (e) => {
+      this.url = reader.result;
+      this.placeholder = false;
+    };
+  }
+
+  removeImage(){
+    this.imgFile = '';
+    this.placeholder = true;
   }
 }
