@@ -3,11 +3,12 @@ import {
   AngularFirestore,
   AngularFirestoreCollection
 } from '@angular/fire/firestore';
+import { AngularFireStorage } from '@angular/fire/storage';
 import { Constants } from './constants';
 
 @Injectable()
 export class FirebaseUtil {
-  constructor(private firestore: AngularFirestore) { }
+  constructor(private firestore: AngularFirestore, private storage: AngularFireStorage) { }
 
   static errorCodeToMessageMapper(code: string): string {
     if (!code) {
@@ -62,5 +63,13 @@ export class FirebaseUtil {
 
   toJson(obj: any) {
     return JSON.parse(JSON.stringify(obj));
+  }
+
+  uploadInventoryImage(productId: string, file, name: string){
+    return this.storage.ref(Constants.PRODUCTS + '/' + 'bizId' + '/' + productId + '/' + name).put(file);
+  }
+
+  downloadInventoryImage(productId: string, name: string) {
+    return this.storage.ref(Constants.PRODUCTS + '/' + 'bizId' + '/' + productId + '/' + name).getDownloadURL();
   }
 }

@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 
 import { FirebaseUtil } from './firebaseutil';
 import { AngularFirestoreModule } from '@angular/fire/firestore';
+import { AngularFireStorageModule } from '@angular/fire/storage';
 
 import { CommonUtil } from './common.util';
 import { SplashComponent } from './splash/splash.component';
@@ -13,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @NgModule({
   imports: [
     AngularFirestoreModule.enablePersistence(),
+    AngularFireStorageModule,
     MatSnackBarModule,
     MatProgressSpinnerModule
   ],

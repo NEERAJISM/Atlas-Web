@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { SplashComponent } from './core/splash/splash.component';
 import { AuthGuard } from './auth.guard';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   // TODO default goto page + secure all links
@@ -14,6 +15,10 @@ const routes: Routes = [
   {
     path: 'splash',
     component: SplashComponent,
+  },
+  {
+    path: 'profile',
+    component: ProfileComponent,
   },
   {
     path: 'dashboard',

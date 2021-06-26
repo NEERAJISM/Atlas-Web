@@ -61,6 +61,11 @@ export class DashboardComponent implements OnInit {
       link: '/dashboard/tax',
     },
     {
+      name: 'Business Profile',
+      icon: 'fas fa-globe-americas mr-2 ml-1',
+      link: '/dashboard/tax',
+    },
+    {
       name: 'Help / Support',
       icon: 'fas fa-headset mr-2',
       link: '/dashboard/support',

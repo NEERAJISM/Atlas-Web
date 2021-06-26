@@ -18,6 +18,9 @@ export class NewProductComponent {
   imgFile;
   placeholder = true;
 
+  blob1;
+  blob2;
+
   readonly optionsTax = Constants.optionsTax;
 
   constructor(
@@ -28,11 +31,21 @@ export class NewProductComponent {
     if (data) {
       this.product = data;
       this.action = 'Update Product';
+      this.loadImage();
     } else {
       this.product = new Product();
       this.product.units = [];
       this.product.units.push(new Unit());
     }
+  }
+
+  loadImage(){
+    this.url = this.fbutil.downloadInventoryImage(this.product.id, '1.png');
+    this.placeholder = false;
+  }
+
+  noPlaceholder(){
+    this.placeholder = false;
   }
 
   submit() {
@@ -45,8 +58,15 @@ export class NewProductComponent {
       .getProductRef('bizId')
       .doc(this.product.id)
       .set(this.fbutil.toJson(this.product))
-      .then((res) => console.log(res))
       .catch((err) => console.log(err));
+
+    let name;
+
+    if (this.blob1.type === "image/png") {
+      name = "1.png";
+    }
+
+    this.fbutil.uploadInventoryImage(this.product.id, this.blob1, name).catch((error) => console.log(error));
   }
 
   addNewUnit() {
@@ -91,7 +111,7 @@ export class NewProductComponent {
       return;
     }
 
-    if(files[0].size > 500000) {
+    if (files[0].size > 500000) {
       this.imgFile = '';
       this.commonUtil.showSnackBar('Please select a file less than 500KB');
       return;
@@ -104,6 +124,7 @@ export class NewProductComponent {
       return;
     }
 
+    this.blob1 = files[0];
     const reader = new FileReader();
     reader.readAsDataURL(files[0]);
     reader.onload = (e) => {
@@ -112,7 +133,7 @@ export class NewProductComponent {
     };
   }
 
-  removeImage(){
+  removeImage() {
     this.imgFile = '';
     this.placeholder = true;
   }
