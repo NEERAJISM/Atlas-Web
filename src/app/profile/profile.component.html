@@ -1,24 +1,161 @@
-<div style="scroll-behavior: smooth !important; scroll-snap-type: y mandatory;">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="profile#home">
+    <img
+      src="assets/icons/atlas-small.png"
+      width="35"
+      height="35"
+      class="ml-2 d-inline-block"
+    />
+    THE COFFEE SHOP!</a
+  >
 
-  <nav class="navbar">
-    <ul>
-      <li><a href="profile#red">Red</a></li>
-      <li><a href="profile#blue">Blue</a></li>
-      <li><a href="profile#green">Green</a></li>
-    </ul>
-  </nav>
+  <ul style="justify-content: flex-start;">
+    <li class="nav-item"><a class="nav-link" href="profile#home" (click)="home()">Home</a></li>
+    <li class="nav-item">
+      <a class="nav-link" href="javascript:void(0)" (click)="order()"
+        >Buy</a
+      >
+    </li>
+    <li class="nav-item"><a class="nav-link" href="profile#about" (click)="home()">About</a></li>
+    <li class="nav-item">
+      <a class="nav-link" href="profile#contact" (click)="home()">Contact us</a>
+    </li>
+  </ul>
 
-  <section id="red" style="background: #ff5f45" class="fwh-slide">
-    <h2 style="color: #f4f4f4;">Section 1</h2>
-    
-  </section>
-  <section id="blue" style="background: #22a6e4" class="fwh-slide">
-    <h2 style="color: #f4f4f4;" >Section 2</h2>
-    
+  <ul *ngIf="isOrderSection && !isCheckoutSection" style="justify-content: flex-end;">
+    <li class="nav-item">
+      <button mat-flat-button (click)="checkout()" matBadge="{{cartMap.size}}" class="py-1 btn btn-success justify-content-flex-start" *ngIf="cartMap.size > 0">
+        <i class="fas fa-shopping-bag"></i>
+        &nbsp;Checkout
+      </button>
+    </li>
+  </ul>
+
+  <!-- Social Icon  -->
+  <ul class="col-lg-1 navbar-nav nav-flex-icons" style="justify-content: flex-end">
+    <li class="nav-item navbar-item-nopadding">
+      <a class="nav-link"><i class="fab fa-facebook"></i></a>
+    </li>
+    <li class="nav-item navbar-item-nopadding">
+      <a class="nav-link"><i class="fab fa-instagram"></i></a>
+    </li>
+    <li class="nav-item navbar-item-nopadding">
+      <a class="nav-link"><i class="fab fa-twitter"></i></a>
+    </li>
+  </ul>
+</nav>
+
+<!-- Dashboard -->
+
+<div *ngIf="!isOrderSection">
+  <section
+    id="home"
+    style="
+      background: url(assets/images/profile/coffee.jpg);
+      background-size: cover;
+    "
+    class="fwh-slide"
+  ></section>
+  <section id="about" style="background: #22a6e4" class="fwh-slide">
+    <h2 style="color: #f4f4f4">Section 2</h2>
   </section>
 
-  <section id="green" style="background: #22e4b3" class="fwh-slide">
-    <h2 style="color: #f4f4f4;">Section 3</h2>
-    
+  <section id="contact" style="background: #22e4b3" class="fwh-slide">
+    <h2 style="color: #f4f4f4">Section 3</h2>
   </section>
+</div>
+
+<!-- Cart -->
+
+<div *ngIf="isOrderSection && !isCheckoutSection" style="margin-top: 65px">
+  <div class="row mt-2">
+    <div class="col-lg-3" *ngFor="let item of items; index as i">
+      <mat-card class="profile-card">
+        <mat-card-header class="justify-content-center">
+          <mat-card-title>{{ item.name }}</mat-card-title>
+        </mat-card-header>
+        <img
+          mat-card-image
+          src="{{ item.photoUrl[0] }}"
+          height="400px"
+          class="mb-0"
+        />
+
+        <mat-card-actions class="profile-card-actions">
+          <button
+            *ngIf="!cartMap.has(i)"
+            mat-flat-button
+            (click)="addToCart(i)"
+            style="
+              padding-top: 0.38em;
+              padding-bottom: 0.38em;
+              background: #f5f5f5;
+              font-size: 18px;
+            "
+          >
+            Add to cart
+          </button>
+
+          <div class="row" *ngIf="cartMap.has(i)">
+            <div class="col-4">
+              <mat-form-field appearance="outline" style="display: inline">
+                <mat-select [(value)]="cartMap.get(i).unit">
+                  <mat-option
+                    *ngFor="let unit of items[i].units"
+                    [value]="unit.unit"
+                  >
+                    {{ unit.unit }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div
+              class="col-8"
+              style="display: flex; flex-direction: row-reverse"
+            >
+              <button
+                mat-flat-button
+                (click)="removeFromCart(i)"
+                style="background: #f5f5f5; font-size: 18px"
+              >
+                <i class="fas fa-minus-circle"></i>
+              </button>
+              <h5 style="display: inline; margin: auto" class="mx-2">
+                {{ cartMap.get(i).qty }}
+              </h5>
+              <button
+                mat-flat-button
+                (click)="addToCart(i)"
+                style="background: #f5f5f5; font-size: 18px"
+              >
+                <i class="fas fa-plus-circle"></i>
+              </button>
+            </div>
+          </div>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+<!-- Checkout -->
+
+<div class="row" *ngIf="isCheckoutSection" style="margin-top: 65px">
+  <div class="col-lg-8">
+    <mat-card class="profile-card">
+      <mat-card-header class="justify-content-center">
+        <mat-card-title>Stepper</mat-card-title>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
+  <div class="col-lg-4">
+    <mat-card class="profile-card">
+      <mat-card-header class="justify-content-center">
+        <mat-card-title>Stepper</mat-card-title>
+      </mat-card-header>
+    </mat-card>
+  </div>
+
 </div>

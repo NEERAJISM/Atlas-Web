@@ -62,8 +62,8 @@ export class NewProductComponent {
 
     let name;
 
-    if (this.blob1.type === "image/png") {
-      name = "1.png";
+    if (this.blob1.type === 'image/png') {
+      name = '1.png';
     }
 
     this.fbutil.uploadInventoryImage(this.product.id, this.blob1, name).catch((error) => console.log(error));
