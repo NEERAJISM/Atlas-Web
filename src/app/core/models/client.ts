@@ -11,7 +11,4 @@ export class Client {
   email: string;
 
   address: Address = new Address();
-
-  // TODO replace invoice component
-  shippingAddress: Address = new Address();
 }

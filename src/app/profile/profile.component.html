@@ -474,7 +474,7 @@
                     <mat-label>Shipping Address Line 1</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="client.shippingAddress.line1"
+                      [(ngModel)]="shippingAddress.line1"
                       required
                       type="text"
                       name="customerName"
@@ -489,7 +489,7 @@
                     <mat-label>Address Line 2 (Optional)</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="client.shippingAddress.line2"
+                      [(ngModel)]="shippingAddress.line2"
                       type="text"
                       name="customerName"
                     />
@@ -505,7 +505,7 @@
                     <mat-label>Pincode</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="client.shippingAddress.pin"
+                      [(ngModel)]="shippingAddress.pin"
                       required
                       [pattern]="'[0-9]*'"
                       type="number"
@@ -522,7 +522,7 @@
                     <mat-label>District</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="client.shippingAddress.district"
+                      [(ngModel)]="shippingAddress.district"
                       required
                       type="text"
                       name="customerName"
@@ -537,7 +537,7 @@
                   <mat-select
                     required
                     name="supplyState"
-                    [(ngModel)]="client.shippingAddress.state"
+                    [(ngModel)]="shippingAddress.state"
                   >
                     <mat-option *ngFor="let state of states" [value]="state">
                       {{ state }}
@@ -570,11 +570,11 @@
                   client.address.district &&
                   client.address.state &&
                   (shippingAddressSame ||
-                    (client.shippingAddress.line1 &&
-                      client.shippingAddress.pin &&
-                      client.shippingAddress.pin.toString().length == 6 &&
-                      client.shippingAddress.district &&
-                      client.shippingAddress.state))
+                    (shippingAddress.line1 &&
+                      shippingAddress.pin &&
+                      shippingAddress.pin.toString().length == 6 &&
+                      shippingAddress.district &&
+                      shippingAddress.state))
               }"
               [disabled]="
                 !(
@@ -584,11 +584,11 @@
                   client.address.district &&
                   client.address.state &&
                   (shippingAddressSame ||
-                    (client.shippingAddress.line1 &&
-                      client.shippingAddress.pin &&
-                      client.shippingAddress.pin.toString().length == 6 &&
-                      client.shippingAddress.district &&
-                      client.shippingAddress.state))
+                    (shippingAddress.line1 &&
+                      shippingAddress.pin &&
+                      shippingAddress.pin.toString().length == 6 &&
+                      shippingAddress.district &&
+                      shippingAddress.state))
                 )
               "
             >
@@ -702,11 +702,11 @@
         <div *ngIf="!shippingAddressSame">
           <h5 class="mt-4 mb-3">Shipping Address</h5>
           <h6>
-            {{ client.shippingAddress.line1 }},
-            {{ client.shippingAddress.line2 }},
-            {{ client.shippingAddress.district }},
-            {{ client.shippingAddress.state }} -
-            {{ client.shippingAddress.pin }}
+            {{ shippingAddress.line1 }},
+            {{ shippingAddress.line2 }},
+            {{ shippingAddress.district }},
+            {{ shippingAddress.state }} -
+            {{ shippingAddress.pin }}
           </h6>
         </div>
       </div>

@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Product, Unit } from '@core/models/product';
 import { Constants } from '@core/constants';
 import { Client } from '@core/models/client';
+import { Address } from '@core/models/address';
 
 
 class CartItem {
@@ -36,6 +37,7 @@ export class ProfileComponent implements OnInit {
   // Client form
   client = new Client();
   shippingAddressSame = true;
+  shippingAddress: Address = new Address();
 
   customerNext = false;
   addressNext = false;
