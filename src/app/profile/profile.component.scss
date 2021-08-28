@@ -60,22 +60,26 @@
   flex-direction: column;
 }
 
-::ng-deep .mat-form-field-wrapper{
+.list ::ng-deep .mat-form-field-wrapper{
   padding-bottom: 0;
 }
 
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+.list ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
   padding: 0;
 }
 
-::ng-deep .mat-form-field-flex {
+.list ::ng-deep .mat-form-field-flex {
   padding-bottom: 10px;
 }
 
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+.list ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
   margin: 0;
 }
 
-::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
+.list ::ng-deep .mat-form-field-appearance-outline .mat-form-field-flex {
   padding: 0 .75em 0.75em .75em !important;
+}
+
+::ng-deep .mat-horizontal-stepper-header{
+  pointer-events: none !important;
 }
