@@ -41,13 +41,18 @@ export class DashboardComponent implements OnInit {
       link: '/dashboard/main',
     },
     {
+      name: 'Orders',
+      icon: 'fas fa-dolly mr-2',
+      link: '/dashboard/orders',
+    },
+    {
       name: 'Biiling / Invoice',
-      icon: 'fas fa-boxes mr-2',
+      icon: 'fas fa-receipt pl-1 mr-2',
       link: '/dashboard/invoice',
     },
     {
       name: 'Inventory',
-      icon: 'fas fa-dolly-flatbed mr-2',
+      icon: 'fab fa-buffer pl-1 mr-2',
       link: '/dashboard/inventory',
     },
     {

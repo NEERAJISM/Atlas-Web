@@ -1,0 +1,136 @@
+<div class="container-fluid mt-3">
+  <!-- Quick Summary -->
+
+  <div class="row">
+    <div class="col col-lg-3">
+      <mat-card class="p-2">
+        <mat-card-header>
+          <div
+            mat-card-avatar
+            style="background-color: #4caf50"
+            class="center-div"
+          >
+            <i
+              class="fas fa-file-invoice text-white"
+              style="font-size: 1.3em"
+            ></i>
+          </div>
+          <mat-card-subtitle class="mb-0"
+            >Total New orders created</mat-card-subtitle
+          >
+          <mat-card-title class="mb-0" style="color: #4caf50"
+            >37</mat-card-title
+          >
+        </mat-card-header>
+      </mat-card>
+    </div>
+
+    <div class="col col-lg-3">
+      <mat-card class="p-2">
+        <mat-card-header>
+          <div
+            mat-card-avatar
+            style="background-color: #009688"
+            class="center-div"
+          >
+            <i
+              class="fas fa-rupee-sign text-white"
+              style="font-size: 1.3em"
+            ></i>
+          </div>
+          <mat-card-subtitle class="mb-0"
+            >Total cash business</mat-card-subtitle
+          >
+          <mat-card-title class="mb-0" style="color: #009688"
+            >7500.0</mat-card-title
+          >
+        </mat-card-header>
+      </mat-card>
+    </div>
+
+    <div class="col col-lg-3">
+      <mat-card class="p-2">
+        <mat-card-header>
+          <div
+            mat-card-avatar
+            style="background-color: #00bcd4"
+            class="center-div"
+          >
+            <i
+              class="fas fa-rupee-sign text-white"
+              style="font-size: 1.3em"
+            ></i>
+          </div>
+          <mat-card-subtitle class="mb-0">Payment Received</mat-card-subtitle>
+          <mat-card-title class="mb-0" style="color: #00bcd4"
+            >5000.0</mat-card-title
+          >
+        </mat-card-header>
+      </mat-card>
+    </div>
+
+    <div class="col col-lg-3">
+      <mat-card class="p-2">
+        <mat-card-header>
+          <div
+            mat-card-avatar
+            style="background-color: #03a9f4"
+            class="center-div"
+          >
+            <i class="fas fa-bell text-white" style="font-size: 1.3em"></i>
+          </div>
+          <mat-card-subtitle class="mb-0">Pending Payment</mat-card-subtitle>
+          <mat-card-title class="mb-0" style="color: #03a9f4"
+            >2500.0</mat-card-title
+          >
+        </mat-card-header>
+      </mat-card>
+    </div>
+  </div>
+
+  <mat-tab-group mat-stretch-tabs class="mt-4">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <i class="fas fa-clipboard-list text-danger mr-2" style="font-size: 1.3rem;"></i>
+        All Orders ({{allOrders}})
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <i class="fas fa-bell mr-2 text-primary" style="font-size: 1.3rem;"></i>
+        New Orders ({{new}})
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <i class="fas fa-check mr-2 text-success" style="font-size: 1.3rem;"></i>
+        Accepted ({{accept}})
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <i class="fas fa-stopwatch text-warning mr-2" style="font-size: 1.3rem;"></i>
+        In Progress ({{progress}})
+      </ng-template>
+    </mat-tab>
+    
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <i class="fas fa-shipping-fast mr-2 text-success" style="font-size: 1.3rem;"></i>
+        In Transit ({{transit}})
+      </ng-template>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <i class="fas fa-history mr-2" style="font-size: 1.3rem;"></i>
+        Completed ({{completed}})
+      </ng-template>
+    </mat-tab>
+  </mat-tab-group>
+
+  <h3>Content</h3>
+</div>

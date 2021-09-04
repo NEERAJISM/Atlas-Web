@@ -183,7 +183,7 @@ export class ProfileComponent implements OnInit {
   itemsNext(){
     this.setFocus('customer-name');
   }
-  
+
   customerNextStep(){
     this.customerNext = true;
     this.setFocus('address-1');
@@ -204,8 +204,8 @@ export class ProfileComponent implements OnInit {
   }
 
   placeOrder(){
-    window.alert("Order Placed successfuly!!!");
-    //TODO Show referenece number / send email to customer
+    window.alert('Order Placed successfuly!!!');
+    // TODO Show referenece number / send email to customer
   }
 
   checkboxClick(){
@@ -216,7 +216,7 @@ export class ProfileComponent implements OnInit {
   }
 
   setFocus(id: string) {
-    let targetElem = document.getElementById(id);
+    const targetElem = document.getElementById(id);
     setTimeout(function waitTargetElem() {
       if (document.body.contains(targetElem)) {
         targetElem.focus();

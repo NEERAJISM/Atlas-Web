@@ -30,6 +30,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import {MatTabsModule} from '@angular/material/tabs';
 
 import { DashboardComponent } from './dashboard.component';
 import { DashboardHeaderComponent } from './header/header.component';
@@ -50,6 +51,7 @@ import { RemoveClientComponent } from './components/customers/remove/remove.clie
 import { NewProductComponent } from './components/inventory/new/new.product.component';
 import { RemoveProductComponent } from './components/inventory/remove/remove.product.component';
 import { InvoiceService } from './components/invoice/invoice.service';
+import { OrdersDashboardComponent } from './components/orders/orders.component';
 
 @NgModule({
   imports: [
@@ -83,6 +85,7 @@ import { InvoiceService } from './components/invoice/invoice.service';
     MatSnackBarModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    MatTabsModule,
   ],
   declarations: [
     DashboardComponent,
@@ -94,6 +97,7 @@ import { InvoiceService } from './components/invoice/invoice.service';
     InventoryDashboardComponent,
     CustomersDashboardComponent,
     TaxDashboardComponent,
+    OrdersDashboardComponent,
     SupportDashboardComponent,
     InvoicePreviewComponent,
     NewClientComponent,
