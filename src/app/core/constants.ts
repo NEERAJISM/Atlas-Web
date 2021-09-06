@@ -13,6 +13,9 @@ export class Constants {
   static readonly PRODUCT_DB = 'ProductDB';
   static readonly INVOICE_DB = 'InvoiceDB';
   static readonly INVOICE_PREVIEW_DB = 'InvoicePreviewDB';
+  static readonly ORDER_DB = 'OrderDB';
+  static readonly BIZ_ORDER_DB = 'BizOrderDB';
+  static readonly USER_ORDER_DB = 'UserOrderDB';
 
   static readonly USERS = 'Users';
   static readonly CLIENTS = 'Clients';
@@ -20,6 +23,7 @@ export class Constants {
   static readonly INVOICES = 'Invoices';
   static readonly INVOICE_PREVIEWS = 'InvoicePreviews';
 
+  // UI
   static readonly TAX_STRING_SGST = 'Tax (SGST + CGST)';
   static readonly TAX_STRING_IGST = 'Tax (IGST)';
 

@@ -105,4 +105,17 @@ export class AuthService {
       localStorage.removeItem('user');
     }
   }
+
+  getRecaptcha(id: string) {
+    return new firebase.auth.RecaptchaVerifier(id, {
+      size: 'invisible',
+      callback: () => {
+        console.log('captcha auto-resolved. sending verfication code...');
+      }
+    });
+  }
+
+  verifyUserMobile(mobile: string, verifier: firebase.auth.RecaptchaVerifier) {
+    return this.afAuth.signInWithPhoneNumber('+91' + mobile, verifier);
+  }
 }

@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="profile#home">
+  <a class="navbar-brand" href="profile#home" (click)="home()">
     <img
       src="assets/icons/atlas-small.png"
       width="35"
@@ -165,8 +165,14 @@
 <div class="row" *ngIf="isCheckoutSection" style="margin-top: 65px">
   <div class="col-lg-8">
     <mat-card class="profile-card">
-      <mat-card-header>
-        <mat-card-title>Cart Summary</mat-card-title>
+      <mat-card-header class="ml-0">
+        <h5 class="mt-2">Cart Summary</h5>
+        <div class="col mb-3" style="justify-content: flex-end; display: flex;">
+          <button mat-flat-button color="warn" (click)="goBackToOrderSection()">
+            <i class="fas fa-arrow-left"></i>
+            Go Back
+          </button>
+        </div>
       </mat-card-header>
 
       <!-- Stepper -->
@@ -264,7 +270,88 @@
               Back
             </button>
 
-            <button mat-button matStepperNext class="btn-success" (click)="itemsNext()">Next</button>
+            <button
+              mat-button
+              matStepperNext
+              class="btn-success"
+              (click)="itemsNext()"
+            >
+              Next
+            </button>
+          </div>
+        </mat-step>
+
+        <mat-step label="Mobile Verification">
+          <div class="row">
+            <div class="col-lg-4">
+              <p>
+                <mat-form-field appearance="outline" style="width: 100%">
+                  <mat-label>Mobile No. (10 digit)</mat-label>
+                  <input
+                    id="mobile"
+                    matInput
+                    [(ngModel)]="client.mobile"
+                    required
+                    maxlength="10"
+                    name="customerMobile"
+                    [disabled]="otpSuccess"
+                  />
+                </mat-form-field>
+              </p>
+            </div>            
+          </div>
+
+          <div *ngIf="otpSuccess" class="row">
+            <div class="col-lg-4">
+              <p>
+                <mat-form-field appearance="outline" style="width: 100%">
+                  <mat-label>6 digit verification code</mat-label>
+                  <input
+                    matInput
+                    [(ngModel)]="code"
+                    maxlength="10"
+                    name="verificationCode"
+                  />
+                </mat-form-field>
+              </p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div id="btn-verify">
+              <button
+                *ngIf="!otpSuccess"
+                [disabled]="!(client.mobile && client.mobile.length == 10) || otpRequested"
+                mat-stroked-button
+                class="btn-success"
+                (click)="getOtp()"
+              >
+                Send OTP
+                <i
+                  class="fa fa-spinner fa-spin"
+                  *ngIf="otpRequested && !otpSuccess"
+                ></i>
+              </button>
+              <button
+                *ngIf="otpSuccess"
+                [disabled]="!(code && code.length == 6) || verification"
+                mat-stroked-button
+                class="btn-success"
+                (click)="verify(stepper)"
+              >
+                Verify
+                <i class="fa fa-spinner fa-spin" *ngIf="verification"></i>
+              </button>
+            </div>
+            <div class="ml-2">
+              <button
+                mat-stroked-button
+                matStepperPrevious
+                (click)="verifyBack()"
+              >
+                Back
+              </button>
+            </div>
           </div>
         </mat-step>
 
@@ -275,7 +362,7 @@
                 <mat-form-field appearance="outline" style="width: 100%">
                   <mat-label>Full Name</mat-label>
                   <input
-                    id='customer-name'
+                    id="customer-name"
                     matInput
                     [(ngModel)]="client.name"
                     required
@@ -288,21 +375,6 @@
           </div>
 
           <div class="row">
-            <div class="col-lg-4 mr-3">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Mobile No. (10 digit)</mat-label>
-                  <input
-                    matInput
-                    [pattern]="'[0-9]*'"
-                    [(ngModel)]="client.mobile"
-                    required
-                    maxlength="10"
-                    name="customerMobile"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
             <div class="col-lg-4">
               <p>
                 <mat-form-field appearance="outline" style="width: 100%">
@@ -350,7 +422,12 @@
           </div>
 
           <div class="row" style="justify-content: flex-end">
-            <button mat-stroked-button matStepperPrevious class="mr-2">
+            <button
+              mat-stroked-button
+              matStepperPrevious
+              class="mr-2"
+              (click)="customerBack()"
+            >
               Back
             </button>
             <button
@@ -600,29 +677,31 @@
         <mat-step label="Place Order">
           <div class="row">
             <div class="col">
-              <h4>Please verify all details & click Confirm.</h4>
+              <h4 style="display: flex; justify-content: center; font-weight: 100;">Please verify order summary & click Confirm.</h4>
             </div>
-
-            <div class="col" style="display: contents;">
-              <button
-              id='place-order-back'
-              mat-stroked-button
-              matStepperPrevious
-              class="mr-2"
-              (click)="placeOrderBackStep()"
-            >
-              Back
-            </button>
-            <button              
-              mat-stroked-button
-              matStepperNext
-              class="btn-success"
-              (click)="placeOrder()"
-            >
-              Confirm & Place Order
-            </button>
-            </div>            
           </div>
+
+          <div class="row mt-3">
+            <div class="col" style="display: flex; justify-content: center;">              
+              <button
+                mat-stroked-button
+                matStepperNext
+                class="mr-2 btn-success"
+                (click)="placeOrder()"
+              >
+                Confirm & Place Order
+              </button>
+              <button
+                id="place-order-back"
+                mat-stroked-button
+                matStepperPrevious
+                (click)="placeOrderBackStep()"
+              >
+                Back
+              </button>
+            </div>
+          </div>
+
         </mat-step>
       </mat-horizontal-stepper>
     </mat-card>
@@ -702,23 +781,14 @@
         <div *ngIf="!shippingAddressSame">
           <h5 class="mt-4 mb-3">Shipping Address</h5>
           <h6>
-            {{ shippingAddress.line1 }},
-            {{ shippingAddress.line2 }},
-            {{ shippingAddress.district }},
-            {{ shippingAddress.state }} -
+            {{ shippingAddress.line1 }}, {{ shippingAddress.line2 }},
+            {{ shippingAddress.district }}, {{ shippingAddress.state }} -
             {{ shippingAddress.pin }}
           </h6>
         </div>
-      </div>
-
-      <div class="row mt-4">
-        <div class="col-lg-6">
-          <button mat-flat-button color="warn" (click)="goBackToOrderSection()">
-            <i class="fas fa-arrow-left"></i>
-            Go Back
-          </button>
-        </div>
-      </div>
+      </div>      
     </mat-card>
   </div>
 </div>
+
+<div id="recaptcha-container"></div>

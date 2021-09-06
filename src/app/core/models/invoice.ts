@@ -2,6 +2,7 @@
 
 import { Address } from './address';
 import { Client } from './client';
+import { Item } from './order';
 
 export class Invoice {
   id: string;
@@ -42,24 +43,6 @@ export class InvoiceVersion {
   total: number;
 
   signId: string;
-
-  constructor() { }
-}
-
-export class Item {
-  id: string;
-  name: string;
-
-  unit: string;
-  price: number;
-
-  qty: number;
-
-  discount: number;
-  tax: string;
-  taxValue: number;
-
-  total: number;
 
   constructor() { }
 }
