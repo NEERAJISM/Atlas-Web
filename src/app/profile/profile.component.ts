@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { Router } from '@angular/router';
+import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-
-import { Product, Unit } from '@core/models/product';
+import { Router } from '@angular/router';
+import { CommonUtil } from '@core/common.util';
 import { Constants } from '@core/constants';
-import { Client } from '@core/models/client';
 import { Address } from '@core/models/address';
-
+import { Client } from '@core/models/client';
+import { Order } from '@core/models/order';
+import { Product, Unit } from '@core/models/product';
+import firebase from 'firebase/app';
+import { v4 as uuidv4 } from 'uuid';
+import { AuthService } from '../auth.service';
 
 class CartItem {
   name = '';
@@ -39,12 +41,21 @@ export class ProfileComponent implements OnInit {
   shippingAddressSame = true;
   shippingAddress: Address = new Address();
 
+  // verification
+  code: string;
+  otpRequested = false;
+  otpSuccess = false;
+  verification = false;
+  confirmationResult: firebase.auth.ConfirmationResult;
+  recaptchaVerifier: firebase.auth.RecaptchaVerifier;
+
   customerNext = false;
   addressNext = false;
 
   states = Constants.states;
 
-  constructor(private location: Location, private router: Router, private _formBuilder: FormBuilder) {
+  constructor(private location: Location, private router: Router, private _formBuilder: FormBuilder,
+    private auth: AuthService, private commonUtil: CommonUtil) {
     this.init();
     this.isOrderSection = (router.url === '/profile#order');
   }
@@ -160,7 +171,7 @@ export class ProfileComponent implements OnInit {
     if (this.cartMap.get(i).qty === 0) {
       this.cartMap.delete(i);
 
-      if(this.cartMap.size === 0) {
+      if (this.cartMap.size === 0) {
         this.isCheckoutSection = false;
       }
     } else {
@@ -180,50 +191,104 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  itemsNext(){
-    this.setFocus('customer-name');
+  itemsNext() {
+    this.setFocus('mobile');
+    this.code = '';
+    this.otpRequested = false;
+    this.otpSuccess = false;
   }
 
-  customerNextStep(){
+  getOtp() {
+    if (!this.recaptchaVerifier) {
+      this.recaptchaVerifier = this.auth.getRecaptcha('recaptcha-container');
+    }
+    this.otpRequested = true;
+    this.auth.verifyUserMobile(this.client.mobile, this.recaptchaVerifier)
+      .then((confirmationResult) => {
+        this.otpSuccess = true;
+        this.confirmationResult = confirmationResult;
+        this.commonUtil.showSnackBar('Verification OTP sent successfully.');
+      }).catch((error) => {
+        this.otpRequested = false;
+        this.commonUtil.showSnackBar('Unable to send verification OTP.');
+      });
+  }
+
+  verify(stepper) {
+    this.verification = true;
+    this.confirmationResult.confirm(this.code)
+      .then((result) => {
+        const user = result.user;
+        console.log('verified user - ' + user);
+
+        // next
+        stepper.next();
+        this.setFocus('customer-name');
+
+      }).catch((error) => {
+        console.log('Unable to verify user - ' + error);
+      }).finally(() => { this.verification = false; });
+  }
+
+  verifyBack() {
+    this.otpRequested = false;
+  }
+
+  customerBack() {
+    this.code = '';
+    this.otpRequested = false;
+    this.otpSuccess = false;
+  }
+
+  customerNextStep() {
     this.customerNext = true;
     this.setFocus('address-1');
   }
 
-  addressNextStep(){
+  addressNextStep() {
     this.addressNext = true;
     this.setFocus('place-order-back');
   }
 
-  addressBackStep(){
+  addressBackStep() {
     this.customerNext = false;
     this.addressNext = false;
   }
 
-  placeOrderBackStep(){
+  placeOrderBackStep() {
     this.addressNext = false;
   }
 
-  placeOrder(){
-    window.alert('Order Placed successfuly!!!');
+  placeOrder() {
     // TODO Show referenece number / send email to customer
+
+    // create or get user - based on mobile no verification
+
+    const order: Order = new Order();
+    order.id = '';
+    order.vId = uuidv4();
+
+
+
+    window.alert('Order Placed successfuly!!! - ' + uuidv4());
   }
 
-  checkboxClick(){
+  checkboxClick() {
     // still has previous value
-    if(this.shippingAddressSame) {
+    if (this.shippingAddressSame) {
       this.addressNext = false;
     }
   }
 
   setFocus(id: string) {
-    const targetElem = document.getElementById(id);
-    setTimeout(function waitTargetElem() {
-      if (document.body.contains(targetElem)) {
-        targetElem.focus();
-      } else {
-        setTimeout(waitTargetElem, 100);
-      }
-    }, 100);
+    // const targetElem = document.getElementById(id);
+    // setTimeout(function waitTargetElem() {
+    //   if (document.body.contains(targetElem)) {
+    //     targetElem.focus();
+    //   } else {
+    //     setTimeout(waitTargetElem, 100);
+    //   }
+    // }, 100);
   }
 
 }
