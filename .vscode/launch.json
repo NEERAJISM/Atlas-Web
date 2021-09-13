@@ -1,0 +1,10 @@
+{
+  "configurations": [
+    {
+      "type": "pwa-chrome",
+      "name": "http://localhost:4200/profile#account",
+      "request": "launch",
+      "url": "http://localhost:4200/profile#account"
+    }
+  ]
+}

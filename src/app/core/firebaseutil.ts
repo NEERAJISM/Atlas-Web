@@ -33,6 +33,10 @@ export class FirebaseUtil {
     return this.firestore.createId();
   }
 
+  getInstance(): AngularFirestore {
+    return this.firestore;
+  }
+
   getClientRef(bizId: string): AngularFirestoreCollection {
     return this.firestore
       .collection(Constants.CLIENT_DB)

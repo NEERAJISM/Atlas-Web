@@ -8,6 +8,14 @@ export class Constants {
   static readonly AUTH_NETWORK_ISSUE = 'auth/network-request-failed';
 
   // Firebase
+  static readonly INFO = 'INFO';
+  static readonly ORDERS = 'ORDERS';
+
+  static readonly BUSINESS = 'BUSINESS';
+
+  static readonly USER = 'USER';
+
+  // old
   static readonly USER_DB = 'UserDB';
   static readonly CLIENT_DB = 'ClientDB';
   static readonly PRODUCT_DB = 'ProductDB';
@@ -15,7 +23,7 @@ export class Constants {
   static readonly INVOICE_PREVIEW_DB = 'InvoicePreviewDB';
   static readonly ORDER_DB = 'OrderDB';
   static readonly BIZ_ORDER_DB = 'BizOrderDB';
-  static readonly USER_ORDER_DB = 'UserOrderDB';
+  static readonly CLIENT_ORDER_DB = 'ClientOrderDB';
 
   static readonly USERS = 'Users';
   static readonly CLIENTS = 'Clients';

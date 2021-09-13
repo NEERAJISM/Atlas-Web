@@ -14,7 +14,9 @@
       <a class="nav-link" href="profile#home" (click)="home()">Home</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" href="javascript:void(0)" (click)="order()">Order</a>
+      <a class="nav-link" href="javascript:void(0)" (click)="order()"
+        >Products</a
+      >
     </li>
     <li class="nav-item">
       <a class="nav-link" href="profile#about" (click)="home()">About</a>
@@ -24,8 +26,8 @@
     </li>
   </ul>
 
-  <ul *ngIf="!isCheckoutSection" style="justify-content: flex-end">
-    <li class="nav-item">
+  <ul style="justify-content: flex-end">
+    <li *ngIf="!isCheckoutSection" class="m-0">
       <button
         mat-flat-button
         (click)="checkout()"
@@ -37,10 +39,20 @@
         &nbsp;Checkout
       </button>
     </li>
+    <li class="m-0">
+      <button
+        mat-flat-button
+        (click)="account()"
+        class="py-1 btn btn-warning justify-content-flex-start"
+      >
+        <i class="fas fa-user-alt"></i>
+        &nbsp;My Account
+      </button>
+    </li>
   </ul>
 
   <!-- Social Icon  -->
-  <ul
+  <!-- <ul
     class="col-lg-1 navbar-nav nav-flex-icons"
     style="justify-content: flex-end"
   >
@@ -53,12 +65,12 @@
     <li class="nav-item navbar-item-nopadding">
       <a class="nav-link"><i class="fab fa-twitter"></i></a>
     </li>
-  </ul>
+  </ul> -->
 </nav>
 
 <!-- Dashboard -->
 
-<div *ngIf="!isOrderSection">
+<div *ngIf="!isOrderSection && !isAccountSection">
   <section
     id="home"
     style="
@@ -78,7 +90,7 @@
 
 <!-- Cart -->
 
-<div *ngIf="isOrderSection && !isCheckoutSection" style="margin-top: 65px">
+<div *ngIf="isOrderSection && !isCheckoutSection" style="height: calc(100% - 65px); margin-top: 65px">
   <div class="row mt-2">
     <div class="col-lg-3" *ngFor="let item of items; index as i">
       <mat-card class="profile-card list">
@@ -162,15 +174,15 @@
 
 <!-- Checkout -->
 
-<div class="row" *ngIf="isCheckoutSection" style="margin-top: 65px">
+<div class="row" *ngIf="isCheckoutSection" style="height: calc(100% - 65px); margin-top: 65px">
   <div class="col-lg-8">
     <mat-card class="profile-card">
       <mat-card-header class="ml-0">
         <h5 class="mt-2">Cart Summary</h5>
-        <div class="col mb-3" style="justify-content: flex-end; display: flex;">
+        <div class="col mb-3" style="justify-content: flex-end; display: flex">
           <button mat-flat-button color="warn" (click)="goBackToOrderSection()">
             <i class="fas fa-arrow-left"></i>
-            Go Back
+            Go Back To Products
           </button>
         </div>
       </mat-card-header>
@@ -298,7 +310,7 @@
                   />
                 </mat-form-field>
               </p>
-            </div>            
+            </div>
           </div>
 
           <div *ngIf="otpSuccess" class="row">
@@ -321,7 +333,9 @@
             <div id="btn-verify">
               <button
                 *ngIf="!otpSuccess"
-                [disabled]="!(client.mobile && client.mobile.length == 10) || otpRequested"
+                [disabled]="
+                  !(client.mobile && client.mobile.length == 10) || otpRequested
+                "
                 mat-stroked-button
                 class="btn-success"
                 (click)="getOtp()"
@@ -677,19 +691,25 @@
         <mat-step label="Place Order">
           <div class="row">
             <div class="col">
-              <h4 style="display: flex; justify-content: center; font-weight: 100;">Please verify order summary & click Confirm.</h4>
+              <h4
+                style="display: flex; justify-content: center; font-weight: 100"
+              >
+                Please verify order summary & click Confirm.
+              </h4>
             </div>
           </div>
 
           <div class="row mt-3">
-            <div class="col" style="display: flex; justify-content: center;">              
+            <div class="col" style="display: flex; justify-content: center">
               <button
                 mat-stroked-button
                 matStepperNext
                 class="mr-2 btn-success"
                 (click)="placeOrder()"
+                [disabled]="orderRequested"
               >
                 Confirm & Place Order
+                <i class="fa fa-spinner fa-spin" *ngIf="orderRequested"></i>
               </button>
               <button
                 id="place-order-back"
@@ -701,7 +721,6 @@
               </button>
             </div>
           </div>
-
         </mat-step>
       </mat-horizontal-stepper>
     </mat-card>
@@ -786,8 +805,152 @@
             {{ shippingAddress.pin }}
           </h6>
         </div>
-      </div>      
+      </div>
     </mat-card>
+  </div>
+</div>
+
+<div class="row" *ngIf="isAccountSection" style="height: calc(100% - 65px); margin-top: 65px; margin-left: 150px; margin-right: 150px;">
+  <!-- Verification -->
+  <div *ngIf="isVerified" class="col">
+    <mat-card class="profile-card">
+      <mat-card-header class="ml-0">
+        <h5 class="mt-2">Verification</h5>
+      </mat-card-header>
+
+      <div class="row">
+        <div class="col-lg-4">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>Mobile No. (10 digit)</mat-label>
+              <input
+                id="mobile"
+                matInput
+                [(ngModel)]="client.mobile"
+                required
+                maxlength="10"
+                name="customerMobile"
+                [disabled]="otpSuccess"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div *ngIf="otpSuccess" class="row">
+        <div class="col-lg-4">
+          <p>
+            <mat-form-field appearance="outline" style="width: 100%">
+              <mat-label>6 digit verification code</mat-label>
+              <input
+                matInput
+                [(ngModel)]="code"
+                maxlength="10"
+                name="verificationCode"
+              />
+            </mat-form-field>
+          </p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div id="btn-verify">
+          <button
+            *ngIf="!otpSuccess"
+            [disabled]="
+              !(client.mobile && client.mobile.length == 10) || otpRequested
+            "
+            mat-stroked-button
+            class="btn-success"
+            (click)="getOtp()"
+          >
+            Send OTP
+            <i
+              class="fa fa-spinner fa-spin"
+              *ngIf="otpRequested && !otpSuccess"
+            ></i>
+          </button>
+          <button
+            *ngIf="otpSuccess"
+            [disabled]="!(code && code.length == 6) || verification"
+            mat-stroked-button
+            class="btn-success"
+            (click)="verify()"
+          >
+            Verify
+            <i class="fa fa-spinner fa-spin" *ngIf="verification"></i>
+          </button>
+        </div>
+        <div class="ml-2">
+          <button mat-stroked-button (click)="verifyBack()">Back</button>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+
+  <!-- Order User details -->
+  <div class="col">
+    <mat-tab-group mat-stretch-tabs *ngIf="!isVerified">
+      <mat-tab label="Orders">
+
+        
+
+
+      </mat-tab>
+
+      <mat-tab label="Settings">
+        <mat-accordion multi>
+          <div>
+
+            <!-- Personal Data -->
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Personal data </mat-panel-title>
+                <mat-panel-description>
+                  Type your name and age
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <mat-form-field appearance="fill">
+                <mat-label>First name</mat-label>
+                <input matInput />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Middle name</mat-label>
+                <input matInput />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Last name</mat-label>
+                <input matInput />
+              </mat-form-field>
+              
+            </mat-expansion-panel>
+
+            <!-- Preferences -->            
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title> Preferences </mat-panel-title>
+                <mat-panel-description>
+                  Preferences
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <mat-form-field appearance="fill">
+                <mat-label>First name</mat-label>
+                <input matInput />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Age</mat-label>
+                <input matInput type="number" min="1" />
+              </mat-form-field>
+            </mat-expansion-panel>
+          </div>
+        </mat-accordion>
+      </mat-tab>
+    </mat-tab-group>
   </div>
 </div>
 

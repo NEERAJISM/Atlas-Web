@@ -1,14 +1,16 @@
 import { Location } from '@angular/common';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CommonUtil } from '@core/common.util';
 import { Constants } from '@core/constants';
+import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
 import { Client } from '@core/models/client';
-import { Order } from '@core/models/order';
+import { Item, Order, OrderStatus, Status } from '@core/models/order';
 import { Product, Unit } from '@core/models/product';
 import firebase from 'firebase/app';
+import { Subscription } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../auth.service';
 
@@ -24,22 +26,33 @@ class CartItem {
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss'],
 })
-export class ProfileComponent implements OnInit {
+export class ProfileComponent implements OnInit, OnDestroy {
 
+  isAccountSection = false;
   isOrderSection = false;
   isCheckoutSection = false;
 
   firstFormGroup: FormGroup;
   secondFormGroup: FormGroup;
 
+  customerNext = false;
+  addressNext = false;
+
+  states = Constants.states;
+
   items: Product[] = [];
 
   cartMap: Map<number, CartItem> = new Map();
+  orderRequested = false;
+
+  // Business
+  bizId = 'bizId';
 
   // Client form
   client = new Client();
   shippingAddressSame = true;
   shippingAddress: Address = new Address();
+  isVerified = false;
 
   // verification
   code: string;
@@ -48,16 +61,19 @@ export class ProfileComponent implements OnInit {
   verification = false;
   confirmationResult: firebase.auth.ConfirmationResult;
   recaptchaVerifier: firebase.auth.RecaptchaVerifier;
+  userData: firebase.User = null;
 
-  customerNext = false;
-  addressNext = false;
-
-  states = Constants.states;
+  // Account Details
+  orders: Order[] = [];
+  orderSubscription: Subscription;
 
   constructor(private location: Location, private router: Router, private _formBuilder: FormBuilder,
-    private auth: AuthService, private commonUtil: CommonUtil) {
+    private auth: AuthService, private commonUtil: CommonUtil, private fbUtil: FirebaseUtil) {
     this.init();
-    this.isOrderSection = (router.url === '/profile#order');
+    this.isOrderSection = (router.url === '/profile#products');
+    if (router.url === '/profile#account') {
+      this.account();
+    }
   }
 
   ngOnInit() {
@@ -67,6 +83,10 @@ export class ProfileComponent implements OnInit {
     this.secondFormGroup = this._formBuilder.group({
       secondCtrl: ['', Validators.required]
     });
+  }
+
+  ngOnDestroy(): void {
+    this.orderSubscription.unsubscribe();
   }
 
   init() {
@@ -119,18 +139,62 @@ export class ProfileComponent implements OnInit {
     this.items.push(product4);
     this.items.push(product4);
     this.items.push(product4);
+
+    this.loadUserData();
+  }
+
+  // Load orders
+  loadUserData() {
+    // user data
+
+    // orders
+    this.orderSubscription = this.fbUtil.getInstance()
+      .collection(Constants.USER + '/' + 'my7dwdbkikdLXrKvZDtYSV3ugfP2' + '/' + Constants.ORDERS)
+      .snapshotChanges().subscribe(() => this.loadOrders());
+  }
+
+  loadOrders() {
+    const result: Order[] = [];
+    this.fbUtil.getInstance()
+      .collection(Constants.USER + '/' + 'my7dwdbkikdLXrKvZDtYSV3ugfP2' + '/' + Constants.ORDERS)
+      .get().forEach((res) =>
+        res.forEach((data) => {
+          const o = new Order();
+          if (data.data()) {
+            Object.assign(o, data.data());
+            result.push(o);
+          }
+        })
+      )
+      .finally(() => this.updateOrders(result));
+  }
+
+  updateOrders(result: Order[]){
+    this.orders = result;
+    console.log('Loaded ' + this.orders.length + ' orders');
   }
 
   home() {
     document.documentElement.scrollTop = 0;
     this.isOrderSection = false;
     this.isCheckoutSection = false;
+    this.isAccountSection = false;
   }
 
   order() {
-    this.location.replaceState('profile#order');
+    this.location.replaceState('profile#products');
     document.documentElement.scrollTop = 0;
     this.isOrderSection = true;
+    this.isAccountSection = false;
+    this.isCheckoutSection = false;
+  }
+
+  account() {
+    this.location.replaceState('profile#account');
+    document.documentElement.scrollTop = 0;
+    this.isOrderSection = false;
+    this.isCheckoutSection = false;
+    this.isAccountSection = true;
   }
 
   checkout() {
@@ -152,7 +216,7 @@ export class ProfileComponent implements OnInit {
       this.cartMap.get(i).qty++;
 
       this.items[i].units.forEach((unit) => {
-        if (unit.unit == this.cartMap.get(i).unit) {
+        if (unit.unit === this.cartMap.get(i).unit) {
           this.cartMap.get(i).price = this.cartMap.get(i).qty * unit.price;
         }
       });
@@ -176,7 +240,7 @@ export class ProfileComponent implements OnInit {
       }
     } else {
       this.items[i].units.forEach((unit) => {
-        if (unit.unit == this.cartMap.get(i).unit) {
+        if (unit.unit === this.cartMap.get(i).unit) {
           this.cartMap.get(i).price = this.cartMap.get(i).qty * unit.price;
         }
       });
@@ -185,7 +249,7 @@ export class ProfileComponent implements OnInit {
 
   unitChange(i: number, value: string) {
     this.items[i].units.forEach((unit) => {
-      if (unit.unit == value) {
+      if (unit.unit === value) {
         this.cartMap.get(i).price = this.cartMap.get(i).qty * unit.price;
       }
     });
@@ -214,19 +278,19 @@ export class ProfileComponent implements OnInit {
       });
   }
 
-  verify(stepper) {
+  verify(stepper?) {
     this.verification = true;
     this.confirmationResult.confirm(this.code)
       .then((result) => {
-        const user = result.user;
-        console.log('verified user - ' + user);
-
+        this.commonUtil.showSnackBar('User verified successfully!!');
+        this.userData = result.user;
         // next
-        stepper.next();
+        if (stepper) {
+          stepper.next();
+        }
         this.setFocus('customer-name');
-
       }).catch((error) => {
-        console.log('Unable to verify user - ' + error);
+        this.commonUtil.showSnackBar('Incorrect OTP. Please check verification SMS.');
       }).finally(() => { this.verification = false; });
   }
 
@@ -265,12 +329,60 @@ export class ProfileComponent implements OnInit {
     // create or get user - based on mobile no verification
 
     const order: Order = new Order();
-    order.id = '';
+    order.id = this.fbUtil.getId();
     order.vId = uuidv4();
+    order.createdTimeUTC = Date.now();
 
+    order.userId = this.userData.uid;
+    order.bizId = this.bizId;
 
+    const status: OrderStatus = new OrderStatus();
+    status.status = Status.New;
+    status.time = Date.now();
+    order.status.push(status);
 
-    window.alert('Order Placed successfuly!!! - ' + uuidv4());
+    // cart items
+    this.cartMap.forEach((item) => {
+      const i = new Item();
+
+      // TODO
+      i.id = '';
+
+      i.name = item.name;
+      i.qty = item.qty;
+      i.price = item.price;
+      i.unit = item.unit;
+
+      // discount & tax
+
+      order.items.push(i);
+    });
+
+    const doc = this.fbUtil.toJson(order);
+
+    this.orderRequested = true;
+    this.fbUtil.getInstance()
+      .collection(Constants.BUSINESS + '/' + order.bizId + '/' + Constants.ORDERS)
+      .doc(order.id)
+      .set(doc)
+      .catch(() => this.commonUtil.showSnackBar('Error occurred, Please check Internet connectivity'))
+      .then(() =>
+        this.fbUtil.getInstance()
+          .collection(Constants.USER + '/' + order.userId + '/' + Constants.ORDERS)
+          .doc(order.id)
+          .set(doc)
+      )
+      .finally(() => {
+        this.orderRequested = false;
+        window.alert('Order Placed successfuly!!! - ' + uuidv4());
+        this.account();
+        // TODO replace by resetting all
+        location.reload();
+      });
+  }
+
+  clearCart() {
+
   }
 
   checkboxClick() {

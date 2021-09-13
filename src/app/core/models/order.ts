@@ -5,6 +5,7 @@ export class Order {
   userId: string;
   bizId: string;
 
+  createdTimeUTC: number;
   status: OrderStatus[] = [];
 
   items: Item[] = [];
@@ -21,6 +22,8 @@ export class Order {
   totalTaxableValue: number;
   totalTax: number;
   total: number;
+
+  // TODO payment gateway details
 
   constructor() { }
 }
@@ -48,15 +51,15 @@ export class OrderStatus {
   time: number;
 }
 
-enum Status {
-  New,
-  Cancel,
-  Reject,
-  Accept,
-  Progress,
-  Transit,
-  Complete,
-  Return,
-  ReturnAceept,
-  ReturnComplete,
+export enum Status {
+  New = 'New',
+  Cancel = 'Cancel',
+  Reject = 'Reject',
+  Accept = 'Accept',
+  Progress = 'Progress',
+  Transit = 'Transit',
+  Complete = 'Complete',
+  Return = 'Return',
+  ReturnAccept = 'ReturnAccept',
+  ReturnComplete = 'ReturnComplete',
 }
