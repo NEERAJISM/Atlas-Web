@@ -10,7 +10,8 @@ import { Client } from '@core/models/client';
 import { Item, Order, OrderStatus, Status } from '@core/models/order';
 import { Product, Unit } from '@core/models/product';
 import firebase from 'firebase/app';
-import { Subscription } from 'rxjs';
+import { fromEvent, merge, Observable, Observer, Subscription } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { AuthService } from '../auth.service';
 
@@ -27,7 +28,6 @@ class CartItem {
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfileComponent implements OnInit, OnDestroy {
-
   isAccountSection = false;
   isOrderSection = false;
   isCheckoutSection = false;
@@ -64,14 +64,28 @@ export class ProfileComponent implements OnInit, OnDestroy {
   userData: firebase.User = null;
 
   // Account Details
-  orders: Order[] = [];  
+  orders: Order[] = [];
   orderSubscription: Subscription;
-  url ='https://material.angular.io/assets/img/examples/shiba2.jpg';
+  limit = 3;
+  url = 'https://material.angular.io/assets/img/examples/shiba2.jpg';
 
-  constructor(private location: Location, private router: Router, private _formBuilder: FormBuilder,
-    private auth: AuthService, private commonUtil: CommonUtil, private fbUtil: FirebaseUtil) {
+  constructor(
+    private location: Location,
+    private router: Router,
+    private _formBuilder: FormBuilder,
+    private auth: AuthService,
+    private commonUtil: CommonUtil,
+    private fbUtil: FirebaseUtil
+  ) {
+    this.createOnline$().subscribe((isOnline) => {
+      if (!isOnline) {
+        window.alert("You're offline. Please check your internet.");
+      }
+    });
+
     this.init();
-    this.isOrderSection = (router.url === '/profile#products');
+
+    this.isOrderSection = router.url === '/profile#products';
     if (router.url === '/profile#account') {
       this.account();
     }
@@ -79,10 +93,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
+      firstCtrl: ['', Validators.required],
     });
     this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required]
+      secondCtrl: ['', Validators.required],
     });
   }
 
@@ -149,16 +163,33 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // user data
 
     // orders
-    this.orderSubscription = this.fbUtil.getInstance()
-      .collection(Constants.USER + '/' + 'my7dwdbkikdLXrKvZDtYSV3ugfP2' + '/' + Constants.ORDERS)
-      .snapshotChanges().subscribe(() => this.loadOrders());
+    this.orderSubscription = this.fbUtil
+      .getInstance()
+      .collection(
+        Constants.USER +
+          '/' +
+          'my7dwdbkikdLXrKvZDtYSV3ugfP2' +
+          '/' +
+          Constants.ORDERS
+      )
+      .valueChanges()
+      .subscribe(() => this.loadOrders());
   }
 
   loadOrders() {
     const result: Order[] = [];
-    this.fbUtil.getInstance()
-      .collection(Constants.USER + '/' + 'my7dwdbkikdLXrKvZDtYSV3ugfP2' + '/' + Constants.ORDERS)
-      .get().forEach((res) =>
+    this.fbUtil
+      .getInstance()
+      .collection(
+        Constants.USER +
+          '/' +
+          'my7dwdbkikdLXrKvZDtYSV3ugfP2' +
+          '/' +
+          Constants.ORDERS,
+        (ref) => ref.orderBy('createdTimeUTC', 'desc').limit(this.limit)
+      )
+      .get()
+      .forEach((res) =>
         res.forEach((data) => {
           const o = new Order();
           if (data.data()) {
@@ -170,7 +201,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       .finally(() => this.updateOrders(result));
   }
 
-  updateOrders(result: Order[]){
+  updateOrders(result: Order[]) {
     this.orders = result;
     console.log('Loaded ' + this.orders.length + ' orders');
   }
@@ -221,7 +252,6 @@ export class ProfileComponent implements OnInit, OnDestroy {
           this.cartMap.get(i).price = this.cartMap.get(i).qty * unit.price;
         }
       });
-
     } else {
       const item = new CartItem();
       item.name = this.items[i].name;
@@ -268,20 +298,25 @@ export class ProfileComponent implements OnInit, OnDestroy {
       this.recaptchaVerifier = this.auth.getRecaptcha('recaptcha-container');
     }
     this.otpRequested = true;
-    this.auth.verifyUserMobile(this.client.mobile, this.recaptchaVerifier)
+    this.auth
+      .verifyUserMobile(this.client.mobile, this.recaptchaVerifier)
       .then((confirmationResult) => {
         this.otpSuccess = true;
         this.confirmationResult = confirmationResult;
         this.commonUtil.showSnackBar('Verification OTP sent successfully.');
-      }).catch((error) => {
+      })
+      .catch((error) => {
         this.otpRequested = false;
-        this.commonUtil.showSnackBar('Unable to send verification OTP. Please check you Internet.');
+        this.commonUtil.showSnackBar(
+          'Unable to send verification OTP. Please check you Internet.'
+        );
       });
   }
 
   verify(stepper?) {
     this.verification = true;
-    this.confirmationResult.confirm(this.code)
+    this.confirmationResult
+      .confirm(this.code)
       .then((result) => {
         this.commonUtil.showSnackBar('User verified successfully!!');
         this.userData = result.user;
@@ -290,9 +325,15 @@ export class ProfileComponent implements OnInit, OnDestroy {
           stepper.next();
         }
         this.setFocus('customer-name');
-      }).catch((error) => {
-        this.commonUtil.showSnackBar('Incorrect OTP. Please check verification SMS.');
-      }).finally(() => { this.verification = false; });
+      })
+      .catch((error) => {
+        this.commonUtil.showSnackBar(
+          'Incorrect OTP. Please check verification SMS.'
+        );
+      })
+      .finally(() => {
+        this.verification = false;
+      });
   }
 
   verifyBack() {
@@ -372,14 +413,24 @@ export class ProfileComponent implements OnInit, OnDestroy {
     const doc = this.fbUtil.toJson(order);
 
     this.orderRequested = true;
-    this.fbUtil.getInstance()
-      .collection(Constants.BUSINESS + '/' + order.bizId + '/' + Constants.ORDERS)
+    this.fbUtil
+      .getInstance()
+      .collection(
+        Constants.BUSINESS + '/' + order.bizId + '/' + Constants.ORDERS
+      )
       .doc(order.id)
       .set(doc)
-      .catch(() => this.commonUtil.showSnackBar('Error occurred, Please check Internet connectivity'))
+      .catch(() =>
+        this.commonUtil.showSnackBar(
+          'Error occurred, Please check Internet connectivity'
+        )
+      )
       .then(() =>
-        this.fbUtil.getInstance()
-          .collection(Constants.USER + '/' + order.userId + '/' + Constants.ORDERS)
+        this.fbUtil
+          .getInstance()
+          .collection(
+            Constants.USER + '/' + order.userId + '/' + Constants.ORDERS
+          )
           .doc(order.id)
           .set(doc)
       )
@@ -392,13 +443,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
       });
   }
 
-  getDate(epoch : number){
+  getDate(epoch: number) {
     return this.commonUtil.getFormattedDate(new Date(epoch));
   }
 
-  clearCart() {
-
-  }
+  clearCart() {}
 
   checkboxClick() {
     // still has previous value
@@ -418,4 +467,19 @@ export class ProfileComponent implements OnInit, OnDestroy {
     // }, 100);
   }
 
+  createOnline$() {
+    return merge<boolean>(
+      fromEvent(window, 'offline').pipe(map(() => false)),
+      fromEvent(window, 'online').pipe(map(() => true)),
+      new Observable((sub: Observer<boolean>) => {
+        sub.next(navigator.onLine);
+        sub.complete();
+      })
+    );
+  }
+
+  increaseOrderLimit() {
+    this.limit += 3;
+    this.loadOrders();
+  }
 }

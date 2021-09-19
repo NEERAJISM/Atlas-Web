@@ -907,24 +907,24 @@
   <!-- Order User details -->
   <div class="col">
     <mat-tab-group mat-stretch-tabs *ngIf="!isVerified">
-      <mat-tab label="Orders">
+      <mat-tab label="My Orders">
         <mat-card class="order-card" *ngFor="let order of orders">
           <div class="row" style="padding: 16px; background: #eeeeee">
             <div class="col-lg-2">
               <h5>Date</h5>
-              <p>{{getDate(order.createdTimeUTC)}}</p>
+              <p>{{ getDate(order.createdTimeUTC) }}</p>
             </div>
             <div class="col-lg-2">
               <h5>Status</h5>
-              <p>{{order.status[0].status}}</p>
+              <p>{{ order.status[0].status }}</p>
             </div>
             <div class="col-lg-2">
               <h5>Total</h5>
-              <p>{{order.total}}</p>
+              <p>{{ order.total }}</p>
             </div>
             <div class="col-lg-6">
               <h5># Order Id</h5>
-              <p>{{order.vId}}</p>
+              <p>{{ order.vId }}</p>
             </div>
           </div>
 
@@ -961,7 +961,7 @@
                     mat-flat-button
                     (click)="account()"
                     class="btn btn-danger m-0"
-                    style="float: right; width: 100%;"
+                    style="float: right; width: 100%"
                   >
                     <i class="far fa-times-circle"></i>
                     &nbsp;Cancel Order
@@ -970,9 +970,9 @@
                 <div class="row mt-2">
                   <button
                     mat-flat-button
-                    (click)="account()"
+                    (click)="limitInc()"
                     class="btn btn-warning m-0"
-                    style="float: right; width: 100%;"
+                    style="float: right; width: 100%"
                   >
                     <i class="fas fa-question"></i>
                     &nbsp;Need help
@@ -982,6 +982,16 @@
             </div>
           </mat-card-content>
         </mat-card>
+        <div class="row mb-4" style="display: flex; justify-content: center;">
+        <button
+          mat-flat-button
+          (click)="limitInc()"
+          class="col-lg-4 py-2 btn btn-secondary"
+        >
+          <i class="fas fa-redo-alt"></i>
+          &nbsp;Load more orders
+        </button>
+      </div>
       </mat-tab>
 
       <mat-tab label="Settings">
