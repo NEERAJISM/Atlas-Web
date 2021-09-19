@@ -32,6 +32,8 @@ export class Item {
   id: string;
   name: string;
 
+  // Biz Item photo url
+
   unit: string;
   price: number;
 

@@ -357,10 +357,7 @@ export class EditInvoiceComponent {
 
     const index = Constants.optionsTax.indexOf(item.tax);
     if (index !== -1) {
-      item.taxValue =
-        Math.round(
-          (item.total * Constants.optionsTaxValue[index] + Number.EPSILON) * 100
-        ) / 100;
+      item.taxValue = this.util.getTax(item.total, Constants.optionsTaxValue[index]);        
     }
 
     item.total += item.taxValue;

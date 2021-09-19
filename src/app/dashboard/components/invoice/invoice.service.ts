@@ -6,6 +6,7 @@ import { Invoice, InvoiceVersion } from '@core/models/invoice';
 import { jsPDF, jsPDFOptions } from 'jspdf';
 
 import { HttpClient } from '@angular/common/http';
+import { CommonUtil } from '@core/common.util';
 
 @Injectable()
 export class InvoiceService {
@@ -46,7 +47,7 @@ export class InvoiceService {
     ['Final Amount (Total + Tax)', '']
   ];
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private util: CommonUtil) { }
 
   public getBusinessInfo(): Business {
     const b = new Business();
@@ -111,8 +112,8 @@ export class InvoiceService {
     dataInvoiceDetails[1] = [];
     dataInvoiceDetails[2] = [];
     dataInvoiceDetails[3] = [];
-    dataInvoiceDetails[0][0] = this.dataInvoiceDetails[0] + this.getFormattedDate(new Date(i.invoiceDate));
-    dataInvoiceDetails[1][0] = this.dataInvoiceDetails[1] + this.getFormattedDate(new Date(i.dueDate));
+    dataInvoiceDetails[0][0] = this.dataInvoiceDetails[0] + this.util.getFormattedDate(new Date(i.invoiceDate));
+    dataInvoiceDetails[1][0] = this.dataInvoiceDetails[1] + this.util.getFormattedDate(new Date(i.dueDate));
     dataInvoiceDetails[2][0] = this.dataInvoiceDetails[2] + i.supplyPlace;
     dataInvoiceDetails[3][0] = this.dataInvoiceDetails[3] + i.supplyState;
 
@@ -228,19 +229,6 @@ export class InvoiceService {
     }
 
     return doc;
-  }
-
-  getFormattedDate(date: Date): string {
-    const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(
-      date
-    );
-    const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(
-      date
-    );
-    const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(
-      date
-    );
-    return da + ' ' + mo + ' ' + ye;
   }
 
   getAddressArray(): string[][] {

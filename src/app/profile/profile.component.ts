@@ -64,8 +64,9 @@ export class ProfileComponent implements OnInit, OnDestroy {
   userData: firebase.User = null;
 
   // Account Details
-  orders: Order[] = [];
+  orders: Order[] = [];  
   orderSubscription: Subscription;
+  url ='https://material.angular.io/assets/img/examples/shiba2.jpg';
 
   constructor(private location: Location, private router: Router, private _formBuilder: FormBuilder,
     private auth: AuthService, private commonUtil: CommonUtil, private fbUtil: FirebaseUtil) {
@@ -274,7 +275,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.commonUtil.showSnackBar('Verification OTP sent successfully.');
       }).catch((error) => {
         this.otpRequested = false;
-        this.commonUtil.showSnackBar('Unable to send verification OTP.');
+        this.commonUtil.showSnackBar('Unable to send verification OTP. Please check you Internet.');
       });
   }
 
@@ -341,6 +342,8 @@ export class ProfileComponent implements OnInit, OnDestroy {
     status.time = Date.now();
     order.status.push(status);
 
+    let totalV = 0;
+    let totalTaxV = 0;
     // cart items
     this.cartMap.forEach((item) => {
       const i = new Item();
@@ -354,9 +357,17 @@ export class ProfileComponent implements OnInit, OnDestroy {
       i.unit = item.unit;
 
       // discount & tax
+      i.tax = '0';
+      i.taxValue = this.commonUtil.getTax(i.price, 0);
+      i.total = i.price + i.taxValue;
 
+      totalV += i.total;
+      totalTaxV += i.taxValue;
       order.items.push(i);
     });
+
+    order.total = totalV;
+    order.totalTaxableValue = totalTaxV;
 
     const doc = this.fbUtil.toJson(order);
 
@@ -379,6 +390,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
         // TODO replace by resetting all
         location.reload();
       });
+  }
+
+  getDate(epoch : number){
+    return this.commonUtil.getFormattedDate(new Date(epoch));
   }
 
   clearCart() {
