@@ -23,6 +23,8 @@ export class Order {
   totalTax: number;
   total: number;
 
+  // TODO Address details
+
   // TODO payment gateway details
 
   constructor() { }
