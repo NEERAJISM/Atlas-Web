@@ -24,6 +24,9 @@ export class OrdersDashboardComponent implements OnDestroy {
   orders: Order[] = [];
   orderSubscription: Subscription;
   limit = 3;
+  value = '';
+  timeout?: number;
+
   url = 'https://material.angular.io/assets/img/examples/shiba2.jpg';
 
   constructor(private fbUtil: FirebaseUtil, private util: CommonUtil) {
@@ -36,7 +39,7 @@ export class OrdersDashboardComponent implements OnDestroy {
 
   // TODO better filtering to get actual new orders
 
-  loadOrders() {
+  loadOrders(isSearch?: boolean) {
     const result: Order[] = [];
     this.fbUtil
       .getInstance()
@@ -50,7 +53,14 @@ export class OrdersDashboardComponent implements OnDestroy {
           const o = new Order();
           if (data.data()) {
             Object.assign(o, data.data());
-            result.push(o);
+            if (!isSearch) {
+              result.push(o);
+              return;
+            }
+
+            if (o.client.name.toUpperCase().indexOf(this.value.toUpperCase()) != -1) {
+              result.push(o);
+            }
           }
         })
       )
@@ -82,7 +92,7 @@ export class OrdersDashboardComponent implements OnDestroy {
           break;
         case Status.Progress:
           this.progress++;
-          break;        
+          break;
         case Status.Complete:
           this.completed++;
           break;
@@ -92,9 +102,10 @@ export class OrdersDashboardComponent implements OnDestroy {
       }
     });
 
-    if(this.tabStatus != null) {
+    if (this.tabStatus != null) {
       this.orders = this.allOrders.filter(
-        (order) => order.status[order.status.length - 1].status === this.tabStatus
+        (order) =>
+          order.status[order.status.length - 1].status === this.tabStatus
       );
     }
   }
@@ -127,10 +138,10 @@ export class OrdersDashboardComponent implements OnDestroy {
         case 3:
           this.tabStatus = Status.Progress;
           break;
-        case 4:          
+        case 4:
           this.tabStatus = Status.Complete;
           break;
-        case 5:          
+        case 5:
           this.tabStatus = Status.Cancel;
           break;
       }
@@ -163,13 +174,31 @@ export class OrdersDashboardComponent implements OnDestroy {
         this.fbUtil
           .getInstance()
           .collection(
-            Constants.USER + '/' + order.userId + '/' + Constants.ORDERS
+            Constants.USER + '/' + order.client.userId + '/' + Constants.ORDERS
           )
           .doc(order.id)
           .set(doc)
-      ).finally(() => {
+      )
+      .finally(() => {
         this.updateTabs();
       });
   }
 
+  onInput(): void {
+    window.clearTimeout(this.timeout);
+    this.timeout = window.setTimeout(() => this.search(), 1000);
+  }
+
+  searchClear() {
+    this.value = '';
+    this.loadOrders();
+  }
+
+  search() {
+    if (!this.value) {
+      this.searchClear();
+      return;
+    }
+    this.loadOrders(true);
+  }
 }
