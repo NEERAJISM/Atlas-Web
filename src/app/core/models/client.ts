@@ -13,6 +13,4 @@ export class Client {
   email: string;
 
   address: Address = new Address();
-
-  //shipping address ??
 }

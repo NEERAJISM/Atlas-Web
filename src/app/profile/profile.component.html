@@ -469,110 +469,26 @@
         </mat-step>
 
         <mat-step label="Address Details">
-          <h5>Billing Address</h5>
-          <div class="row mt-2">
-            <div class="col-lg-5 mr-3">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Address Line 1</mat-label>
-                  <input
-                    id="address-1"
-                    matInput
-                    [(ngModel)]="client.address.line1"
-                    required
-                    type="text"
-                    name="customerName"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
+          <h5>Delivery Mode</h5>
 
-            <div class="col-lg-5">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Address Line 2 (Optional)</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.address.line2"
-                    type="text"
-                    name="customerName"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
+          <div class="row my-3">
+            <mat-radio-group (change)="deliveryMode($event)">
+              <mat-radio-button value="pickup" class="mr-3" checked>Self Pickup</mat-radio-button>
+              <mat-radio-button value="delivery">Deliver to an Address</mat-radio-button>
+            </mat-radio-group>
           </div>
 
-          <div class="row">
-            <div class="col-lg-2 pr-2">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>Pincode</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.address.pin"
-                    required
-                    [pattern]="'[0-9]*'"
-                    type="number"
-                    maxlength="6"
-                    name="customerAddressPin"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-
-            <div class="col-lg-3 mr-3">
-              <p>
-                <mat-form-field appearance="outline" style="width: 100%">
-                  <mat-label>District</mat-label>
-                  <input
-                    matInput
-                    [(ngModel)]="client.address.district"
-                    required
-                    type="text"
-                    name="customerName"
-                  />
-                </mat-form-field>
-              </p>
-            </div>
-
-            <div class="col-lg-3">
-              <mat-form-field appearance="outline" style="width: 100%">
-                <mat-label>State</mat-label>
-                <mat-select
-                  required
-                  name="supplyState"
-                  [(ngModel)]="client.address.state"
-                >
-                  <mat-option *ngFor="let state of states" [value]="state">
-                    {{ state }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col">
-              <mat-checkbox
-                name="shippingAddressSame"
-                [(ngModel)]="shippingAddressSame"
-                (click)="checkboxClick()"
-                >Use same as shipping address</mat-checkbox
-              >
-            </div>
-          </div>
-
-          <div class="mt-2" *ngIf="!shippingAddressSame">
-            <h5>Shipping Address</h5>
-
+          <div *ngIf="!pickup">
+            <h5>Billing Address</h5>
             <div class="row mt-2">
               <div class="col-lg-5 mr-3">
                 <p>
                   <mat-form-field appearance="outline" style="width: 100%">
-                    <mat-label>Shipping Address Line 1</mat-label>
+                    <mat-label>Address Line 1</mat-label>
                     <input
+                      id="address-1"
                       matInput
-                      [(ngModel)]="shippingAddress.line1"
+                      [(ngModel)]="client.address.line1"
                       required
                       type="text"
                       name="customerName"
@@ -587,7 +503,7 @@
                     <mat-label>Address Line 2 (Optional)</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="shippingAddress.line2"
+                      [(ngModel)]="client.address.line2"
                       type="text"
                       name="customerName"
                     />
@@ -603,12 +519,12 @@
                     <mat-label>Pincode</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="shippingAddress.pin"
+                      [(ngModel)]="client.address.pin"
                       required
                       [pattern]="'[0-9]*'"
                       type="number"
                       maxlength="6"
-                      name="customerShippingPin"
+                      name="customerAddressPin"
                     />
                   </mat-form-field>
                 </p>
@@ -620,7 +536,7 @@
                     <mat-label>District</mat-label>
                     <input
                       matInput
-                      [(ngModel)]="shippingAddress.district"
+                      [(ngModel)]="client.address.district"
                       required
                       type="text"
                       name="customerName"
@@ -635,13 +551,108 @@
                   <mat-select
                     required
                     name="supplyState"
-                    [(ngModel)]="shippingAddress.state"
+                    [(ngModel)]="client.address.state"
                   >
                     <mat-option *ngFor="let state of states" [value]="state">
                       {{ state }}
                     </mat-option>
                   </mat-select>
                 </mat-form-field>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col">
+                <mat-checkbox
+                  name="shippingAddressSame"
+                  [(ngModel)]="shippingAddressSame"
+                  (click)="checkboxClick()"
+                  >Use same as shipping address</mat-checkbox
+                >
+              </div>
+            </div>
+
+            <div class="mt-2" *ngIf="!shippingAddressSame">
+              <h5>Shipping Address</h5>
+
+              <div class="row mt-2">
+                <div class="col-lg-5 mr-3">
+                  <p>
+                    <mat-form-field appearance="outline" style="width: 100%">
+                      <mat-label>Shipping Address Line 1</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="shippingAddress.line1"
+                        required
+                        type="text"
+                        name="customerName"
+                      />
+                    </mat-form-field>
+                  </p>
+                </div>
+
+                <div class="col-lg-5">
+                  <p>
+                    <mat-form-field appearance="outline" style="width: 100%">
+                      <mat-label>Address Line 2 (Optional)</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="shippingAddress.line2"
+                        type="text"
+                        name="customerName"
+                      />
+                    </mat-form-field>
+                  </p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-lg-2 pr-2">
+                  <p>
+                    <mat-form-field appearance="outline" style="width: 100%">
+                      <mat-label>Pincode</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="shippingAddress.pin"
+                        required
+                        [pattern]="'[0-9]*'"
+                        type="number"
+                        maxlength="6"
+                        name="customerShippingPin"
+                      />
+                    </mat-form-field>
+                  </p>
+                </div>
+
+                <div class="col-lg-3 mr-3">
+                  <p>
+                    <mat-form-field appearance="outline" style="width: 100%">
+                      <mat-label>District</mat-label>
+                      <input
+                        matInput
+                        [(ngModel)]="shippingAddress.district"
+                        required
+                        type="text"
+                        name="customerName"
+                      />
+                    </mat-form-field>
+                  </p>
+                </div>
+
+                <div class="col-lg-3">
+                  <mat-form-field appearance="outline" style="width: 100%">
+                    <mat-label>State</mat-label>
+                    <mat-select
+                      required
+                      name="supplyState"
+                      [(ngModel)]="shippingAddress.state"
+                    >
+                      <mat-option *ngFor="let state of states" [value]="state">
+                        {{ state }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
               </div>
             </div>
           </div>
@@ -662,7 +673,7 @@
               (click)="addressNextStep()"
               [ngClass]="{
                 'btn-success':
-                  client.address.line1 &&
+                pickup || (client.address.line1 &&
                   client.address.pin &&
                   client.address.pin.toString().length == 6 &&
                   client.address.district &&
@@ -672,10 +683,10 @@
                       shippingAddress.pin &&
                       shippingAddress.pin.toString().length == 6 &&
                       shippingAddress.district &&
-                      shippingAddress.state))
+                      shippingAddress.state)))
               }"
               [disabled]="
-                !(
+                !(pickup || (
                   client.address.line1 &&
                   client.address.pin &&
                   client.address.pin.toString().length == 6 &&
@@ -686,7 +697,7 @@
                       shippingAddress.pin &&
                       shippingAddress.pin.toString().length == 6 &&
                       shippingAddress.district &&
-                      shippingAddress.state))
+                      shippingAddress.state)))
                 )
               "
             >
@@ -794,10 +805,11 @@
       <div *ngIf="addressNext">
         <h5 class="mt-4 mb-3">
           {{
-            shippingAddressSame ? "Billing/Shipping Address" : "Billing Address"
+            pickup ? "Delivery Mode : Self Pickup" : (shippingAddressSame ? "Billing/Shipping Address" : "Billing Address")
           }}
         </h5>
 
+        <div *ngIf="!pickup">
         <h6 class="mb-3">
           {{ client.address.line1 }}, {{ client.address.line2 }},
           {{ client.address.district }}, {{ client.address.state }} -
@@ -812,6 +824,7 @@
             {{ shippingAddress.pin }}
           </h6>
         </div>
+      </div>
       </div>
     </mat-card>
   </div>

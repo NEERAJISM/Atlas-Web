@@ -1,9 +1,19 @@
+import { Address } from "./address";
+import { Client } from "./client";
+
 export class Order {
   id: string;
   vId: string;
 
+  //TODO remove later
   userId: string;
+
+  client: Client = new Client();
+  shippingAddress: Address = new Address();  // shipping address is related to Order
+
   bizId: string;
+  bizName: string;
+  bizMob: string;
 
   createdTimeUTC: number;
   status: OrderStatus[] = [];
@@ -22,8 +32,6 @@ export class Order {
   totalTaxableValue: number;
   totalTax: number;
   total: number;
-
-  // TODO Address details
 
   // TODO payment gateway details
 

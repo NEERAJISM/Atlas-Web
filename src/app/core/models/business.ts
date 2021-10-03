@@ -4,6 +4,8 @@ import { Address } from './Address';
 export class Business {
   id: string;
 
+  profileName: string; //TODO like insta / twitter handle
+
   name: string;
   web: string;
 

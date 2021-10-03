@@ -11,7 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ProfileComponent } from './profile.component';
-
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   imports: [
@@ -26,13 +26,10 @@ import { ProfileComponent } from './profile.component';
     MatInputModule,
     MatCheckboxModule,
     MatExpansionModule,
-    MatTabsModule
+    MatTabsModule,
+    MatRadioModule,
   ],
-  declarations: [
-    ProfileComponent,
-  ],
-  exports: [
-    ProfileComponent,
-  ],
+  declarations: [ProfileComponent],
+  exports: [ProfileComponent],
 })
-export class ProfileModule { }
+export class ProfileModule {}

@@ -6,6 +6,7 @@ import { CommonUtil } from '@core/common.util';
 import { Constants } from '@core/constants';
 import { FirebaseUtil } from '@core/firebaseutil';
 import { Address } from '@core/models/address';
+import { Business } from '@core/models/business';
 import { Client } from '@core/models/client';
 import { Item, Order, OrderStatus, Status } from '@core/models/order';
 import { Product, Unit } from '@core/models/product';
@@ -46,10 +47,11 @@ export class ProfileComponent implements OnInit, OnDestroy {
   orderRequested = false;
 
   // Business
-  bizId = 'bizId';
+  bizInfo: Business;
 
   // Client form
   client = new Client();
+  pickup = true;
   shippingAddressSame = true;
   shippingAddress: Address = new Address();
   isVerified = false;
@@ -375,8 +377,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
     order.vId = uuidv4();
     order.createdTimeUTC = Date.now();
 
-    order.userId = this.userData.uid;
-    order.bizId = this.bizId;
+    order.client = this.client;
+    order.client.userId = this.userData.uid;
+    order.shippingAddress = this.pickup ? new Address() : (this.shippingAddressSame ? this.client.address : this.shippingAddress);
+
+    order.bizId = this.bizInfo.id;
+    order.bizName = "Lakecity Waters";
+    order.bizMob = '+91 - 8877073059';
 
     const status: OrderStatus = new OrderStatus();
     status.status = Status.New;
@@ -429,7 +436,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
         this.fbUtil
           .getInstance()
           .collection(
-            Constants.USER + '/' + order.userId + '/' + Constants.ORDERS
+            Constants.USER + '/' + order.client.userId + '/' + Constants.ORDERS
           )
           .doc(order.id)
           .set(doc)
@@ -481,5 +488,13 @@ export class ProfileComponent implements OnInit, OnDestroy {
   increaseOrderLimit() {
     this.limit += 3;
     this.loadOrders();
+  }
+
+  deliveryMode(e) {
+    if (e.value === 'delivery') {
+      this.pickup = false;
+    } else {
+      this.pickup = true;
+    }
   }
 }
