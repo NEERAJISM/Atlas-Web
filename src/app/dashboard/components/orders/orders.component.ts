@@ -58,7 +58,7 @@ export class OrdersDashboardComponent implements OnDestroy {
               return;
             }
 
-            if (o.client.name.toUpperCase().indexOf(this.value.toUpperCase()) != -1) {
+            if (JSON.stringify(o).toUpperCase().indexOf(this.value.toUpperCase()) != -1) {
               result.push(o);
             }
           }
